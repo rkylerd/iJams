@@ -5,6 +5,7 @@ const request = require("request");
 const bcrypt = require("bcrypt");
 const auth = require("./auth.js");
 const SALT_WORK_FACTOR = 10;
+
 //
 // Users
 //

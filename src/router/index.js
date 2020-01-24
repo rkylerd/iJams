@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home.vue'
-
+import store from '../store/index'
 
 Vue.use(Router)
 
@@ -66,5 +66,18 @@ const router = new Router({
     },
   ]
 });
+
+router.beforeEach(async (to, from, next) => {
+    console.log("to", to);
+    // let userResponse = await store.dispatch("getUser");
+    // if (userResponse.message) {
+    //   console.log("Must log in", userResponse)
+      
+    //     next("/Account");
+    // } else {
+    //   next();
+    // }
+    next();
+})
 
 export default router;

@@ -19,7 +19,7 @@
 
             <div style="margin: auto; width: 240px; height: 40px; padding-top: 20px;">
                 <!--<input @click="toggle" style="width: 125px;" class="confirmation-buttons" value="Register" type="button"/>-->
-                <input @click="go" class="confirmation-buttons" v-bind:class="{colorAnimation : loginanimation}" :disabled="errors.length > 0" value="Submit" type="button"/>
+                <input @click="go" class="confirmation-buttons" v-bind:class="{colorAnimation : loginanimation}" value="Submit" type="button"/>
             </div>
         </div>
 </template>

@@ -154,10 +154,9 @@
         margin: 3rem;
         display: flex;
         flex-wrap: wrap;
-        /* height: 450px; */
         justify-content: center;
         overflow-x: auto;
-        width: 90%;
+        
         margin: auto;
     }
 
@@ -359,7 +358,7 @@
                 this.rightArrow = false;
                 this.filterArt = true;
 
-                this.containerClass = "container-normal";
+                // this.containerClass = "container-normal";
                 this.artistResults = [];
 
                 await this.getSongInfo(artistId);

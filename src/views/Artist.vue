@@ -6,7 +6,7 @@
   <div id="container-songs" class="container-normal">
     <div class="second-layer-container">
                         
-            <div class="albums-container flex" style="min-height: 165px;" v-for="album in artistAlbums.slice(1,artistAlbums.length-1)">
+            <div class="albums-container flex" style="min-height: 175px;" v-for="album in artistAlbums.slice(1,artistAlbums.length-1)">
               <!--{{album}}-->
               <span class="flex">
                   <a class="album-art" :style="{ 'background-image': 'url(' + album.artworkUrl100 + ')' }" @click.prevent="getAlbum(album)">
@@ -22,7 +22,7 @@
                     <div class="song-info">
                         <div class="name-artist">
                             <a class="song-name purple-text small-font" @click.prevent="getAlbum(album)" href="" >
-                              <strong>{{ cutLength(album.collectionCensoredName, 60) }}</strong>
+                              <strong>{{ (cutLength(album.collectionCensoredName, 60)) }}</strong>
                               
                             </a>
                             <!--<a  class="artist-name white-text small-font" href="">{{album.artistName}}</a><br>-->
@@ -141,7 +141,7 @@ body {background-color: black;}
 
 .albums-container {
     border-top: white 1px solid; 
-    max-width: 220px;
+    max-width: 175px;
 }
 
 .container-normal {
@@ -284,7 +284,7 @@ export default {
         },
         cutLength(inputWord, length) {
             if (inputWord.length > length) {
-                inputWord = inputWord.substring(0, length) + "...";
+                inputWord = inputWord.substring(0, length).trim() + "...";
             }
             return inputWord;
         }

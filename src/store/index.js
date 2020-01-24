@@ -200,7 +200,6 @@ export default new Vuex.Store({
     async setUser(context, data) {
       try {
         context.commit("setUser", data);
-        console.log("setUser VueX Action method", data);
       } catch (error) {
         return error.message;
       }
@@ -208,6 +207,7 @@ export default new Vuex.Store({
     async logout(context, data) {
       try {
         console.log("store logout method");
+        context.commit("setUser", null);
         let logoutResult = await axios.delete('/api/users');
         console.log("logoutResult", logoutResult);
         

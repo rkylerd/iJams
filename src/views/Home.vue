@@ -104,7 +104,6 @@
 #my-clean-songs {
     
     flex: 1;
-    width: 85%;
     justify-content: center;
     margin: auto;
     display: flex;

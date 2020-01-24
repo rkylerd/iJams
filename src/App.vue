@@ -17,7 +17,15 @@
         </div>
         <div id="empty-space">
             <!--<div v-if="user">-->
-                <button class="nav-link-text" @click="logout">Logout</button>
+            <div @click="()=>{getUserInfo(); if (user != null) {isShown = !isShown;}}" class="dropdown">
+                
+                <span class="menu-btn"><img class="menu-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23000000%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23000000%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E"></span>
+                <div class="dropdown-content" :class="{block: isShown && user != null}">
+                    <span @click="logout"><span>Sign Out</span></span>
+                    <span><span>Another option</span></span>
+                </div>
+            </div>
+                <!--<button class="nav-link-text" @click="logout">Logout</button>-->
                 <!--<span class="nav-link-text">Welcome {{user.data.username}}</span>-->
             <!--</div>-->
             <!--<div v-else>-->
@@ -35,6 +43,74 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Cabin|Fredoka+One|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap|Fruktur&display=swap');
+
+/* Dropdown */
+
+.menu-btn {
+    display: inline-block;
+    
+    vertical-align: sub;
+
+    height: 100%;
+    width: 40px;
+}
+
+.menu-icon {
+    vertical-align: middle;
+}
+
+.dropdown {
+    cursor: default;
+    position: relative;
+    display: inline-block;
+}
+
+.block {
+    display: block !important;
+    z-index: 5;
+}
+
+/*.dropdown:hover .dropdown-content {*/
+/*  display: block;*/
+/*}*/
+
+.dropdown-content {
+  cursor: pointer;
+  display: none;
+  position: absolute;
+  /*left: -10px;*/
+  font-size: smaller;
+  background-color: #2c3e50;
+  color: whitesmoke;
+  margin-top: 1px;
+  min-width: 150px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 6px 0 6px 0;
+  min-height: 35px;
+  border-radius: 5px;
+  z-index: 5;
+}
+
+.dropdown-content > span {
+    text-align: left;
+    width: 100%; 
+    line-height: 2;
+    min-height: 30px;
+    font-size: 14px;
+    display: block;
+    
+}
+
+.dropdown-content > span > span {
+    padding : 3px 0 3px 4px;
+}
+
+.dropdown-content > span:hover {
+    width: 100%;
+    color: whitesmoke;
+    background-color: #42b983 !important;
+    /*background-color: #2c3e50;*/
+}
 
 .nav-link-text {
   font-family: 'Fredoka One', cursive;
@@ -136,37 +212,12 @@
     data() {
         return {
         user: {},
-        // fresh: true,
-        // songResults: [],
-        // songNames: [],
-        // artistResults: [],
-        // returnArtists: [],
-        // filteredAlbum: [],
-        // pastQueries: [],
-        // album: {
-        //     artworkUrl100: '',
-        //     collectionName: '',
-        //     artistName: '',
-        // },
-        // artist: '',
-        // songName: '',
-        // albumTitle: '',
         queryStr: '',
-        // audio: '',
-        // video: '',
-        // songs: '',
+        isShown: false,
         playing: {
         },
         playingSong: '',
-        isPlaying: {isPlaying: false, index: ''},
-        // controlPlayer: {},
-        // leftArrow: false,
-        // rightArrow: false,
-        // arrowImage: '',
-        // containerClass: 'container-normal',
-        // filterArt: false,
-        // filterSearch: false,
-        // playlist: [],
+        isPlaying: {isPlaying: false, index: ''}
       }
     },
     async beforeMount() {
@@ -183,7 +234,15 @@
         }
     },
     methods: {
-        
+        async getUserInfo(){
+            let userResponse = await this.$store.dispatch("getUser");
+            if (userResponse.message) {
+                this.user = null;
+                return;
+            }
+            
+            this.user = userResponse.data;
+        },
         setQueryTerm(term) {
             this.queryStr = term;
             
@@ -192,12 +251,12 @@
             
         },
         logout() {
+            this.isShown = false;
             if (this.$store.state.playing !== null) {
 
-                    this.$store.state.playing.pause();
-                    this.$store.dispatch("passPlayingSong", null);
-
-                }
+                this.$store.state.playing.pause();
+                this.$store.dispatch("passPlayingSong", null);
+            }
             this.user = null;
             this.$store.dispatch("logout");  
             this.$router.replace("Account");
