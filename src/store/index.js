@@ -13,9 +13,13 @@ export default new Vuex.Store({
     album: null,
     artistAlbums: null,
     artist: null,
-    playing: null
+    playing: null,
+    loginRedirect: null
   },
   mutations: {
+    setLoginRedirect(state, redirect) {
+      state.loginRedirect = redirect;
+    },
     setUser(state, user) {
       console.log("store mutation, setUser: ", user);
       state.user = user;
@@ -65,7 +69,6 @@ export default new Vuex.Store({
       return state.results;
     },
     getUser(state) {
-      console.log("getUser mutation method; state.user: ", state.user);
       return !state.user ? this.dispatch('getUser') : state.user; 
     }
   },
@@ -121,8 +124,7 @@ export default new Vuex.Store({
     },
     async search(context, data) {
       try {
-        context.commit("setResults", data);
-        return "";
+        return await axios.get(`api/search/${data}`)
       } catch (error) {
         alert(error.message);
       }
@@ -170,26 +172,26 @@ export default new Vuex.Store({
       }
     },
     async login(context, data) {
-
       try {
-        return await axios.post('/api/users/login', {user: data});
+        let currentUser = await axios.post("api/users/login", {user: data});
+        context.commit("setUser", currentUser.data);
+        return currentUser.data;
       } catch (error) {
         return error.message;
       }
     },
     async register(context, data) {
-
       try {
-        return await axios.post('/api/users/register', {user: data});
+        const currentUser = await axios.post('/api/users/register', {user: data});
+        context.commit("setUser", currentUser.data);
+        return currentUser.data;
       } catch (error) {
         throw new Error(error);
       }
     },
     async getUser(context, data) {
-      console.log("getUser store method");
       try {
-        let currentUser = await axios.get('/api/users/');
-        console.log("getUser VueX Action method", currentUser);
+        const currentUser = await axios.get('/api/users/');
         context.commit("setUser", currentUser.data);
         return currentUser;
       } catch (error) {
@@ -206,14 +208,18 @@ export default new Vuex.Store({
     },
     async logout(context, data) {
       try {
-        console.log("store logout method");
+        
         context.commit("setUser", null);
         let logoutResult = await axios.delete('/api/users');
+        window.localStorage.setItem('user', null);
         console.log("logoutResult", logoutResult);
         
       } catch (error) {
         return error.message;
       }
+    },
+    setLoginRedirect(context, data) {
+      context.commit("setLoginRedirect", data);
     }
   },
   modules: {}

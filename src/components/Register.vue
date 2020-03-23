@@ -134,25 +134,29 @@
                 this.checkPasswordConf();
                 this.checkUsername();
                 
-                
-                let user = {
+                const user = {
                     username: this.username,
                     password: this.password,
                     firstname: this.firstname,
                     lastname: this.lastname,
                     email: this.email
                 }
+                
                 try {
-                    
                     let registerResult = await this.$store.dispatch("register", user);
-                    console.log("registerResult", registerResult);
                     
-                    if (registerResult.data) {
-                        this.$store.dispatch("setUser", registerResult.data);
-                        router.push("/");
+                    if (registerResult.tokens) {
+                        window.localStorage.setItem("user", JSON.stringify({...registerResult, "username": this.username}))
+                            
+                        if (this.$store.state.loginRedirect) {
+                            router.replace(this.$store.state.loginRedirect);
+                        } else {
+                            router.replace("/");
+                        }
                     } else {
-                        this.unameerror.push(registerResult.data);
+                        this.unameerror.push(registerResult);
                     }
+                    
                 } catch (error) {
                     console.log("Registration error: ", error);
                 }

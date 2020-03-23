@@ -45,15 +45,20 @@ export default {
         this.$parent.toggle();
       },
       async go() {
-
+        this.errors = [];
         let user = {username: this.username, password: this.password}
             
         let loginResult = await this.$store.dispatch("login", user);
-        console.log("loginResult", loginResult);
         
-        if (loginResult.data) {
-            this.$store.dispatch("setUser", loginResult.data);
-            router.push("/");
+        if (loginResult.tokens) {
+                window.localStorage.setItem("user", JSON.stringify({...loginResult, "username": this.username}))
+                
+            if (this.$store.state.loginRedirect) {
+                router.replace(this.$store.state.loginRedirect);
+            } else {
+                router.replace("/");
+            }
+            
         } else {
             this.errors.push("Invalid username/password combination. Try again.");
         }
@@ -65,10 +70,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
     @import url('https://fonts.googleapis.com/css?family=Cabin|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap');
-
-    #nav {
-        /*display: none;    */
-    }
 
     #account-error-container {
         min-height: 15px;

@@ -1,6 +1,6 @@
 <template>
     
-        <div id="container-songs" class="container-album">
+        <div v-if="computedUser && !loading" id="container-songs" class="container-album">
             
                 <div class="album-display">
                         <img  width="100" height="100" :src="album.artworkUrl100">
@@ -21,7 +21,7 @@
                         <th>Time</th>
                         <th></th>
                     </tr>
-                    <tr v-for="songs in album.songs" :key="songs.trackId">
+                    <tr v-for="songs in albumSongs" :key="songs.trackId">
                         <td class="trackNumber-cell small-album-info" :class="songs.className" @click.prevent="playSound(songs)"><a class="inner-track-num">{{songs.trackNumber}}</a></td>
                         <td class="name-cell"><a class=" song-name white-text small-font" ><strong>{{songs.trackName_short}}</strong></a></td>
                         <td class="artist-cell"><div @click.prevent="filterArtist(songs.artistId)" class="small-font artistNameP white-text link">{{songs.artistName_short}}</div></td>
@@ -296,7 +296,6 @@
     }
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"></script>
 <script>
     import router from '@/router'
     const axios = require('axios');
@@ -311,32 +310,35 @@
                 isPlaying: { isPlaying: false, index: '' },
                 drag: {},
                 albumSongs: '',
+                album: {},
+                loading: true
             }
         },
         async created() {
-            let userResponse = await this.$store.dispatch("getUser");
-            if (userResponse.message) {
-                router.replace("Account");
-            }
-            this.user = userResponse.data;
-            
-            this.albumSongs = this.$store.state.album.songs;
-        },
-        mounted() {
-            document.addEventListener("backbutton", () => {
-                console.log("pop(): ", this.$store.state.results.pop());
-            }, false);
-        },
-        computed: {
-            album() {
-                console.log("album", this.$store.state.album);
-                return this.$store.state.album;
-            }
+            // this.user = this.$store.state.user;
+            // this.getAlbum();
         },
         methods: {
+            async getAlbum() {
+                
+                const response = await this.$store.dispatch("getAlbum", this.$route.query.album);
+                console.log('album.vue', response.data);
+                this.album = response.data.results[0];
+                
+                response.data.results = response.data.results.slice(1);
+
+                for (var i = 0; i < response.data.results.length; i++) {
+                    response.data.results[i].className = "play";
+                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
+                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
+                    response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
+                }
+                this.albumSongs = response.data.results;
+                this.loading = false;
+            },
             async addToPlaylist(song) {
                 song.className = "play";
-                console.log("lets add " + song.trackName + " to your playlist");
+                
                 song.username = this.user.username;
                 await this.$store.dispatch("addToPlaylist", song);
             },
@@ -345,34 +347,13 @@
                 await this.getSongInfo(artistId);
             },
             async getSongInfo(artistId) {
-
-                let response = await this.$store.dispatch("getArtist", artistId);
-                console.log(artistId + " response: ", response.data.results);
-
-                response.data.results.splice(0, 1);
-                for (var i = 0; i < response.data.results.length; i++) {
-                    response.data.results[i].className = "play";
-                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 12);
-                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 20);
-                }
-
-                console.log("Song Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistSongs", response.data.results);
-
-                response = await this.$store.dispatch("getArtistAlbums", artistId);
-
-                console.log("Response about the artist's albums: ", response.data.results);
-
-                console.log("Album Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistAlbums", response.data.results);
-                router.push("Artist");
+                router.push({path:"artist", query: {"artist":artistId}});
             },
             playSound(sound) {
-                console.log("My sounds: ", sound.previewUrl);
+                
                 if (sound) {
 
                     let index = this.albumSongs.indexOf(sound);
-                    // console.log("playing song: ", this.$store.state.playing);
 
                     //If the same song on same page is "stopped"
                     if (this.isPlaying.index === index) {
@@ -411,8 +392,7 @@
                     this.$store.dispatch("passPlayingSong", this.playing);
                     this.playing.play();
                     setTimeout(() => {
-                        // console.log("store trackId:", this.$store.state.playing.trackId);
-                        console.log("the clicked song trackId:", sound.trackId);
+                        
                         if (this.isPlaying.trackId === sound.trackId) {
 
                             this.$store.dispatch("passPlayingSong", null);
@@ -421,7 +401,21 @@
                     }, 30000);
                 }
             },
-        }
+            
+        },
+        watch: {
+            '$route.query.album': function(album) {
+                this.getAlbum()
+            }
+      },
+      computed: {
+          computedUser() {
+              this.user = this.$store.state.user;
+              console.log('computedUser', this.user);
+              if (this.user) this.getAlbum();
+              return this.$store.state.user;
+          } 
+      }
     }
 
     function cutLength(inputWord, length) {
@@ -429,5 +423,11 @@
             inputWord = inputWord.substring(0, length) + "...";
         }
         return inputWord;
+    }
+     
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 </script>

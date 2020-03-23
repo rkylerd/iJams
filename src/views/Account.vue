@@ -182,11 +182,6 @@
         },
         components: {Login, Register},
         async created() {
-            this.user = (await this.$store.dispatch("getUser")).data;
-            console.log("account page user:", this.user);
-            if (this.user) {
-                router.push("/");
-            }
         },
         methods: {
             toggle(option) {
@@ -219,10 +214,12 @@
                             email: this.email
                             }
                 if (login) {
-                    let loginResult = await axios.post("api/users/login", user);
+                    let loginResult = await this.$store.dispatch("login", user);
+                    
                 } else {
-                    let registerResult = await axios.post("api/users/register", user);
-                    let historyResult = await axios.post("api/users/register", user);
+                    let registerResult = await this.$store.dispatch("register", user);
+                    // let historyResult = await axios.post("api/users/register", user);
+                    this.goHome();
                 }
             },
             goHome() {

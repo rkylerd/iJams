@@ -3,7 +3,7 @@
     <!--<img alt="Vue logo" src="../assets/logo.png">-->
     <h2 class="page-title">Home</h2>
    
-    <div id="my-clean-songs">
+    <div id="my-clean-songs" v-if="computedUser">
       <div class="single-track search-display" v-for="songs in myEdits" :key="songs.trackId">
               
               <a class="album-art" :style="{ 'background-image': 'url(' + songs.artworkUrl60 + ')' }" @click.prevent="playSound(songs)">
@@ -19,7 +19,7 @@
                   
                   <div class="price-explicitness">
                   
-                      <button class="purchase-button small-text btn-outline-success my-2 my-sm-0" type="button" @click.prevent="addToPlaylist(songs)">Add</button>
+                      <button class="purchase-button small-text btn-outline-success my-sm-0" type="button" @click.prevent="addToPlaylist(songs)">Add</button>
                       <div class="not-explicit">{{songs.trackExplicitness}}</div>
                   </div>
                   
@@ -102,7 +102,7 @@
 }
 
 #my-clean-songs {
-    
+    width: 90%;
     flex: 1;
     justify-content: center;
     margin: auto;
@@ -265,19 +265,14 @@ export default {
     
   },
   async beforeMount() {
-    let userResponse = await this.$store.dispatch("getUser");
-    if (userResponse.message) {
-        router.replace("Account");
-    }
-    this.user = userResponse.data;
+    // this.user = this.$store.state.user;
+    
     this.playing = this.$store.state.playing;
   },
   methods: {
       async getSongs() {
           
           try {
-            console.log("I'm inside the function getSongs()");
-            
             this.error = await this.$store.dispatch("getSongs");
             
           } catch (error) {
@@ -287,39 +282,8 @@ export default {
       async getAlbum(song) {
           let album = {artistId: song.artistId, artworkUrl100: '', collectionName: song.collectionName, 
                       artistName: song.artistName, releaseDate: song.releaseDate, genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
-
-          if (song.trackCount == 1) {
-              song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
-              song.trackName_short = cutLength(song.trackName, 75);
-              song.artistName_short = cutLength(song.artistName, 35);
-
-              album.songs = [song];
-              await this.$store.dispatch("defineAlbumInfo", album);
-              router.push("Album");
-
-              return;
-          }
-
-          try {
-              const response = await this.$store.dispatch("getAlbum", song.collectionId);
-              album.artworkUrl100 = response.data.results[0].artworkUrl100;
-              response.data.results.splice(0, 1);
-              
-              for (var i = 0; i < response.data.results.length; i++) {
-                  response.data.results[i].className = "play";
-                  response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
-                  response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
-                  response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-              }
-
-              album.songs = response.data.results;
-              await this.$store.dispatch("defineAlbumInfo", album);
-
-              router.push("Album");
-          }
-          catch (err) {
-              console.log(err);
-          }
+          
+          router.push({path:"album", query: {"album":song.collectionId}});
       },
       async addToPlaylist(song) {
           song.className = "play";
@@ -365,10 +329,8 @@ export default {
                     
                 }
 
-
               this.playing = new Audio(sound.previewUrl);
 
-              
               this.myEdits[index].className = "stop";
 
               this.isPlaying.isPlaying = true;
@@ -388,49 +350,16 @@ export default {
             }
           },
           async filterArtist(artistId) {
-                this.rightArrow = false;
-
-                let response = await this.$store.dispatch("getArtist", artistId);
-                console.log(artistId + " response: ", response.data.results);
-
-                response.data.results.splice(0, 1);
-                for (var i = 0; i < response.data.results.length; i++) {
-                    response.data.results[i].className = "play";
-                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 12);
-                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 20);
-                }
-
-                console.log("Song Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistSongs", response.data.results);
-
-                response = await this.$store.dispatch("getArtistAlbums", artistId);
-                let album = response.data.results;
-                album.artistId = artistId;
-                console.log("Response about the artist's albums: ", album);
-
-                this.$store.dispatch("defineArtistAlbums", album);
-                router.push("Artist");
-            },
-
-  }
-  
+               router.push({path:"artist", query: {"artist":artistId}});
+          },
+  },
+  computed: {
+    computedUser() {
+        this.user = this.$store.state.user;
+        return this.$store.state.user;
+    }  
+  },
 }
-window.onbeforeunload = function (evt) {
-  var message = "Are you sure you want to leave?";
-  if (typeof evt == "undefined") {
-    evt = window.event;
-  }
-  if (evt) {
-    evt.returnValue = message;
-  }
-  return message;
-}
-
-// window.onpopstate=function()
-// {
-//   alert("Back/Forward clicked!");
-// }
-
     function cutLength(inputWord, length) {
         if (inputWord.length > length) {
             inputWord = inputWord.substring(0, length) + "...";

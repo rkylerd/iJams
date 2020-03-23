@@ -4,7 +4,7 @@
 <h3 style="margin-top: 2%; margin-left: 5%; color: whitesmoke;">Search Results:</h3>
   <div id="container-songs" class="container-normal">
     <div class="second-layer-container">
-                        
+                 
             <div class="single-track album-tracks" v-for="songs in songResults" :key="songs.track_id">
                     <a class="album-art" :style="{ 'background-image': 'url(' + songs.artworkUrl60 + ')' }" @click.prevent="playSound(songs)">
                         <img width="60" height="60" :class="songs.className">
@@ -24,7 +24,8 @@
                         </div>
                         
                     </div>
-            </div>                        
+            </div>   
+            
         </div>
           </div>
         </section>
@@ -180,25 +181,45 @@
                 playing: {},
                 playingSong: '',
                 isPlaying: { isPlaying: false, index: '' },
+                songResults: []
             }
         },
         async created() {
-            let userResponse = await this.$store.dispatch("getUser");
-            if (userResponse.message) {
-                router.replace("Account");
-            }
-            this.user = userResponse.data;
+            this.search();
+            
+            this.user = this.$store.state.user;
             this.playing = null;
         },
-        mounted() {
-            document.addEventListener("backbutton", () => {
-                alert("back button pressed");
-            }, false);
-        },
-        // beforeDestroy() {
-        //     document.removeEventListener("backbutton", this.yourCallBackFunction);
-        // },
         methods: {
+            search() {
+                this.$store.dispatch("search",this.$route.query.search).then(itunesResponse => {
+                    this.songResults = [];
+                    console.log('itunesResponse', itunesResponse);
+                    let results = itunesResponse.data.results;
+                    const artistResults = [];
+                    const songNames = [];
+                    for (var i =0; i < results.length; i++ ) {
+                        if (results[i].kind === "song") {
+                            results[i].className = "play";
+                            if (!artistResults.includes(results[i].artistId)) {
+                                artistResults.push(results[i].artistId);
+                            }    
+    
+                            if (!songNames.includes(results[i].trackName)) {
+                                songNames.push(results[i].trackName);
+                                
+                                results[i].trackName_short = cutLength(results[i].trackName, 12);
+                                results[i].artistName_short = cutLength(results[i].artistName, 20);
+                                
+                                this.songResults.push(results[i]);
+                            } 
+                        } 
+    
+                    }
+                })
+                
+                
+            },
             async addToPlaylist(song) {
                 song.className = "play";
                 song.username = this.user.username;
@@ -213,18 +234,15 @@
                 }
             },
             playSound(sound) {
-                console.log("My sounds: ", sound.previewUrl);
                 if (sound) {
-
-                    let index = this.$store.state.results[this.$store.state.results.length - 1].indexOf(sound);
-                    console.log("playing song: ", this.$store.state.playing);
-
+                    let index = this.songResults.indexOf(sound);
+                    
                     //when you press stop on a song playing from same page
                     if (this.isPlaying.trackId === sound.trackId) {
 
                         this.playing.pause();
 
-                        this.$store.state.results[this.$store.state.results.length - 1][this.isPlaying.index].className = "play";
+                        this.songResults[this.isPlaying.index].className = "play";
 
                         this.isPlaying.isPlaying = false;
                         this.isPlaying.index = '';
@@ -237,11 +255,10 @@
                     if (this.$store.state.playing !== undefined && this.$store.state.playing !== null) {
                         this.$store.state.playing.pause();
 
-
                         // to simply change the album artwork of the last song on page that was playing
                         if (this.playing !== null) {
 
-                            this.$store.state.results[this.$store.state.results.length - 1][this.isPlaying.index].className = "play";
+                            this.songResults[this.isPlaying.index].className = "play";
 
                         }
                     }
@@ -250,7 +267,7 @@
 
                     this.playing = new Audio(sound.previewUrl);
 
-                    this.$store.state.results[this.$store.state.results.length - 1][index].className = "stop";
+                    this.songResults[index].className = "stop";
 
                     this.isPlaying.isPlaying = true;
                     this.isPlaying.index = index;
@@ -262,89 +279,50 @@
 
                         if (this.isPlaying.trackId === sound.trackId) {
                             this.$store.dispatch("passPlayingSong", null);
-                            // this.playlist[this.playlist.length-1][this.isPlaying.index].className = "play";
                             this.playing = null;
                             this.isPlaying.trackId = "";
-                            this.$store.state.results[this.$store.state.results.length - 1][index].className = "play";
+                            this.songResults[index].className = "play";
                         }
                     }, 30000);
                 }
             },
             async getAlbum(song) {
-                let album = { artworkUrl100: song.artworkUrl100, collectionName: song.collectionName, 
-                artistName: song.artistName, releaseDate: song.releaseDate, 
-                genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
+                // let album = { artworkUrl100: song.artworkUrl100, collectionName: song.collectionName, 
+                // artistName: song.artistName, releaseDate: song.releaseDate, 
+                // genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
 
-                if (song.trackCount == 1) {
-                    song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
-                    song.trackName_short = cutLength(song.trackName, 75);
-                    song.artistName_short = cutLength(song.artistName, 35);
+                // if (song.trackCount == 1) {
+                //     song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
+                //     song.trackName_short = cutLength(song.trackName, 75);
+                //     song.artistName_short = cutLength(song.artistName, 35);
 
-                    album.songs = [song];
-                    await this.$store.dispatch("defineAlbumInfo", album);
-                    router.push("Album");
+                //     album.songs = [song];
+                //     await this.$store.dispatch("defineAlbumInfo", album);
+                    
+                //     router.push("Album");
 
-                    return;
-                }
+                //     return;
+                // }
 
                 try {
-                    const response = await this.$store.dispatch("getAlbum", song.collectionId);
-                    response.data.results.splice(0, 1);
-
-                    for (var i = 0; i < response.data.results.length; i++) {
-                        response.data.results[i].className = "play";
-                        response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
-                        response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
-                        response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-                    }
-
-                    album.songs = response.data.results;
-                    await this.$store.dispatch("defineAlbumInfo", album);
-
-                    router.push("Album");
+                    router.push({path:"album", query: {"album": song.collectionId}});
                 }
                 catch (err) {
                     console.log(err);
                 }
-
             },
             async filterArtist(artistId) {
-
-                // let response = await axios.get("https://itunes.apple.com/lookup?id=" + artistId + "&entity=song", config);
-                let response = await this.$store.dispatch("getArtist", artistId);
-                console.log(artistId + " response: ", response.data.results);
-
-                response.data.results.splice(0, 1);
-                for (var i = 0; i < response.data.results.length; i++) {
-                    response.data.results[i].className = "play";
-                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 12);
-                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 20);
-                }
-
-                console.log("Song Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistSongs", response.data.results);
-
-                // response = await axios.get("https://itunes.apple.com/lookup?id=" + artistId, config);
-                response = await this.$store.dispatch("getArtistAlbums", artistId);
-
-                console.log("Response about the artist's albums: ", response.data.results);
-                // response.data.results.splice(0,1);
-                // for (var i = 0; i < response.data.results.length; i++) {
-                //     response.data.results[i].className = "play";
-                //     response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 12);
-                //     response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 20);
-                // }
-
-                console.log("Album Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistAlbums", response.data.results);
-                router.push("Artist");
+                router.push({path:"artist", query: {"artist":artistId}});
             },
         },
         computed: {
-            songResults() {
-                return this.$store.state.results[this.$store.state.results.length - 1];
+            
+        },
+        watch: {
+            '$route.query.search': function (search) {
+              this.search()
             }
-        }
+          },
     }
 
     function cutLength(inputWord, length) {

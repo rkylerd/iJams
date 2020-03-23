@@ -1,43 +1,48 @@
-<template>
-<div>
-<section class="outmost-container">
-<h3 style="margin-top: 2%; margin-left: 5%; color: whitesmoke;">{{artistAlbums[0].artistName}}</h3>
-<br>
-  <div id="container-songs" class="container-normal">
-    <div class="second-layer-container">
-                        
-            <div class="albums-container flex" style="min-height: 175px;" v-for="album in artistAlbums.slice(1,artistAlbums.length-1)">
-              <!--{{album}}-->
-              <span class="flex">
-                  <a class="album-art" :style="{ 'background-image': 'url(' + album.artworkUrl100 + ')' }" @click.prevent="getAlbum(album)">
-                      <img width="100" height="100">
-                  </a>
-                  
-                  <span v-if="album.collectionExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">Explicit</span>
-                  <span v-else-if="album.collectionExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">Clean</span>
-              </span>
-                    
-                    
-                    <!-- class makes the song info a flex row. makes sense. -->
-                    <div class="song-info">
-                        <div class="name-artist">
-                            <a class="song-name purple-text small-font" @click.prevent="getAlbum(album)" href="" >
-                              <strong>{{ (cutLength(album.collectionCensoredName, 60)) }}</strong>
-                              
+    <template>
+        <div>
+        <section class="outmost-container">
+          
+          <template v-if="!loading">
+            <h3 style="margin-top: 2%; margin-left: 5%; color: whitesmoke;">{{artistAlbums[0].artistName}}</h3>
+          <br>
+            <div id="container-songs" class="container-normal">
+              <div class="second-layer-container">
+                                  
+                      <div class="albums-container flex" style="min-height: 175px;" v-for="album in artistAlbums.slice(1,artistAlbums.length-1)">
+                        <!--{{album}}-->
+                        <span class="flex">
+                            <a class="album-art" :style="{ 'background-image': 'url(' + album.artworkUrl100 + ')' }" @click.prevent="getAlbum(album)">
+                                <img width="100" height="100">
                             </a>
-                            <!--<a  class="artist-name white-text small-font" href="">{{album.artistName}}</a><br>-->
-                        </div>
+                            
+                            <span v-if="album.collectionExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">Explicit</span>
+                            <span v-else-if="album.collectionExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">Clean</span>
+                        </span>
+                              
+                              
+                              <!-- class makes the song info a flex row. makes sense. -->
+                              <div class="song-info">
+                                  <div class="name-artist">
+                                      <a class="song-name purple-text small-font" @click.prevent="getAlbum(album)" href="" >
+                                        <strong>{{ (cutLength(album.collectionCensoredName, 60)) }}</strong>
+                                        
+                                      </a>
+                                      <!--<a  class="artist-name white-text small-font" href="">{{album.artistName}}</a><br>-->
+                                  </div>
+                              </div>
+                      </div>                        
+                  </div>
                     </div>
-            </div>                        
-        </div>
-          </div>
-        </section>
-        
-        <hr>
-        
-</div>
-
-</template>
+                    </template>
+    </section>
+    
+    <hr>
+    
+    </div>
+    
+    
+    
+    </template>
 
 <style scoped>
 body {background-color: black;}
@@ -176,17 +181,24 @@ export default {
         },
           playingSong: '',
           isPlaying: {isPlaying: false, index: ''},
+          artistAlbums: [],
+          loading: true,
         }
     },
   async created() {
-    let userResponse = await this.$store.dispatch("getUser");
-    if (userResponse.message) {
-        router.replace("Account");
-    }
-    console.log("albums by my artist: ", this.$store.state.artistAlbums);
-    console.log("nothing new");
+    
+    this.getArtistAlbums();
   },
   methods: {
+    getArtistAlbums() {
+      
+      this.$store.dispatch("getArtistAlbums", this.$route.query.artist).then(results => {
+        this.artistAlbums = [];
+        console.log('results', results)
+        this.artistAlbums = results.data.results;
+        this.loading = false;
+      });
+    },
     async addToPlaylist(song) {
       song.className = "play";
       await this.$store.dispatch("addSong", song);
@@ -242,39 +254,39 @@ export default {
             }
           },
           async getAlbum(album) {
-            console.log("album to send ", album);
-
-            try {
-              const response = await this.$store.dispatch("getAlbum", album.collectionId);
-              response.data.results.splice(0, 1);
+            // console.log("album to send ", album);
+      
+            // try {
+            //   const response = await this.$store.dispatch("getAlbum", album.collectionId);
+            //   response.data.results.splice(0, 1);
             
-              for (var i = 0; i < response.data.results.length; i++) {
-                response.data.results[i].className = "play";
-                response.data.results[i].trackName_short = this.cutLength(response.data.results[i].trackName, 75);
-                response.data.results[i].artistName_short = this.cutLength(response.data.results[i].artistName, 35);
-                response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-              }
+            //   for (var i = 0; i < response.data.results.length; i++) {
+            //     response.data.results[i].className = "play";
+            //     response.data.results[i].trackName_short = this.cutLength(response.data.results[i].trackName, 75);
+            //     response.data.results[i].artistName_short = this.cutLength(response.data.results[i].artistName, 35);
+            //     response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
+            //   }
             
-              album.songs = response.data.results;
-              await this.$store.dispatch("defineAlbumInfo", album);
+            //   album.songs = response.data.results;
+            //   await this.$store.dispatch("defineAlbumInfo", album);
             
-              router.push("Album");
-            }
-            catch (err) {
+            //   router.push("Album");
+            // }
+            // catch (err) {
             
-              console.log(err);
+            //   console.log(err);
             
-            }
-            
+            // }
+            router.push({path:"album", query: {"album":album.collectionId}});
         },
         async filterArtist(artistId) {
             this.rightArrow = false;
             this.filterArt = true;
 
-            var ls = JSON.parse(localStorage.getItem("savedState"));
+            let ls = JSON.parse(window.localStorage.getItem("savedState"));
             ls.push({'songs': this.songResults, 'class':this.containerClass});
 
-            localStorage.setItem("savedState", JSON.stringify(ls));
+            window.localStorage.setItem("savedState", JSON.stringify(ls));
 
             this.containerClass = "container-normal";
             this.artistResults = [];
@@ -289,13 +301,11 @@ export default {
             return inputWord;
         }
   },
-  computed: {
-    artistAlbums() {
-      
-      return this.$store.state.artistAlbums;
-      
+  watch: {
+    '$route.query.artist': function (search) {
+      this.getArtistAlbums()
     }
-  }
+  },
 }
 
 function millisToMinutesAndSeconds(millis) {

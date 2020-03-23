@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="computedUser">
       <h2 class="page-title">Playlist</h2>
     <section id="flex-box-column">
         <div v-if="playlist"  class="playlist-normal">
@@ -50,6 +50,7 @@
       color: #42b983 !important;
 
     }
+    
     .purchase-button {
 
         margin-top: 0px !important; 
@@ -173,7 +174,7 @@
     import { db } from '@/main'
     const axios = require('axios');
     import router from '@/router'
-
+    import store from '@/store'
     export default {
         name: "playlist",
         data() {
@@ -188,36 +189,28 @@
             }
         },
         async beforeMount() {
-            let userResponse = await this.$store.dispatch("getUser");
-            if (userResponse.message) {
-                router.replace("Account");
-            }
-            this.user = userResponse.data;
-            this.getPlaylist();
+            // this.user = this.$store.state.user;
+            // this.getPlaylist();
             this.playing = this.$store.state.playing;
+        },
+        computed: {
+          computedUser() {
+              this.user = store.state.user;
+              if (this.user) this.getPlaylist();
+              return store.state.user;
+          }  
         },
         methods: {
             async getPlaylist() {
+                console.log('user from getPlaylist', this.user);
                 this.playlist = (await axios.get("api/library/" + this.user.username)).data.sort((a, b) => {
                     return a.index - b.index;
                 });
-                console.log("playlist: ", this.playlist);
-                // async playlist() {
-
-                // return this.$store.state.playlist
-                // return this.$store.state.playlist;
-                //     console.log("playlist: ", (await axios.get("api/library")).data);
-                //     return (await axios.get("api/library")).data;
-                // }
-            },
-            clearLocalStorage() {
-                localStorage.clear();
             },
             dragItem(song) {
                 this.drag = song;
             },
             async dropItem(song) {
-                console.log("playlist: ", this.playlist);
 
                 const indexItem = this.playlist.indexOf(this.drag);
                 const indexTarget = this.playlist.indexOf(song);
@@ -240,40 +233,40 @@
                             console.log("error while updating the order of your playlist.");
                         });
                 }
-                // await this.$store.dispatch("updatePlaylist", this.playlist);
             },
             async getAlbum(song) {
-                let album = { artistId: song.artistId, artworkUrl100: '', collectionName: song.collectionName, artistName: song.artistName, 
-                            releaseDate: song.releaseDate, genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
+                // let album = { artistId: song.artistId, artworkUrl100: '', collectionName: song.collectionName, artistName: song.artistName, 
+                //             releaseDate: song.releaseDate, genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
 
-                if (song.trackCount == 1) {
-                    song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
-                    song.trackName_short = cutLength(song.trackName, 75);
-                    song.artistName_short = cutLength(song.artistName, 35);
+                // if (song.trackCount == 1) {
+                //     song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
+                //     song.trackName_short = cutLength(song.trackName, 75);
+                //     song.artistName_short = cutLength(song.artistName, 35);
                     
-                    album.songs = [song];
-                    await this.$store.dispatch("defineAlbumInfo", album);
-                    router.push("Album");
+                //     album.songs = [song];
+                //     await this.$store.dispatch("defineAlbumInfo", album);
+                //     router.push("Album");
 
-                    return;
-                }
+                //     return;
+                // }
 
                 try {
-                    const response = await this.$store.dispatch("getAlbum", song.collectionId);
-                    album.artworkUrl100 = response.data.results[0].artworkUrl100;
-                    response.data.results.splice(0, 1);
+                    // const response = await this.$store.dispatch("getAlbum", song.collectionId);
+                    // album.artworkUrl100 = response.data.results[0].artworkUrl100;
+                    // response.data.results.splice(0, 1);
 
-                    for (var i = 0; i < response.data.results.length; i++) {
-                        response.data.results[i].className = "play";
-                        response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
-                        response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
-                        response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-                    }
+                    // for (var i = 0; i < response.data.results.length; i++) {
+                    //     response.data.results[i].className = "play";
+                    //     response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
+                    //     response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
+                    //     response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
+                    // }
 
-                    album.songs = response.data.results;
-                    await this.$store.dispatch("defineAlbumInfo", album);
+                    // album.songs = response.data.results;
+                    // await this.$store.dispatch("defineAlbumInfo", album);
 
-                    router.push("Album");
+                    // router.push("Album");
+                    router.push({path:"album", query: {"album": song.collectionId}});
                 }
                 catch (err) {
                     console.log(err);
@@ -282,18 +275,6 @@
             async deleteFromPlaylist(song) {
 
                 try {
-                    // var songsRef = db.collection('songs');
-                    // var documentToDelete = songsRef.doc(song.trackId.toString());
-                    // var doc = await documentToDelete.get();
-
-                    // if (!doc.exists) {
-                    //     alert("Fool that file doesn't exist.");
-                    //     return;
-                    // }
-                    // else {
-                    //     documentToDelete.delete();
-                    //     await this.$store.dispatch("getSongs"); 
-                    // }
                     song.username = this.user.username;
                     let deleteResult = await axios.delete("api/library/" + song.username + "." + song.trackId);
                     await this.getPlaylist();
@@ -324,17 +305,13 @@
                     if (this.playing != undefined && this.isPlaying.isPlaying) { //ensures multiples songs don't play at the same time
                         this.playing.pause();
                         this.playlist[this.isPlaying.index].className = "play";
-
                     }
 
                     //if a song from another page is playing
                     if (this.$store.state.playing !== null) {
-
                         this.$store.state.playing.pause();
                         this.$store.dispatch("passPlayingSong", null);
-
                     }
-
 
                     this.playing = new Audio(sound.previewUrl);
 
@@ -346,7 +323,6 @@
                     this.$store.dispatch("passPlayingSong", this.playing);
                     this.playing.play();
                     setTimeout(() => {
-
                         if (this.playing.trackId === sound.trackId) {
                             this.$store.dispatch("passPlayingSong", null);
                         }
@@ -355,14 +331,7 @@
                 }
             },
             async filterArtist(artistId) {
-                this.rightArrow = false;
-                this.filterArt = true;
-
-                // this.containerClass = "container-normal";
-                this.artistResults = [];
-
-                await this.getSongInfo(artistId);
-
+                router.push({path:"artist", query: {"artist":artistId}});
             },
             async getSongInfo(artistId) {
 

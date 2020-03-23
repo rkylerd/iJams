@@ -105,17 +105,17 @@ const Users = mongoose.model('Users', userSchema);
 // Get current user if logged in.
 router.get('/', auth.verifyToken, async (req, res) => {
   // look up user account
-  console.log("getting current user: ", req.user_id);
   const user = await Users.findOne({
     _id: req.user_id
   });
+  
   if (!user) {
       console.log("No one is logged in yet");
        return res.status(403).send({
           error: "must login"
         });   
   }
-
+  console.log('logged in user', user);
   return res.send(user);
 });
 
@@ -146,19 +146,33 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// router.post('/badlogin', async (req, res) => {
+//     let invalid = {error: "Invalid username and password comination. Try again."};
+    
+//     try {
+//         let existingUser = await Users.findOne({username: req.body.user.username, password: req.body.user.password});
+//         if (existingUser == null) {
+//           return res.status(403).send(invalid);
+//         }
+        
+//         return await login(existingUser, res);
+//     } catch (error) {
+//         console.log(error);
+//         return res.sendStatus(500);
+//     }
+// });
+
 router.post('/login', async (req, res) => {
-    console.log("router.post('/login')", req.body.user);
     let invalid = {error: "Invalid username and password comination. Try again."};
     
     try {
         let existingUser = await Users.findOne({username: req.body.user.username});
         if (existingUser == null || !await existingUser.comparePassword( req.body.user.password) ) {
-            console.log(invalid + " from login");
+            console.log("From login", invalid);
           return res.status(403).send(invalid);
         }
         
         return await login(existingUser, res);
-        // return res.status(200).send(existingUser);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
