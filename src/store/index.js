@@ -14,6 +14,8 @@ export default new Vuex.Store({
     artistAlbums: null,
     artist: null,
     playing: null,
+    idOfPlaying: '',
+    referenceToClassName: {},
     loginRedirect: null
   },
   mutations: {
@@ -62,6 +64,16 @@ export default new Vuex.Store({
     setPlaying(state, playing) {
       state.playing = playing;
     },
+    setReferenceToClassNameOfPlaying(state, el) {
+      state.referenceToClassName.classList = ["play"];
+      state.referenceToClassName = el;
+    },
+    setIdOfPlaying(state, id) {
+      state.idOfPlaying = id;
+    },
+    pauseSong() {
+      state.playing.pause();
+    },
     getLastSearch(state) {
       state.results.pop();
     },
@@ -73,6 +85,14 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async setPlaying(context, data) {
+      try {
+        context.commit("setPlaying", data);
+        return;
+      } catch (error) {
+        return error.message;
+      }
+    },
     async getLastSearch(context, data) {
       try {
         context.commit("getLastSearch", data);
@@ -129,10 +149,32 @@ export default new Vuex.Store({
         alert(error.message);
       }
     },
+    pauseSong(context, data) {
+      try {
+        context.commit("pauseSong");
+        return;
+      } catch (error) {
+        return error.message;
+      }
+    },
     passPlayingSong(context, data) {
       try {
         context.commit("setPlaying", data);
         return "";
+      } catch (error) {
+        return error.message;
+      }
+    },
+    setReferenceToClassNameOfPlaying(context, data) {
+      try {
+        context.commit("setReferenceToClassNameOfPlaying", data);
+      } catch (error) {
+        return error.message;
+      }
+    },
+    setIdOfPlaying(context, data) {
+      try {
+        context.commit("setIdOfPlaying", data);
       } catch (error) {
         return error.message;
       }

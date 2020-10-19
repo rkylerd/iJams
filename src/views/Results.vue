@@ -5,9 +5,9 @@
   <div id="container-songs" class="container-normal">
     <div class="second-layer-container">
                  
-            <div class="single-track album-tracks" v-for="songs in songResults" :key="songs.track_id">
-                    <a class="album-art" :style="{ 'background-image': 'url(' + songs.artworkUrl60 + ')' }" @click.prevent="playSound(songs)">
-                        <img width="60" height="60" :class="songs.className">
+            <div class="single-track album-tracks" v-for="(songs, idx) in songResults" :key="idx">
+                    <a class="album-art" :style="{ 'background-image': 'url(' + songs.artworkUrl60 + ')' }" @click.prevent="playSong(songs, idx)">
+                        <img width="60" height="60" :class="songs.className" :ref="idx">
                     </a>
                     
                     <!-- class makes the song info a flex row. makes sense. -->
@@ -169,9 +169,9 @@
 
 <script>
     import App from '@/App.vue'
-    import { db } from '@/main'
     const axios = require('axios');
     import router from '@/router'
+    import { getAlbum, addToPlaylist, playSound, filterArtist, cutLength } from '@/shared/logic'
 
     export default {
         name: 'mypage',
@@ -220,6 +220,10 @@
                 
                 
             },
+            playSong(sound, index) {
+                console.log("ref", this.$refs[index][0]);
+                playSound(sound, this.$refs[index][0]);
+            },
             async addToPlaylist(song) {
                 song.className = "play";
                 song.username = this.user.username;
@@ -233,87 +237,8 @@
                     console.log(error);
                 }
             },
-            playSound(sound) {
-                if (sound) {
-                    let index = this.songResults.indexOf(sound);
-                    
-                    //when you press stop on a song playing from same page
-                    if (this.isPlaying.trackId === sound.trackId) {
-
-                        this.playing.pause();
-
-                        this.songResults[this.isPlaying.index].className = "play";
-
-                        this.isPlaying.isPlaying = false;
-                        this.isPlaying.index = '';
-                        this.isPlaying.trackId = '';
-                        this.playing = null;
-                        return;
-                    }
-
-                    //stops a song from any page (and from same page)
-                    if (this.$store.state.playing !== undefined && this.$store.state.playing !== null) {
-                        this.$store.state.playing.pause();
-
-                        // to simply change the album artwork of the last song on page that was playing
-                        if (this.playing !== null) {
-
-                            this.songResults[this.isPlaying.index].className = "play";
-
-                        }
-                    }
-
-                    this.playingSong = sound.previewUrl;
-
-                    this.playing = new Audio(sound.previewUrl);
-
-                    this.songResults[index].className = "stop";
-
-                    this.isPlaying.isPlaying = true;
-                    this.isPlaying.index = index;
-                    this.isPlaying.trackId = sound.trackId;
-
-                    this.$store.dispatch("passPlayingSong", this.playing);
-                    this.playing.play();
-                    setTimeout(() => {
-
-                        if (this.isPlaying.trackId === sound.trackId) {
-                            this.$store.dispatch("passPlayingSong", null);
-                            this.playing = null;
-                            this.isPlaying.trackId = "";
-                            this.songResults[index].className = "play";
-                        }
-                    }, 30000);
-                }
-            },
-            async getAlbum(song) {
-                // let album = { artworkUrl100: song.artworkUrl100, collectionName: song.collectionName, 
-                // artistName: song.artistName, releaseDate: song.releaseDate, 
-                // genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
-
-                // if (song.trackCount == 1) {
-                //     song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
-                //     song.trackName_short = cutLength(song.trackName, 75);
-                //     song.artistName_short = cutLength(song.artistName, 35);
-
-                //     album.songs = [song];
-                //     await this.$store.dispatch("defineAlbumInfo", album);
-                    
-                //     router.push("Album");
-
-                //     return;
-                // }
-
-                try {
-                    router.push({path:"album", query: {"album": song.collectionId}});
-                }
-                catch (err) {
-                    console.log(err);
-                }
-            },
-            async filterArtist(artistId) {
-                router.push({path:"artist", query: {"artist":artistId}});
-            },
+            getAlbum: getAlbum,
+            cutLength: cutLength
         },
         computed: {
             
@@ -323,18 +248,5 @@
               this.search()
             }
           },
-    }
-
-    function cutLength(inputWord, length) {
-        if (inputWord.length > length) {
-            inputWord = inputWord.substring(0, length) + "...";
-        }
-        return inputWord;
-    }
-
-    function millisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 </script>

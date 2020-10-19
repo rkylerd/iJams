@@ -1,43 +1,39 @@
 <template>
-    
-        <div v-if="computedUser && !loading" id="container-songs" class="container-album">
-            
-                <div class="album-display">
-                        <img  width="100" height="100" :src="album.artworkUrl100">
-                        <div style="margin-top: 5px; display: flex; flex-wrap: wrap;">
-                            <h3 style="width: 100%" class="white-text">{{album.collectionName}}</h3>
-                            <h5 style="width: 100%" class="stick-left white-text link" @click.prevent="filterArtist(album.artistId)">{{album.artistName}}</h5>
-                            <h6 style="width: 100%" class="stick-left white-text">{{album.releaseDate}}</h6>
-                            <h6 style="width: 100%" class="stick-left white-text">{{album.genre}}</h6>
-                            <span v-if="album.collectionExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">Explicit</span>
-                            <span v-else-if="album.collectionExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">Clean</span>
-                        </div>
-                </div>
-                <table class="album-songs">
-                    <tr class="white-text">
-                        <th class="center-text">#</th>
-                        <th>Name</th>
-                        <th>Artist</th>
-                        <th>Time</th>
-                        <th></th>
-                    </tr>
-                    <tr v-for="songs in albumSongs" :key="songs.trackId">
-                        <td class="trackNumber-cell small-album-info" :class="songs.className" @click.prevent="playSound(songs)"><a class="inner-track-num">{{songs.trackNumber}}</a></td>
-                        <td class="name-cell"><a class=" song-name white-text small-font" ><strong>{{songs.trackName_short}}</strong></a></td>
-                        <td class="artist-cell"><div @click.prevent="filterArtist(songs.artistId)" class="small-font artistNameP white-text link">{{songs.artistName_short}}</div></td>
-                        <td class="time-cell"><div class="small-album-info">{{songs.trackTimeMillis}}</div></td>
-                        <td><button class="purchase-button btn-outline-success my-2 my-sm-0" type="submit"  @click.prevent="addToPlaylist(songs)">Add</button></td>
-                        <td v-if="songs.trackExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">
-                            Explicit
-                        </td>
-                        <td v-else-if="songs.trackExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">
-                            Clean
-                        </td>
-                    </tr>
-                    
-                </table>
+    <div v-if="!loading" id="container-songs" class="container-album">
+        <div class="album-display">
+            <img  width="100" height="100" :src="album.artworkUrl100">
+            <div style="margin-top: 5px; display: flex; flex-wrap: wrap;">
+                <h3 style="width: 100%" class="white-text">{{album.collectionName}}</h3>
+                <h5 style="width: 100%" class="stick-left white-text link" @click.prevent="filterArtist(album.artistId)">{{album.artistName}}</h5>
+                <h6 style="width: 100%" class="stick-left white-text">{{album.releaseDate}}</h6>
+                <h6 style="width: 100%" class="stick-left white-text">{{album.genre}}</h6>
+                <span v-if="album.collectionExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">Explicit</span>
+                <span v-else-if="album.collectionExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">Clean</span>
+            </div>
         </div>
-    
+        <table class="album-songs">
+            <tr class="white-text">
+                <th class="center-text">#</th>
+                <th>Name</th>
+                <th>Artist</th>
+                <th>Time</th>
+                <th></th>
+            </tr>
+            <tr v-for="songs in albumSongs" :key="songs.trackId">
+                <td class="trackNumber-cell small-album-info" :class="songs.className" @click.prevent="playSound(songs)"><a class="inner-track-num">{{songs.trackNumber}}</a></td>
+                <td class="name-cell"><a class=" song-name white-text small-font" ><strong>{{songs.trackName_short}}</strong></a></td>
+                <td class="artist-cell"><div @click.prevent="filterArtist(songs.artistId)" class="small-font artistNameP white-text link">{{songs.artistName_short}}</div></td>
+                <td class="time-cell"><div class="small-album-info">{{songs.trackTimeMillis}}</div></td>
+                <td><button class="purchase-button btn-outline-success my-2 my-sm-0" type="submit"  @click.prevent="addToPlaylist(songs)">Add</button></td>
+                <td v-if="songs.trackExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">
+                    Explicit
+                </td>
+                <td v-else-if="songs.trackExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">
+                    Clean
+                </td>
+            </tr>
+        </table>
+    </div>
 </template>
 
 <style>
@@ -299,7 +295,7 @@
 <script>
     import router from '@/router'
     const axios = require('axios');
-
+    import { getSongs, addToPlaylist, playSound, filterArtist, cutLength, millisToMinutesAndSeconds } from '@/shared/logic'
     export default {
         name: "playlist",
         data() {
@@ -310,13 +306,12 @@
                 isPlaying: { isPlaying: false, index: '' },
                 drag: {},
                 albumSongs: '',
-                album: {},
-                loading: true
+                album: {}
             }
         },
         async created() {
             // this.user = this.$store.state.user;
-            // this.getAlbum();
+            this.getAlbum();
         },
         methods: {
             async getAlbum() {
@@ -336,72 +331,15 @@
                 this.albumSongs = response.data.results;
                 this.loading = false;
             },
+            playSound: playSound,
+            cutLength: cutLength,
+            millisToMinutesAndSeconds: millisToMinutesAndSeconds,
             async addToPlaylist(song) {
                 song.className = "play";
                 
                 song.username = this.user.username;
                 await this.$store.dispatch("addToPlaylist", song);
-            },
-            async filterArtist(artistId) {
-                console.log("artistId", artistId);
-                await this.getSongInfo(artistId);
-            },
-            async getSongInfo(artistId) {
-                router.push({path:"artist", query: {"artist":artistId}});
-            },
-            playSound(sound) {
-                
-                if (sound) {
-
-                    let index = this.albumSongs.indexOf(sound);
-
-                    //If the same song on same page is "stopped"
-                    if (this.isPlaying.index === index) {
-                        this.playing.pause();
-
-                        this.albumSongs[this.isPlaying.index].className = "play";
-
-                        this.isPlaying.isPlaying = false;
-                        this.isPlaying.index = '';
-                        return;
-                    }
-
-                    //if a song from another page is playing
-                    if (this.$store.state.playing !== null) {
-
-                        this.$store.state.playing.pause();
-
-                        this.$store.dispatch("passPlayingSong", null);
-
-                    }
-
-                    //if a song is made to play while another is already playing
-                    if (this.playing != undefined && this.isPlaying.isPlaying) {
-                        this.playing.pause();
-                        this.albumSongs[this.isPlaying.index].className = "play";
-
-                    }
-
-                    this.playing = new Audio(sound.previewUrl);
-
-                    this.albumSongs[index].className = "stop";
-
-                    this.isPlaying.isPlaying = true;
-                    this.isPlaying.index = index;
-                    this.isPlaying.trackId = sound.trackId;
-                    this.$store.dispatch("passPlayingSong", this.playing);
-                    this.playing.play();
-                    setTimeout(() => {
-                        
-                        if (this.isPlaying.trackId === sound.trackId) {
-
-                            this.$store.dispatch("passPlayingSong", null);
-                            this.albumSongs[this.isPlaying.index].className = "play";
-                        }
-                    }, 30000);
-                }
-            },
-            
+            }
         },
         watch: {
             '$route.query.album': function(album) {
@@ -416,18 +354,5 @@
               return this.$store.state.user;
           } 
       }
-    }
-
-    function cutLength(inputWord, length) {
-        if (inputWord.length > length) {
-            inputWord = inputWord.substring(0, length) + "...";
-        }
-        return inputWord;
-    }
-     
-    function millisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 </script>

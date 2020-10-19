@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const { parsed: { jwtSecret: secret = "" } = {}} = require('dotenv').config();
 
 // We define a random secret here to use for signing JWTs
 // You should NOT do this normally. You don't want to hard code
@@ -12,9 +13,8 @@ const jwt = require("jsonwebtoken");
 // export jwtSecret="RANDOMSECRETCHANGETHIS"
 // We would read this secret with the lne below:
 
-let secret = process.env.jwtSecret;
 
-if (secret === undefined) {
+if (!secret) {
   console.log("You need to define a jwtSecret environment variable to continue.");
   mongoose.connection.close();
   process.exit();
