@@ -6,16 +6,13 @@ import router from '@/router'
 
 export default new Vuex.Store({
   state: {
-    user: null,
-    searchTerm: null,
+    user: {},
     playlist: [],
-    results: [],
-    album: null,
-    artistAlbums: null,
-    artist: null,
-    playing: null,
-    idOfPlaying: '',
-    referenceToClassName: {},
+    playing: null, // The <audio> tag associated w/ the song playing
+    idOfPlaying: '', // trackId of the current song
+    referenceToClassName: {
+      classList: []
+    },
     loginRedirect: null
   },
   mutations: {
@@ -23,65 +20,16 @@ export default new Vuex.Store({
       state.loginRedirect = redirect;
     },
     setUser(state, user) {
-      console.log("store mutation, setUser: ", user);
       state.user = user;
-    },
-    setSearchTerm(state, term) {
-      state.searchTerm = term;
-    },
-    setPlaylist(state, playlist) {
-      playlist.sort((a, b) => {
-        return a.index - b.index;
-      });
-      state.playlist = playlist;
-    },
-    setResults(state, results) {
-      
-      console.log("setting results inside store");
-      if (state.results.length > 1) {
-        console.log(
-          "more recent results",
-          state.results[state.results.length - 1]
-        );
-      }
-      state.results.splice(0, 1);
-      state.results.push(results);
-      console.log("first results from search", state.results[0]);
-      
-    },
-    setAlbum(state, album) {
-      state.album = album;
-    },
-    setArtist(state, artist) {
-      state.artist = artist;
-    },
-    setArtistAlbums(state, artistAlbums) {
-      state.artistAlbums = artistAlbums;
-    },
-    setArtistSongs(state, artist) {
-      state.artist = artist;
     },
     setPlaying(state, playing) {
       state.playing = playing;
     },
     setReferenceToClassNameOfPlaying(state, el) {
-      state.referenceToClassName.classList = ["play"];
       state.referenceToClassName = el;
     },
     setIdOfPlaying(state, id) {
       state.idOfPlaying = id;
-    },
-    pauseSong() {
-      state.playing.pause();
-    },
-    getLastSearch(state) {
-      state.results.pop();
-    },
-    getResults(state) {
-      return state.results;
-    },
-    getUser(state) {
-      return !state.user ? this.dispatch('getUser') : state.user; 
     }
   },
   actions: {
@@ -89,78 +37,6 @@ export default new Vuex.Store({
       try {
         context.commit("setPlaying", data);
         return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async getLastSearch(context, data) {
-      try {
-        context.commit("getLastSearch", data);
-        return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async getResults(context, data) {
-      try {
-        return context.commit("getResults", data);
-        
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async defineAlbumInfo(context, data) {
-      console.log("the album being set: ", data);
-      try {
-        context.commit("setAlbum", data);
-        return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async defineArtist(context, data) {
-      try {
-        context.commit("setArtist", data);
-        return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async defineArtistAlbums(context, data) {
-      try {
-        context.commit("setArtistAlbums", data);
-        return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async defineArtistSongs(context, data) {
-      try {
-        context.commit("setArtistSongs", data);
-        return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async search(context, data) {
-      try {
-        return await axios.get(`api/search/${data}`)
-      } catch (error) {
-        alert(error.message);
-      }
-    },
-    pauseSong(context, data) {
-      try {
-        context.commit("pauseSong");
-        return;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    passPlayingSong(context, data) {
-      try {
-        context.commit("setPlaying", data);
-        return "";
       } catch (error) {
         return error.message;
       }
@@ -175,40 +51,6 @@ export default new Vuex.Store({
     setIdOfPlaying(context, data) {
       try {
         context.commit("setIdOfPlaying", data);
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async addToPlaylist(context, data) {
-      console.log("from addToPlaylist store method", data);
-      try {
-        return await axios.post('/api/library', {       
-                        song: data, 
-                    });
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async getAlbum(context, data) {
-    console.log("from getAlbum store method", data);
-      try {
-        return await axios.get('/api/search/album/' + data);
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async getArtist(context, data) {
-    console.log("from getArtist store method", data);
-      try {
-        return await axios.get('/api/search/artist/' + data);
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async getArtistAlbums(context, data) {
-
-      try {
-        return await axios.get('/api/search/artistalbums/' + data);
       } catch (error) {
         return error.message;
       }
@@ -250,12 +92,9 @@ export default new Vuex.Store({
     },
     async logout(context, data) {
       try {
-        
         context.commit("setUser", null);
-        let logoutResult = await axios.delete('/api/users');
+        await axios.delete('/api/users');
         window.localStorage.setItem('user', null);
-        console.log("logoutResult", logoutResult);
-        
       } catch (error) {
         return error.message;
       }

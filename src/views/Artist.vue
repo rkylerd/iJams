@@ -13,7 +13,7 @@
                 v-bind:key="idx">
                 <!--{{album}}-->
                 <span class="flex">
-                    <a class="album-art" :style="{ 'background-image': 'url(' + album.artworkUrl100 + ')' }" @click.prevent="getAlbum(album)">
+                    <a class="album-art" :style="{ 'background-image': 'url(' + album.artworkUrl100 + ')' }" @click.prevent="goToAlbum(album)">
                         <img width="100" height="100">
                     </a>
                     
@@ -24,9 +24,8 @@
                 <!-- class makes the song info a flex row. makes sense. -->
                 <div class="song-info">
                     <div class="name-artist">
-                        <a class="song-name purple-text small-font" @click.prevent="getAlbum(album)" href="" >
+                        <a class="song-name purple-text small-font" @click.prevent="goToAlbum(album)" href="" >
                           <strong>{{ (cutLength(album.collectionCensoredName, 60)) }}</strong>
-                          
                         </a>
                         <!--<a  class="artist-name white-text small-font" href="">{{album.artistName}}</a><br>-->
                     </div>
@@ -165,18 +164,16 @@ body {background-color: black;}
 
 <script>
 import App from '@/App.vue'
-import { getAlbum, cutLength } from '@/shared/logic'
+import { goToAlbum, cutLength, millisToMinutesAndSeconds, addToPlaylist, getArtistAlbums } from '@/shared/logic'
 const axios = require('axios');
 import router from '@/router'
 
 export default {
-  name: 'mypage',
+  name: 'Artist',
   data(){
     return {
    playing: {      
         },
-          playingSong: '',
-          isPlaying: {isPlaying: false, index: ''},
           artistAlbums: [],
           loading: true,
         }
@@ -186,11 +183,8 @@ export default {
   },
   methods: {
     getArtistAlbums() {
-      
-      this.$store.dispatch("getArtistAlbums", this.$route.query.artist).then(results => {
-        this.artistAlbums = [];
-        console.log('results', results)
-        this.artistAlbums = results.data.results;
+      getArtistAlbums(this.$route.query.artist).then(albums => {
+        this.artistAlbums = albums;
         this.loading = false;
       });
     },
@@ -202,7 +196,9 @@ export default {
       }
     },
     cutLength: cutLength,
-    getAlbum: getAlbum
+    goToAlbum: goToAlbum,
+    millisToMinutesAndSeconds: millisToMinutesAndSeconds,
+    addToPlaylist: addToPlaylist
   },
   watch: {
     '$route.query.artist': function (search) {
@@ -210,10 +206,4 @@ export default {
     }
   },
 }
-
-function millisToMinutesAndSeconds(millis) {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-  }
 </script>

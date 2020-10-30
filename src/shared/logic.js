@@ -1,5 +1,10 @@
 import router from '@/router'
 import $store from '@/store'
+const axios = require('axios');
+
+const play = "play",
+    stop = "stop",
+    waitTime = 30000; // 30 seconds
 
 const getSongs = async () => {
           
@@ -10,33 +15,33 @@ const getSongs = async () => {
     }
 };
 
-const getAlbum = async ({ collectionId = "", ...rest} = {}) => {
-    console.log(rest);
+const goToAlbum = async ({ collectionId = ""} = {}) => {
     router.push({path:"album", query: {"album": collectionId}});
 };
 
-const searchAlbum = async (album) => {
-    const response = await $store.dispatch("getAlbum", album);
-                console.log('album.vue', response.data);
-                this.album = response.data.results[0];
-                
-                response.data.results = response.data.results.slice(1);
-                for (var i = 0; i < response.data.results.length; i++) {
-                    response.data.results[i].className = "play";
-                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
-                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
-                    response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-                }
-                this.albumSongs = response.data.results;
-                this.loading = false;
+const search = async (term = "") => {
+    if (!term) return {};
+
+    try {
+      const {data: { results: mvideos = []} = {}} = await axios.get(`api/search/mvideo/${term}`);
+      const {data: { results: songs = []} = {}} = await axios.get(`api/search/song/${term}`);
+      console.log("songs",mvideos);
+      return {
+        mvideos,
+        songs
+      };
+    } catch (error) {
+        console.log("error from results.vue", error);
+      throw Error("Error encountered while performing search");
+    }
 };
 
-const addToPlaylist = async (song) => {
-    song.className = "play";
-    song.username = this.user.username;
-    console.log("song.username: ", song.username);  
-    await $store.dispatch("addToPlaylist", song);
-};
+const updateMusicIcon = (el, isStart = true) => {
+    if (!el) return;
+    
+    el.classList.remove( isStart ? play : stop);
+    el.classList.add(isStart ? stop : play);
+}
 
 const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, el) => {
 
@@ -44,9 +49,10 @@ const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, e
         // Is the user trying to stop the currently playing song?
         if ($store.state.playing) {
             $store.state.playing.pause();
-            $store.state.referenceToClassName.classList = ["play"]; 
+            updateMusicIcon($store.state.referenceToClassName, false);
+             
             if ($store.state.idOfPlaying === trackId) {
-                $store.dispatch("passPlayingSong", null);
+                $store.dispatch("setPlaying", null);
                 $store.dispatch("setIdOfPlaying", "");
                 return;
             };
@@ -54,19 +60,20 @@ const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, e
 
         let playing = new Audio(previewUrl);
 
-        $store.dispatch("passPlayingSong", playing);
+        $store.dispatch("setPlaying", playing);
         $store.dispatch("setIdOfPlaying", trackId);
         $store.dispatch("setReferenceToClassNameOfPlaying", el);
-        el.classList = ["stop"];
+        updateMusicIcon(el, true);
         playing.play();
+
         setTimeout(() => {
-            if ($store.state.playing.trackId === trackId) {
-                $store.dispatch("passPlayingSong", null);
+            if ($store.state.idOfPlaying === trackId) {
+                $store.dispatch("setPlaying", null);
                 $store.dispatch("setIdOfPlaying", "");
-                el.classList = ["play"];
+                updateMusicIcon(el, false);
                 
             }
-        }, trackTimeMillis);
+        }, waitTime);
         
     }
 };
@@ -92,14 +99,61 @@ const getSongInfo = async (artistId) => {
     router.push({path:"artist", query: {"artist":artistId}});
 };
 
+const addToPlaylist = async (song = {}) => {
+    
+    try {
+      await axios.post('/api/library', {       
+        song: {
+            ...song, 
+            username: $store.state.user.username, 
+            className: play}, 
+        });
+    } catch (error) {
+        throw Error("error encountered while adding song to playlist");
+    }
+};
+
+const getAlbum = async (term = "") => {
+    try {
+      const { data: { results = [] } = {} } = await axios.get(`/api/search/album/${term}`);
+      console.log(results);
+      return results;
+    } catch (error) {
+      throw Error("error encountered while getting album");
+    }
+};
+
+const getArtist = async (term = "") => {
+    try {
+      const { data: { results = [] } = {} } = await axios.get(`/api/search/artist/${term}`);
+      return results;
+    } catch (error) {
+        throw Error("error encountered while getting artist");
+    }
+};
+
+const getArtistAlbums = async (term = "") => {
+    try {
+        const { data: { results = [] } = {} } = await axios.get(`/api/search/artistalbums/${term}`);
+        return results;
+    } catch (error) {
+          throw Error("error encountered while getting artist albums");
+    }
+};
+
 export {
     getSongs,
     getSongInfo,
     getAlbum,
-    searchAlbum,
-    addToPlaylist,
+    // searchAlbum,
     playSound,
     filterArtist,
     cutLength,
-    millisToMinutesAndSeconds
+    millisToMinutesAndSeconds,
+    updateMusicIcon, 
+    search,
+    getArtist,
+    getArtistAlbums,
+    addToPlaylist,
+    goToAlbum
 };

@@ -33,7 +33,7 @@ export default [
           className: "play", 
           trackId: "1946794068305766", 
           trackTimeMillis: 201000, 
-          collectionId: '1445153684', 
+          collectionId: '1036094718', 
           artistId: '315761934'}, 
     {trackName: "Feels", 
           previewUrl: "./audio/feels.mp3", 

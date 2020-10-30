@@ -19,7 +19,7 @@
                 <div class="my-songs-info playlist-indent">
                     <div class="name-artist">
                         
-                        <a class="white-text song-name" @click.prevent="getAlbum(songs)" href=""><strong>{{songs.trackName}}</strong></a><br>
+                        <a class="white-text song-name" @click.prevent="goToAlbum(songs)" href=""><strong>{{songs.trackName}}</strong></a><br>
                         <a  class=" white-text artist-name link" @click.prevent="filterArtist(songs.artistId)">{{songs.artistName}}</a><br>
                     </div>
                 </div>
@@ -202,7 +202,6 @@
         },
         methods: {
             async getPlaylist() {
-                console.log('user from getPlaylist', this.user);
                 this.playlist = (await axios.get("api/library/" + this.user.username)).data.sort((a, b) => {
                     return a.index - b.index;
                 });
@@ -234,44 +233,7 @@
                         });
                 }
             },
-            async getAlbum(song) {
-                // let album = { artistId: song.artistId, artworkUrl100: '', collectionName: song.collectionName, artistName: song.artistName, 
-                //             releaseDate: song.releaseDate, genre: song.primaryGenreName, collectionExplicitness: song.trackExplicitness == undefined ? "" : song.trackExplicitness };
-
-                // if (song.trackCount == 1) {
-                //     song.trackTimeMillis = millisToMinutesAndSeconds(song.trackTimeMillis);
-                //     song.trackName_short = cutLength(song.trackName, 75);
-                //     song.artistName_short = cutLength(song.artistName, 35);
-                    
-                //     album.songs = [song];
-                //     await this.$store.dispatch("defineAlbumInfo", album);
-                //     router.push("Album");
-
-                //     return;
-                // }
-
-                try {
-                    // const response = await this.$store.dispatch("getAlbum", song.collectionId);
-                    // album.artworkUrl100 = response.data.results[0].artworkUrl100;
-                    // response.data.results.splice(0, 1);
-
-                    // for (var i = 0; i < response.data.results.length; i++) {
-                    //     response.data.results[i].className = "play";
-                    //     response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
-                    //     response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
-                    //     response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-                    // }
-
-                    // album.songs = response.data.results;
-                    // await this.$store.dispatch("defineAlbumInfo", album);
-
-                    // router.push("Album");
-                    router.push({path:"album", query: {"album": song.collectionId}});
-                }
-                catch (err) {
-                    console.log(err);
-                }
-            },
+            goToAlbum: (song) => goToAlbum(song),
             async deleteFromPlaylist(song) {
 
                 try {
@@ -286,7 +248,6 @@
                 }
             },
             playSound(sound) {
-                console.log("My sounds: ", sound.previewUrl);
                 if (sound) {
 
                     let index = this.playlist.indexOf(sound);
@@ -310,7 +271,7 @@
                     //if a song from another page is playing
                     if (this.$store.state.playing !== null) {
                         this.$store.state.playing.pause();
-                        this.$store.dispatch("passPlayingSong", null);
+                        this.$store.dispatch("setPlaying", null);
                     }
 
                     this.playing = new Audio(sound.previewUrl);
@@ -320,11 +281,11 @@
                     this.isPlaying.isPlaying = true;
                     this.isPlaying.index = index;
                     this.playing.trackId = sound.trackId;
-                    this.$store.dispatch("passPlayingSong", this.playing);
+                    this.$store.dispatch("setPlaying", this.playing);
                     this.playing.play();
                     setTimeout(() => {
                         if (this.playing.trackId === sound.trackId) {
-                            this.$store.dispatch("passPlayingSong", null);
+                            this.$store.dispatch("setPlaying", null);
                         }
                         this.playlist[this.isPlaying.index].className = "play";
                     }, 30000);
@@ -332,28 +293,7 @@
             },
             async filterArtist(artistId) {
                 router.push({path:"artist", query: {"artist":artistId}});
-            },
-            async getSongInfo(artistId) {
-
-                let response = await this.$store.dispatch("getArtist", artistId);
-                console.log(artistId + " response: ", response.data.results);
-
-                response.data.results.splice(0, 1);
-                for (var i = 0; i < response.data.results.length; i++) {
-                    response.data.results[i].className = "play";
-                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 12);
-                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 20);
-                }
-
-                console.log("Song Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistSongs", response.data.results);
-
-                response = await this.$store.dispatch("getArtistAlbums", artistId);
-                
-                console.log("Album Results after accounting for length: ", response.data.results);
-                this.$store.dispatch("defineArtistAlbums", response.data.results);
-                router.push("Artist");
-            },
+            }
         }
     }
 

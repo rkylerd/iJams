@@ -3,28 +3,37 @@ const router = express.Router();
 const request = require("request");
 
 
-var itunes = "https://itunes.apple.com/";
-var search = "search?term=";
-var lookup = "lookup?id=";
-var typeSong = "&entity=song";
-var typeAlbum = "&entity=album";
+const itunesApi = "https://itunes.apple.com/",
+      searchEndpoint = "search?term=", 
+      lookupEndpoint = "lookup?id=",
+      songEntity = "&entity=song",
+      albumEntity = "&entity=album",
+      limit = "&limit=200";
 
-router.get('/:id', function(req,res) {
-      console.log("req.params ", req.params);
-      request(itunes + search + req.params.id + typeSong).pipe(res);
+router.get('/song/:q', function(req,res) {
+      console.log(req.params.q);
+      request(`${itunesApi}${searchEndpoint}${req.params.q}${songEntity}${limit}`).pipe(res);
+  
+      // request(`${itunesApi}${searchEndpoint}${req.params.q}${songEntity}${limit}`).pipe(res);
+});
+
+router.get('/mvideo/:q', function(req,res) {
+      request(`${itunesApi}${searchEndpoint}${req.params.q}&entity=musicVideo`).pipe(res);
+  
+      // request(`${itunesApi}${searchEndpoint}${req.params.id}${songEntity}${limit}`).pipe(res);
 });
 
 router.get('/album/:id', async (req,res) => {
-   request(itunes + lookup + req.params.id + typeSong).pipe(res);
+      request(`${itunesApi}${lookupEndpoint}${req.params.id}${songEntity}${limit}`).pipe(res);
 });
 
 router.get('/artist/:id', async (req,res) => {
-      console.log("artist search: ", itunes + lookup + req.params.id + typeSong);
-      request(itunes + lookup + req.params.id + typeSong).pipe(res);
+      console.log("artist search: ", itunesApi + lookupEndpoint + req.params.id + songEntity);
+      request(`${itunesApi}${lookupEndpoint}${req.params.id}${songEntity}${limit}`).pipe(res);
 });
 
 router.get('/artistalbums/:id', async (req,res) => {
-      request(itunes + lookup + req.params.id + typeAlbum).pipe(res);
+      request(`${itunesApi}${lookupEndpoint}${req.params.id}${albumEntity}`).pipe(res);
 });
 
 // router.get('/', function(req,res) {

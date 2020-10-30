@@ -13,7 +13,7 @@
                     <!-- class makes the song info a flex row. makes sense. -->
                     <div class="song-info">
                         <div class="name-artist">
-                            <a class="song-name purple-text small-font" @click.prevent="getAlbum(songs)" href="" ><strong>{{songs.trackName_short}}</strong></a><br>
+                            <a class="song-name purple-text small-font" @click.prevent="goToAlbum(songs)" href="" ><strong>{{songs.trackName_short}}</strong></a><br>
                             <a  class="artist-name white-text small-font" @click.prevent="filterArtist(songs.artistId)" href="">{{songs.artistName_short}}</a><br>
                         </div>
                         
@@ -169,9 +169,8 @@
 
 <script>
     import App from '@/App.vue'
-    const axios = require('axios');
     import router from '@/router'
-    import { getAlbum, addToPlaylist, playSound, filterArtist, cutLength } from '@/shared/logic'
+    import { goToAlbum, addToPlaylist, playSound, filterArtist, cutLength, updateMusicIcon, search } from '@/shared/logic'
 
     export default {
         name: 'mypage',
@@ -186,49 +185,32 @@
         },
         async created() {
             this.search();
-            
-            this.user = this.$store.state.user;
-            this.playing = null;
+            this.user = this.$store.state.user || {};
         },
         methods: {
             search() {
-                this.$store.dispatch("search",this.$route.query.search).then(itunesResponse => {
-                    this.songResults = [];
-                    console.log('itunesResponse', itunesResponse);
-                    let results = itunesResponse.data.results;
-                    const artistResults = [];
-                    const songNames = [];
-                    for (var i =0; i < results.length; i++ ) {
-                        if (results[i].kind === "song") {
-                            results[i].className = "play";
-                            if (!artistResults.includes(results[i].artistId)) {
-                                artistResults.push(results[i].artistId);
-                            }    
-    
-                            if (!songNames.includes(results[i].trackName)) {
-                                songNames.push(results[i].trackName);
-                                
-                                results[i].trackName_short = cutLength(results[i].trackName, 12);
-                                results[i].artistName_short = cutLength(results[i].artistName, 20);
-                                
-                                this.songResults.push(results[i]);
-                            } 
-                        } 
-    
-                    }
-                })
+                if (this.$store.state.referenceToClassName && this.$store.state.referenceToClassName.classList.length) {
+                    updateMusicIcon(this.$store.state.referenceToClassName, false);
+                }
                 
-                
+                search(this.$route.query.search)
+                    .then(({songs = [], mvideos=[]}={}) => {
+                        this.songResults = songs.map(song => {
+                            return {
+                                ...song, 
+                                className: "play",
+                                trackName_short: cutLength(song.trackName, 12),
+                                artistName_short: cutLength(song.artistName, 20)
+                            };
+                        });
+                    }).catch(error => {
+                        console.log("error from results.vue", error);
+                    })
             },
             playSong(sound, index) {
-                console.log("ref", this.$refs[index][0]);
                 playSound(sound, this.$refs[index][0]);
             },
-            async addToPlaylist(song) {
-                song.className = "play";
-                song.username = this.user.username;
-                await this.$store.dispatch("addToPlaylist", song);
-            },
+            addToPlaylist: addToPlaylist,
             async logout() {
                 try {
                     this.error = await this.$store.dispatch("logout");
@@ -237,8 +219,9 @@
                     console.log(error);
                 }
             },
-            getAlbum: getAlbum,
-            cutLength: cutLength
+            goToAlbum: goToAlbum,
+            cutLength: cutLength,
+            filterArtist: filterArtist
         },
         computed: {
             

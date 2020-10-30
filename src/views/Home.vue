@@ -4,10 +4,10 @@
     <h2 class="page-title">Home</h2>
    
     <div id="my-clean-songs">
-      <div class="single-track search-display" v-for="songs in myEdits" :key="songs.trackId">
+      <div class="single-track search-display" v-for="(songs, idx) in myEdits" :key="songs.trackId">
               
-              <a class="album-art" :style="{ 'background-image': 'url(' + songs.artworkUrl60 + ')' }" @click.prevent="playSound(songs)">
-                  <img width="60" height="60" :class="songs.className">
+              <a class="album-art" :style="{ 'background-image': 'url(' + songs.artworkUrl60 + ')' }" @click.prevent="playSong(songs, idx)">
+                  <img width="60" height="60" :class="songs.className" :ref="idx">
               </a>
               
               <!-- class makes the song info a flex row. makes sense. -->
@@ -160,7 +160,6 @@ export default {
     return {
       user: {},
       myEdits: myEdits,
-      isPlaying: {isPlaying: false, index: ""},
       playing: {
                   
       },
@@ -177,7 +176,13 @@ export default {
     this.playing = this.$store.state.playing;
   },
   methods: {
-      
+    playSong(sound, index) {
+          playSound(sound, this.$refs[index][0]);
+      },
+      addToPlaylist: addToPlaylist,
+      getSongs: getSongs, 
+      getAlbum: getAlbum,  
+      filterArtist: filterArtist 
   },
   computed: {
     computedUser() {

@@ -7,31 +7,36 @@
                 <h5 style="width: 100%" class="stick-left white-text link" @click.prevent="filterArtist(album.artistId)">{{album.artistName}}</h5>
                 <h6 style="width: 100%" class="stick-left white-text">{{album.releaseDate}}</h6>
                 <h6 style="width: 100%" class="stick-left white-text">{{album.genre}}</h6>
-                <span v-if="album.collectionExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">Explicit</span>
-                <span v-else-if="album.collectionExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">Clean</span>
+                <span v-if="album.collectionExplicitness.toLowerCase() === 'explicit' || album.collectionExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
+                :class="{'explicit': album.collectionExplicitness.toLowerCase() === 'explicit', 
+                                'clean': album.collectionExplicitness.toLowerCase() === 'cleaned' }">{{album.collectionExplicitness}}</span>
             </div>
         </div>
         <table class="album-songs">
-            <tr class="white-text">
-                <th class="center-text">#</th>
-                <th>Name</th>
-                <th>Artist</th>
-                <th>Time</th>
-                <th></th>
-            </tr>
-            <tr v-for="songs in albumSongs" :key="songs.trackId">
-                <td class="trackNumber-cell small-album-info" :class="songs.className" @click.prevent="playSound(songs)"><a class="inner-track-num">{{songs.trackNumber}}</a></td>
-                <td class="name-cell"><a class=" song-name white-text small-font" ><strong>{{songs.trackName_short}}</strong></a></td>
-                <td class="artist-cell"><div @click.prevent="filterArtist(songs.artistId)" class="small-font artistNameP white-text link">{{songs.artistName_short}}</div></td>
-                <td class="time-cell"><div class="small-album-info">{{songs.trackTimeMillis}}</div></td>
-                <td><button class="purchase-button btn-outline-success my-2 my-sm-0" type="submit"  @click.prevent="addToPlaylist(songs)">Add</button></td>
-                <td v-if="songs.trackExplicitness.toLowerCase() == 'explicit'" class="explicit explicitness-container">
-                    Explicit
-                </td>
-                <td v-else-if="songs.trackExplicitness.toLowerCase() == 'cleaned'" class="clean explicitness-container">
-                    Clean
-                </td>
-            </tr>
+            <thead>
+                <tr class="white-text">
+                    <th class="center-text">#</th>
+                    <th>Name</th>
+                    <th>Artist</th>
+                    <th>Time</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(song, idx) in albumSongs" :key="song.trackId">
+                    <td class="trackNumber-cell small-album-info" :class="song.className" @click.prevent="playSong(song, idx)" :ref="idx"><a class="inner-track-num">{{song.trackNumber}}</a></td>
+                    <td class="name-cell"><a class=" song-name white-text small-font" ><strong>{{song.trackName_short}}</strong></a></td>
+                    <td class="artist-cell"><div @click.prevent="filterArtist(song.artistId)" class="small-font artistNameP white-text link">{{song.artistName_short}}</div></td>
+                    <td class="time-cell"><div class="small-album-info">{{song.trackTimeMillis}}</div></td>
+                    <td><button class="purchase-button btn-outline-success my-2 my-sm-0" type="submit"  @click.prevent="addToPlaylist(song)">Add</button></td>
+                    <td v-if="song.trackExplicitness.toLowerCase() === 'explicit' || song.trackExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
+                        :class="{'explicit': song.trackExplicitness.toLowerCase() === 'explicit', 
+                                'clean': song.trackExplicitness.toLowerCase() === 'cleaned' }">
+                                {{song.collectionExplicitness}}
+                    </td>
+                    
+                </tr>
+            </tbody>
         </table>
     </div>
 </template>
@@ -294,16 +299,13 @@
 
 <script>
     import router from '@/router'
-    const axios = require('axios');
-    import { getSongs, addToPlaylist, playSound, filterArtist, cutLength, millisToMinutesAndSeconds } from '@/shared/logic'
+    import { getSongs, addToPlaylist, playSound, filterArtist, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
     export default {
-        name: "playlist",
+        name: "Album",
         data() {
             return {
                 user: {},
                 loading: true,
-                playing: {},
-                isPlaying: { isPlaying: false, index: '' },
                 drag: {},
                 albumSongs: '',
                 album: {}
@@ -315,41 +317,36 @@
         },
         methods: {
             async getAlbum() {
+                const results = await getAlbum(this.$route.query.album);
                 
-                const response = await this.$store.dispatch("getAlbum", this.$route.query.album);
-                console.log('album.vue', response.data);
-                this.album = response.data.results[0];
-                
-                response.data.results = response.data.results.slice(1);
-
-                for (var i = 0; i < response.data.results.length; i++) {
-                    response.data.results[i].className = "play";
-                    response.data.results[i].trackName_short = cutLength(response.data.results[i].trackName, 75);
-                    response.data.results[i].artistName_short = cutLength(response.data.results[i].artistName, 35);
-                    response.data.results[i].trackTimeMillis = millisToMinutesAndSeconds(response.data.results[i].trackTimeMillis);
-                }
-                this.albumSongs = response.data.results;
+                this.album = results[0];
+                this.albumSongs = results.slice(1).map(song => {
+                    return {
+                        ...song,
+                        className: "play",
+                        trackName_short: cutLength(song.trackName, 75),
+                        artistName_short: cutLength(song.artistName, 35),
+                        trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis)
+                    }
+                });
                 this.loading = false;
             },
-            playSound: playSound,
+            playSong(sound, index) {
+                playSound(sound, this.$refs[index][0]);
+            },
             cutLength: cutLength,
             millisToMinutesAndSeconds: millisToMinutesAndSeconds,
-            async addToPlaylist(song) {
-                song.className = "play";
-                
-                song.username = this.user.username;
-                await this.$store.dispatch("addToPlaylist", song);
-            }
+            addToPlaylist: addToPlaylist,
+            filterArtist: filterArtist
         },
         watch: {
-            '$route.query.album': function(album) {
+            '$route.query.album': function() {
                 this.getAlbum()
             }
       },
       computed: {
           computedUser() {
               this.user = this.$store.state.user;
-              console.log('computedUser', this.user);
               if (this.user) this.getAlbum();
               return this.$store.state.user;
           } 
