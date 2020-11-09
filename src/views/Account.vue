@@ -122,8 +122,6 @@
       right: -20px;
     }
 
-
-
     .tabs-container {
         display: flex;
         width: 30vw;
@@ -166,11 +164,11 @@
 
 <script>
     import App from '@/App.vue'
-    const axios = require('axios');
     import Login from "@/components/Login";
     import Register from "@/components/Register";
     import router from '@/router'
-    
+    import { login, register } from '@/shared/logic';
+
     export default {
         name: 'accountpage',
         data() {
@@ -214,11 +212,9 @@
                             email: this.email
                             }
                 if (login) {
-                    let loginResult = await this.$store.dispatch("login", user);
-                    
+                    await login(user);
                 } else {
-                    let registerResult = await this.$store.dispatch("register", user);
-                    // let historyResult = await axios.post("api/users/register", user);
+                    await register(user);
                     this.goHome();
                 }
             },

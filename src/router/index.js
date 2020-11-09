@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home.vue'
 import store from '../store/index'
-import Results from '../views/Results.vue'
+import Results from '../views/SearchResults.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -15,9 +15,9 @@ const router = new Router({
       component: function () { 
         return import('../views/Home.vue')
       },
-      meta: {
-          requiresAuth: true
-      }
+      // meta: {
+      //     requiresAuth: true
+      // }
     },
     {
       path: '/playlist',
@@ -28,9 +28,9 @@ const router = new Router({
       component: function () { 
         return import(/* webpackChunkName: "playlist" */ '../views/Playlist.vue')
       },
-      meta: {
-          requiresAuth: true
-      }
+      // meta: {
+      //     requiresAuth: true
+      // }
     },
     {
       path: '/artist',
@@ -41,9 +41,9 @@ const router = new Router({
       component: function () { 
         return import(/* webpackChunkName: "artist" */ '../views/Artist.vue')
       },
-      meta: {
-          requiresAuth: true
-      }
+      // meta: {
+      //     requiresAuth: true
+      // }
     },
     {
       path: '/album',
@@ -54,17 +54,17 @@ const router = new Router({
       component: function () { 
         return import(/* webpackChunkName: "album" */ '../views/Album.vue')
       },
-      meta: {
-          requiresAuth: true
-      }
+      // meta: {
+      //     requiresAuth: true
+      // }
     },
     {
       path: '/results',
       name: 'results',
       component: Results,
-      meta: {
-          requiresAuth: true
-      }
+      // meta: {
+      //     requiresAuth: true
+      // }
     },
     {
       path: '/account',

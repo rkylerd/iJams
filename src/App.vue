@@ -40,24 +40,7 @@
   </div>
 </template>
 
-<style>
-@import url('https://fonts.googleapis.com/css?family=Cabin|Fredoka+One|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap|Fruktur&display=swap');
-
-    .page-title {
-      text-align: center;
-      margin: 2vh auto 4vh auto;
-      font-family: 'Fredoka One', cursive;
-      font-weight: bold;
-      font-size: 40px;
-      -ms-transform: skewY(-5deg); /* IE 9 */
-      -webkit-transform: skewY(-5deg); /* Safari 3-8 */
-      transform: skewY(-5deg);
-      text-shadow: 3px 3px white;
-      color: #42b983 !important;
-
-    }
-    
-/* Dropdown */
+<style lang='scss'>
 
 .fade-enter-active,
 .fade-leave-active {
@@ -97,10 +80,6 @@
     display: block !important;
     z-index: 5;
 }
-
-/*.dropdown:hover .dropdown-content {*/
-/*  display: block;*/
-/*}*/
 
 .dropdown-content {
   cursor: pointer;
@@ -162,16 +141,13 @@
 }
 
 #search-input {
-
     height: 25px;
-    flex: 5;
-    
+    flex: 5; 
 }
 
 .front-center {
     display: flex;
     flex-wrap: nowrap;
-    
 }
 
 
@@ -200,28 +176,20 @@
 }
 
 @media only screen and (max-width: 700px) {
-
     #nav {
         display: grid;
         grid-template-columns: auto; 
-        
-        
     }
 
     #form-data {
         margin: auto; 
     }
-
 }
 
 #nav a {
   font-weight: bold;
   color: #2c3e50;
 }
-
-/*#nav a.router-link-exact-active {*/
-/*  color: #42b983;*/
-/*}*/
 
 @import '~bootstrap/dist/css/bootstrap.css'
 
@@ -231,6 +199,7 @@
 <script>
 
     import App from '@/App'
+    // import { getUser } from '@/shared/logic';
     const axios = require('axios');
     import router from './router'
 
@@ -249,8 +218,13 @@
       }
     },
     async beforeMount() {
-        await this.$store.dispatch("getUser");
-        // this.user = this.$store.state.user;
+        try {
+            const user = await getUser();
+            this.user = user;
+            await this.$store.dispatch("setUser", user);
+        } catch (error) {
+            // let user know something
+        }
     },
     methods: {
         cutInputLength(){
@@ -268,7 +242,7 @@
             if (this.$store.state.playing !== null) {
 
                 this.$store.state.playing.pause();
-                this.$store.dispatch("passPlayingSong", null);
+                this.$store.dispatch("setPlaying", null);
             }
             // this.user = null;
             this.$store.dispatch("logout");  
@@ -291,35 +265,22 @@
                 this.filterSearch = true;
                 if (queryStr === '') return;
                 
-                axios.put("api/history/", {username: this.$store.user, term: queryStr})
+                /* axios.put("api/history/", {username: this.$store.user, term: queryStr})
                 .then(results => {
                     // console.log("results of search history update: ", results);
                 })
                 .catch(error => {
                     console.log(error);
-                });
+                }); */
                
                 router.push({path:"results", query: {"search":queryStr}})
                 
             } catch (err) {
                 console.log(err);
             }
-        },
-        millisToMinutesAndSeconds(millis) {
-            var minutes = Math.floor(millis / 60000);
-            var seconds = ((millis % 60000) / 1000).toFixed(0);
-            return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-          }
+        }
     }, 
     computed: {
-        singleTrack() {
-            if (this.containerClass == 'container-normal') {
-                return "single-track";
-            } 
-            else {
-                return "album-tracks";
-            }
-        },
         computedUser() {
               this.user = this.$store.state.user;
               return this.$store.state.user;
@@ -328,13 +289,6 @@
     asyncComputed: {
     }
     
-}
-
-function cutLength(inputWord, length)  {
-    if (inputWord.length > length) {
-        inputWord = inputWord.substring(0, length) + "...";
-    }
-    return inputWord;
 }
 
 </script>

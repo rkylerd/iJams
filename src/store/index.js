@@ -55,34 +55,6 @@ export default new Vuex.Store({
         return error.message;
       }
     },
-    async login(context, data) {
-      try {
-        let currentUser = await axios.post("api/users/login", {user: data});
-        context.commit("setUser", currentUser.data);
-        return currentUser.data;
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async register(context, data) {
-      try {
-        const currentUser = await axios.post('/api/users/register', {user: data});
-        context.commit("setUser", currentUser.data);
-        return currentUser.data;
-      } catch (error) {
-        throw new Error(error);
-      }
-    },
-    async getUser(context, data) {
-      try {
-        const currentUser = await axios.get('/api/users/');
-        context.commit("setUser", currentUser.data);
-        return currentUser;
-      } catch (error) {
-        router.replace("Account");
-        return {error: error.message};
-      }
-    },
     async setUser(context, data) {
       try {
         context.commit("setUser", data);

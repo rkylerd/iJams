@@ -1,5 +1,5 @@
-import router from '@/router'
-import $store from '@/store'
+import $store from '@/store';
+import { goToAccount } from '@/shared/navigation'; 
 const axios = require('axios');
 
 const play = "play",
@@ -13,10 +13,6 @@ const getSongs = async () => {
     } catch (error) {
       console.log(error);
     }
-};
-
-const goToAlbum = async ({ collectionId = ""} = {}) => {
-    router.push({path:"album", query: {"album": collectionId}});
 };
 
 const search = async (term = "") => {
@@ -63,6 +59,7 @@ const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, e
         $store.dispatch("setPlaying", playing);
         $store.dispatch("setIdOfPlaying", trackId);
         $store.dispatch("setReferenceToClassNameOfPlaying", el);
+        
         updateMusicIcon(el, true);
         playing.play();
 
@@ -76,10 +73,6 @@ const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, e
         }, waitTime);
         
     }
-};
-
-const filterArtist = async (artistId) => {
-    router.push({path:"artist", query: {"artist":artistId}});
 };
 
 const cutLength = (inputWord, length) => {
@@ -116,7 +109,6 @@ const addToPlaylist = async (song = {}) => {
 const getAlbum = async (term = "") => {
     try {
       const { data: { results = [] } = {} } = await axios.get(`/api/search/album/${term}`);
-      console.log(results);
       return results;
     } catch (error) {
       throw Error("error encountered while getting album");
@@ -141,19 +133,49 @@ const getArtistAlbums = async (term = "") => {
     }
 };
 
+const getUser = async () => {
+    try {
+        const { data = {} } = await axios.get('/api/users/');
+        return data;
+      } catch (error) {
+        goToAccount();
+        throw Error(error.message);
+      }
+}
+
+const login = async (user = {}) => {
+  try {
+    const { data = {} } = await axios.post("api/users/login", {user});
+    this.$store.dispatch("setUser", data);
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+  const register = async (user = {}) => {
+    try {
+      const { data = {}} = await axios.post('/api/users/register', {user});
+      context.commit("setUser", data);
+      return data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
 export {
     getSongs,
     getSongInfo,
     getAlbum,
-    // searchAlbum,
+    getUser,
     playSound,
-    filterArtist,
     cutLength,
     millisToMinutesAndSeconds,
     updateMusicIcon, 
     search,
     getArtist,
     getArtistAlbums,
-    addToPlaylist,
-    goToAlbum
+    addToPlaylist, 
+    login,
+    register
 };

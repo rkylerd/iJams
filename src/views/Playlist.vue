@@ -36,90 +36,18 @@
 </template>
 
 <style scoped>
-
-    .page-title {
-      text-align: center;
-      margin: 2vh auto 4vh auto;
-      font-family: 'Fredoka One', cursive;
-      font-weight: bold;
-      font-size: 40px;
-      -ms-transform: skewY(-5deg); /* IE 9 */
-      -webkit-transform: skewY(-5deg); /* Safari 3-8 */
-      transform: skewY(-5deg);
-      text-shadow: 3px 3px white;
-      color: #42b983 !important;
-
-    }
     
     .purchase-button {
-
         margin-top: 0px !important; 
-        float: right;
-        font-size: x-small;
-        padding: 3px 3px 3px 3px;
-        max-width: 35px;
-        border: 1px solid transparent;
-        border-radius: .25rem;
-    }
-
-    .small-font {
-        font-size: small;
     }
 
     .name-artist {
-        min-width: 122px;
         text-align: left;
     }
 
-    .my-songs-info {
-        margin-left: 3px;
-        display: flex;
-        flex-direction: row;
-    }
-
-    .album-art {
-        background: no-repeat;
-        height: 60;
-    }
-
-    .song-name {
-        color: unset;
-        color: white;
-        font-size: small;
-    }
-
-    a.song-name:not([href]) {
-        color: white;
-    }
-
-    .artist-name {
-        color: unset;
-        color: white;
-        font-size: x-small;
-    }
-
-    a.artist-name:not([href]) {
-        color: white;
-    }
-
-    a.artist-name:hover {
-        color: white;
-    }
 
     a.song-name:link {
         color: white;
-    }
-
-    .white-text {
-        color: white;
-    }
-
-    .center-text {
-        text-align: center;
-    }
-
-    .price-explicitness {
-        margin-left: auto;
     }
 
     .fav-num-container {
@@ -143,12 +71,6 @@
     .playlist-single-track {
         border-top: white 1px solid;
         width: 180px;
-    }
-
-    .search-display {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
     }
 
     .playlist-normal {
