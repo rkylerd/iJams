@@ -24,7 +24,7 @@
 #my-clean-songs {
     width: 90%;
     /* flex: 1; */
-    justify-content: start;
+    justify-content: flex-start;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
@@ -65,7 +65,6 @@ export default {
           playSound(sound, this.$refs[idx][0].$el.children.item("a").children.item("img"));
       },
       addToPlaylist: addToPlaylist,
-      getSongs: getSongs, 
       goToAlbum: goToAlbum,  
       filterArtist: filterArtist 
   },

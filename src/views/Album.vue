@@ -137,7 +137,7 @@
 
 <script>
     import router from '@/router'
-    import { getSongs, addToPlaylist, playSound, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
+    import { addToPlaylist, playSound, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
     import { filterArtist } from '@/shared/navigation'
     export default {
         name: "Album",

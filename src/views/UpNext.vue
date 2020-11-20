@@ -7,7 +7,6 @@
 
 <script>
     import App from '@/App'
-    const axios = require('axios');
     import router from './router'
 
     export default {

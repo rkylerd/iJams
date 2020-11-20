@@ -28,7 +28,7 @@ import router from '@/router'
 export default {
   name: "SongTile",
   props: {
-    song: {},
+    song: Object,
     idx: Number
   }, 
   methods: {

@@ -6,22 +6,13 @@ const play = "play",
     stop = "stop",
     waitTime = 30000; // 30 seconds
 
-const getSongs = async () => {
-          
-    try {
-      this.error = await $store.dispatch("getSongs");
-    } catch (error) {
-      console.log(error);
-    }
-};
-
 const search = async (term = "") => {
     if (!term) return {};
 
     try {
       const {data: { results: mvideos = []} = {}} = await axios.get(`api/search/mvideo/${term}`);
       const {data: { results: songs = []} = {}} = await axios.get(`api/search/song/${term}`);
-      console.log("songs",mvideos);
+      console.log(mvideos);
       return {
         mvideos,
         songs
@@ -87,10 +78,6 @@ const millisToMinutesAndSeconds = (millis) => {
     var seconds = ((millis % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }
-
-const getSongInfo = async (artistId) => {
-    router.push({path:"artist", query: {"artist":artistId}});
-};
 
 const addToPlaylist = async (song = {}) => {
     
@@ -164,8 +151,6 @@ const login = async (user = {}) => {
   };
 
 export {
-    getSongs,
-    getSongInfo,
     getAlbum,
     getUser,
     playSound,
