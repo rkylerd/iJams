@@ -39,7 +39,7 @@
 </style>
 
 <script>
-import { getSongs, addToPlaylist, playSound } from '@/shared/logic'
+import { addToPlaylist, playSound } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
 import myEdits from '@/shared/my-edits'
 import SongTile from '@/components/SongTile.vue'
@@ -57,7 +57,6 @@ export default {
   },
   async beforeMount() {
     // this.user = this.$store.state.user;
-    
     this.playing = this.$store.state.playing;
   },
   methods: {
@@ -70,7 +69,6 @@ export default {
   },
   computed: {
     computedUser() {
-        this.user = this.$store.state.user;
         return this.$store.state.user;
     }  
   },

@@ -12,10 +12,9 @@
 
 <script>
 
-import { addToPlaylist, cutLength, updateMusicIcon } from '@/shared/logic'
+import { addToPlaylist, cutLength } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
-import App from '@/App.vue'
-import router from '@/router'
+
 export default {
   name: "MVideoTile",
   props: {

@@ -2,7 +2,7 @@
     <div>
         <section class="sectionInfo">
             <h3>Search Results: {{searchTerm}}</h3>
-            <MediaSorter @sortMedia="handleSort('songResults')" v-bind:media="songResults" type="song"/>     
+            <MediaSorter @sort-media="handleSort('songResults')" v-bind:media="songResults" type="song"/>     
         </section> 
         <div class="container-normal">
             <div class="flex-col-wrap">
@@ -11,7 +11,7 @@
         </div>
 
         <section class="sectionInfo">
-            <MediaSorter @sortMedia="handleSort('mvideoResults')" v-bind:media="mvideoResults" type="mvideo"/>
+            <MediaSorter @sort-media="handleSort('mvideoResults')" v-bind:media="mvideoResults" type="mvideo"/>
         </section>
         <div class="container-normal">
             <div class="flex-row-wrap flex-space-inbetween">
@@ -71,8 +71,6 @@
 
 
 <script>
-    import App from '@/App.vue'
-    import router from '@/router'
     import SongTile from '@/components/SongTile.vue'
     import MVideoTile from '@/components/MVideoTile.vue'
     import MediaSorter from '@/components/MediaSorter.vue'
@@ -152,7 +150,7 @@
             }
         },
         watch: {
-            '$route.query.search': function (search) {
+            '$route.query.search': function () {
               this.search()
             }
           },

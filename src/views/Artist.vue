@@ -53,10 +53,7 @@
 
 
 <script>
-import App from '@/App.vue'
 import { addToPlaylist, getArtistAlbums } from '@/shared/logic'
-import { goToAlbum, filterArtist } from '@/shared/navigation'
-import router from '@/router'
 import AlbumCard from '@/components/AlbumCard'
 
 export default {
@@ -92,7 +89,7 @@ export default {
     addToPlaylist: addToPlaylist
   },
   watch: {
-    '$route.query.artist': function (search) {
+    '$route.query.artist': function () {
       this.getArtistAlbums()
     }
   },

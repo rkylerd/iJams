@@ -136,7 +136,6 @@
 </style>
 
 <script>
-    import router from '@/router'
     import { addToPlaylist, playSound, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
     import { filterArtist } from '@/shared/navigation'
     export default {
@@ -152,6 +151,7 @@
         },
         async created() {
             // this.user = this.$store.state.user;
+            // if (this.user) this.getAlbum();
             this.getAlbum();
         },
         methods: {
@@ -185,8 +185,6 @@
       },
       computed: {
           computedUser() {
-              this.user = this.$store.state.user;
-              if (this.user) this.getAlbum();
               return this.$store.state.user;
           } 
       }

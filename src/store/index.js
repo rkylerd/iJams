@@ -1,10 +1,7 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from 'vuex'
 const axios = require('axios');
-Vue.use(Vuex);
-import router from '@/router'
 
-export default new Vuex.Store({
+export default createStore({
   state: {
     user: {},
     playlist: [],
@@ -62,7 +59,7 @@ export default new Vuex.Store({
         return error.message;
       }
     },
-    async logout(context, data) {
+    async logout(context) {
       try {
         context.commit("setUser", null);
         await axios.delete('/api/users');

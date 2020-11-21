@@ -163,7 +163,6 @@
 </style>
 
 <script>
-    import App from '@/App.vue'
     import Login from "@/components/Login";
     import Register from "@/components/Register";
     import router from '@/router'

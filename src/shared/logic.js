@@ -30,7 +30,7 @@ const updateMusicIcon = (el, isStart = true) => {
     el.classList.add(isStart ? stop : play);
 }
 
-const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, el) => {
+const playSound = ({ trackId = "", previewUrl = ""} = {}, el) => {
 
     if(trackId) {
         // Is the user trying to stop the currently playing song?
@@ -42,7 +42,7 @@ const playSound = ({ trackTimeMillis = 0, trackId = "", previewUrl = ""} = {}, e
                 $store.dispatch("setPlaying", null);
                 $store.dispatch("setIdOfPlaying", "");
                 return;
-            };
+            }
         }
 
         let playing = new Audio(previewUrl);
@@ -143,7 +143,7 @@ const login = async (user = {}) => {
   const register = async (user = {}) => {
     try {
       const { data = {}} = await axios.post('/api/users/register', {user});
-      context.commit("setUser", data);
+      $store.dispatch("setUser", data);
       return data;
     } catch (error) {
       throw new Error(error.message);
