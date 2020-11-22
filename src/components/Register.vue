@@ -5,13 +5,17 @@
           <span class="input">
                   <label for="username">username</label>
                   <input name="username" class="start-pages" @keyup="checkUsername" v-model="username" type="text" autofocus>
-                  <span v-if="unameerror.length > 0" id="account-error-container" v-for="error in unameerror">{{error}}</span>
+                  <span v-if="unameerror.length > 0">
+                    <span id="account-error-container" v-for="(error, idx) in unameerror" :key="idx">{{error}}</span>
+                  </span>
               </span><br><br>
   
           <span class="input">
                   <label for="password">password</label>
                   <input class="start-pages" @keyup="checkPassword" name="password" v-model="password" type="password">
-                  <span v-if="passerror.length > 0" id="account-error-container" v-for="error in passerror">{{error}}</span>
+                  <span v-if="passerror.length > 0">
+                      <span id="account-error-container" v-for="(error, idx) in passerror" :key="idx">{{error}}</span>
+                  </span>
               </span><br><br>
           
           <span class="input">
@@ -23,19 +27,23 @@
             <span class="input">
                 <label for="firstname">first name</label>
                 <input name="firstname" @keyup="checkFName" class="start-pages" placeholder="" v-model="firstname" type="text">
-                <span v-if="fnameerror.length > 0" id="account-error-container" v-for="error in fnameerror">*{{error}}</span>
+                <span v-if="fnameerror.length > 0">
+                    <span id="account-error-container" v-for="(error, idx) in fnameerror" :key="idx">*{{error}}</span>
+                </span>
             </span><br><br>
 
             <span class="input">
                 <label for="lastname">last name</label>
                 <input class="start-pages" @keyup="checkLName" name="lastname" v-model="lastname" type="text">
-                <span v-if="lnameerror.length > 0" id="account-error-container" v-for="error in lnameerror">*{{error}}</span>
+                <span v-if="lnameerror.length > 0"> 
+                    <span id="account-error-container" v-for="(error, idx) in lnameerror" :key="idx">*{{error}}</span>
+                </span>
             </span><br><br>
             
             <span class="input">
                 <label for="email">email</label>
                 <input name="email" class="start-pages" @keyup="checkEmail" v-model="email" type="email">
-                <span id="account-error-container" v-for="error in emailerror">*{{error}}</span>
+                <span id="account-error-container" v-for="(error, idx) in emailerror" :key="idx">*{{error}}</span>
             </span><br>
           
       </div>
@@ -49,7 +57,6 @@
 </template>
 
 <script>
-    import App from '@/App'
     import router from '@/router'
     
     export default {

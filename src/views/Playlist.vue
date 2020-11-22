@@ -93,10 +93,11 @@
 </style>
 
 <script>
-    import { db } from '@/main'
     const axios = require('axios');
     import router from '@/router'
     import store from '@/store'
+    import {goToAlbum} from '@/shared/navigation'
+
     export default {
         name: "playlist",
         data() {
@@ -111,14 +112,12 @@
             }
         },
         async beforeMount() {
-            // this.user = this.$store.state.user;
-            // this.getPlaylist();
+            this.user = store.state.user;
+            if (this.user) this.getPlaylist();
             this.playing = this.$store.state.playing;
         },
         computed: {
           computedUser() {
-              this.user = store.state.user;
-              if (this.user) this.getPlaylist();
               return store.state.user;
           }  
         },
@@ -151,7 +150,7 @@
                             console.log("successfully updated song with index: " + playlistCounter++, results);
                         })
                         .catch(error => {
-                            console.log("error while updating the order of your playlist.");
+                            console.log("error while updating the order of your playlist.", error);
                         });
                 }
             },
@@ -160,10 +159,8 @@
 
                 try {
                     song.username = this.user.username;
-                    let deleteResult = await axios.delete("api/library/" + song.username + "." + song.trackId);
+                    await axios.delete("api/library/" + song.username + "." + song.trackId);
                     await this.getPlaylist();
-                    return "";
-
                 }
                 catch (error) {
                     console.log(error);
@@ -217,18 +214,5 @@
                 router.push({path:"artist", query: {"artist":artistId}});
             }
         }
-    }
-
-    function cutLength(inputWord, length) {
-        if (inputWord.length > length) {
-            inputWord = inputWord.substring(0, length) + "...";
-        }
-        return inputWord;
-    }
-
-    function millisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 </script>

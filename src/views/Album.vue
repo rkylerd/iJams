@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!loading" class="flex-row-wrap container-album">
+    <div v-if="album" class="flex-row-wrap container-album">
         <div class="album-display">
             <img :src="album.artworkUrl100">
             <div class="flex-row-wrap">
@@ -23,8 +23,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(song, idx) in albumSongs" :key="song.trackId">
-                    <td class="trackNumber-cell small-album-info" :class="song.className" @click.prevent="playSong(song, idx)" :ref="idx"><span>{{song.trackNumber}}</span></td>
+                <tr v-for="(song, idx) in albumSongs" :key="idx">
+                    <td class="trackNumber-cell small-album-info" :class="{ 'play' : !isPlaying(song.trackId), 'stop' : isPlaying(song.trackId) }" @click.prevent="({ target } = {}) => playSound(song, target)">{{song.trackNumber}}</td>
                     <td class="name-cell"><span class="song-name"><strong>{{song.trackName_short}}</strong></span></td>
                     <td class="artist-cell"><div @click.prevent="filterArtist(song.artistId)" class="x-small-font link">{{song.artistName_short}}</div></td>
                     <td class="time-cell"><div class="small-album-info">{{song.trackTimeMillis}}</div></td>
@@ -40,6 +40,50 @@
     </div>
 </template>
 
+<script>
+    import { addToPlaylist, playSound, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
+    import { filterArtist } from '@/shared/navigation'
+    import { onBeforeMount, reactive, ref } from 'vue'
+    import store from '@/store'
+    import router from '@/router'
+
+    export default {
+        name: "Album",
+        setup() {
+            const album = ref(undefined);
+            const albumSongs = ref([]);
+
+            onBeforeMount(async () => {
+                const { album: albumId = "" } = router.currentRoute.value.query || {}; 
+                const results = await getAlbum(albumId);
+                
+                album.value = results[0],
+                albumSongs.value = results.slice(1).map(song => {
+                    return {
+                        ...song,
+                        className: "play",
+                        trackName_short: cutLength(song.trackName, 75),
+                        artistName_short: cutLength(song.artistName, 35),
+                        trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis)
+                    }
+                })
+            });
+            
+            const data = reactive({
+                user: {},
+                playSound,
+                cutLength,
+                millisToMinutesAndSeconds,
+                addToPlaylist,
+                filterArtist,
+                isPlaying: (id) => id === store.state.idOfPlaying
+            });
+
+            return { ...data, album, albumSongs };
+        }
+    }
+</script>
+
 <style scoped lang="scss">
 
     .play:hover {
@@ -49,6 +93,7 @@
 
     .stop {
         background-size: 25px 25px;
+        font-size: 0 !important;
         cursor: pointer;
     }
 
@@ -134,61 +179,3 @@
         }
     }
 </style>
-
-<script>
-    import router from '@/router'
-    import { addToPlaylist, playSound, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
-    import { filterArtist } from '@/shared/navigation'
-    export default {
-        name: "Album",
-        data() {
-            return {
-                user: {},
-                loading: true,
-                drag: {},
-                albumSongs: '',
-                album: {}
-            }
-        },
-        async created() {
-            // this.user = this.$store.state.user;
-            this.getAlbum();
-        },
-        methods: {
-            async getAlbum() {
-                const results = await getAlbum(this.$route.query.album);
-                
-                this.album = results[0];
-                this.albumSongs = results.slice(1).map(song => {
-                    return {
-                        ...song,
-                        className: "play",
-                        trackName_short: cutLength(song.trackName, 75),
-                        artistName_short: cutLength(song.artistName, 35),
-                        trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis)
-                    }
-                });
-                this.loading = false;
-            },
-            playSong(sound, index) {
-                playSound(sound, this.$refs[index][0]);
-            },
-            cutLength: cutLength,
-            millisToMinutesAndSeconds: millisToMinutesAndSeconds,
-            addToPlaylist: addToPlaylist,
-            filterArtist: filterArtist
-        },
-        watch: {
-            '$route.query.album': function() {
-                this.getAlbum()
-            }
-      },
-      computed: {
-          computedUser() {
-              this.user = this.$store.state.user;
-              if (this.user) this.getAlbum();
-              return this.$store.state.user;
-          } 
-      }
-    }
-</script>

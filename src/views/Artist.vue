@@ -53,10 +53,7 @@
 
 
 <script>
-import App from '@/App.vue'
 import { addToPlaylist, getArtistAlbums } from '@/shared/logic'
-import { goToAlbum, filterArtist } from '@/shared/navigation'
-import router from '@/router'
 import AlbumCard from '@/components/AlbumCard'
 
 export default {
@@ -73,7 +70,7 @@ export default {
     AlbumCard
   },
   async created() {
-    this.getArtistAlbums();
+    await this.getArtistAlbums();
   },
   methods: {
     getArtistAlbums() {
@@ -90,11 +87,6 @@ export default {
       }
     },
     addToPlaylist: addToPlaylist
-  },
-  watch: {
-    '$route.query.artist': function (search) {
-      this.getArtistAlbums()
-    }
-  },
+  }
 }
 </script>

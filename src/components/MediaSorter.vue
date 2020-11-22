@@ -40,8 +40,9 @@ export default {
   methods: {
       sortMedia(toggleFirst = false) {
           toggleFirst && (this.sort.inAsc = !this.sort.inAsc);
-          let sortedMedia = [...this.media.sort(this.sorter(this.sort))];
-          this.$emit('sortMedia', sortedMedia);
+          let m = this.media; 
+          let sortedMedia = [...m.sort(this.sorter(this.sort))];
+          this.$emit('sort-media', sortedMedia);
       },
       sorter({ inAsc = true, by = 'trackName'} = {}){
           return function(a, b) {

@@ -2,16 +2,16 @@
     <div>
         <section class="sectionInfo">
             <h3>Search Results: {{searchTerm}}</h3>
-            <MediaSorter @sortMedia="handleSort('songResults')" v-bind:media="songResults" type="song"/>     
+            <MediaSorter @sort-media="handleSort('songResults')" v-bind:media="songResults" type="song"/>     
         </section> 
         <div class="container-normal">
             <div class="flex-col-wrap">
-                <SongTile @play="playSong" class="flex-row-wrap"  v-bind:song="song" v-for="(song, idx) in songResults" :ref="idx" v-bind:idx="idx" :key="idx"/>   
+                <SongTile class="flex-row-wrap" :song="song" v-for="(song, idx) in songResults" :idx="idx" :key="idx"/>   
             </div>
         </div>
 
         <section class="sectionInfo">
-            <MediaSorter @sortMedia="handleSort('mvideoResults')" v-bind:media="mvideoResults" type="mvideo"/>
+            <MediaSorter @sort-media="handleSort('mvideoResults')" v-bind:media="mvideoResults" type="mvideo"/>
         </section>
         <div class="container-normal">
             <div class="flex-row-wrap flex-space-inbetween">
@@ -63,24 +63,15 @@
         width: 200px;
     }
 
-    .mvideo-info {
-        text-align: left;
-    }
-
 </style>
 
-
 <script>
-    import App from '@/App.vue'
-    import router from '@/router'
     import SongTile from '@/components/SongTile.vue'
     import MVideoTile from '@/components/MVideoTile.vue'
     import MediaSorter from '@/components/MediaSorter.vue'
 
-    import { addToPlaylist, playSound, cutLength, updateMusicIcon, search } from '@/shared/logic'
+    import { addToPlaylist, cutLength, updateMusicIcon, search } from '@/shared/logic'
     import { goToAlbum, filterArtist } from '@/shared/navigation'
-
-
 
     export default {
         name: 'Results',
@@ -129,10 +120,6 @@
                     this[mediaKey] = sortedMedia;
                 }
             },
-            playSong({sound = {}, idx = 0}) {
-                // The fragile second paramter is to access the img tag within the SongTile component
-                playSound(sound, this.$refs[idx][0].$el.children.item("a").children.item("img"));
-            },
             addToPlaylist: addToPlaylist,
             async logout() {
                 try {
@@ -152,7 +139,7 @@
             }
         },
         watch: {
-            '$route.query.search': function (search) {
+            '$route.query.search': function () {
               this.search()
             }
           },

@@ -1,6 +1,6 @@
 <template>
   <div>
-      <video width="200px" height="auto" controls>
+      <video width="200" height="150" controls>
           <source :src="mvid.previewUrl" type=""/>
       </video>
       <div class="mvideo-info">
@@ -12,10 +12,9 @@
 
 <script>
 
-import { addToPlaylist, cutLength, updateMusicIcon } from '@/shared/logic'
+import { addToPlaylist, cutLength } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
-import App from '@/App.vue'
-import router from '@/router'
+
 export default {
   name: "MVideoTile",
   props: {
@@ -31,5 +30,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .mvideo-info {
+      text-align: left;
+  }
 </style>

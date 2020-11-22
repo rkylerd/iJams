@@ -1,7 +1,7 @@
 /* eslint-disable */
 <template>
   <div id="app">
-    <template v-if="computedUser">
+    <section> <!--  v-if="computedUser" -->
         <div id="nav" @mouseover="inputBoxGrow = true" @mouseleave="cutInputLength">
             
             <div id="form-data">
@@ -19,7 +19,7 @@
                 <img class="menu-icons" src="https://cdn1.iconfinder.com/data/icons/assorted-gadgets-and-items-1/144/headphones-512.png">
                 <router-link to="/playlist" class="nav-link-text">Playlist</router-link>
             </div>
-            <div id="empty-space" @mouseleave="()=>{isShown = false;}">
+            <!-- <div id="empty-space" @mouseleave="()=>{isShown = false;}">
                 <div @click="()=>{if (computedUser) {isShown = !isShown;}}" class="dropdown">
                     <span class="menu-btn">
                         <font-awesome-icon style="color: black; font-size: 2em; cursor: pointer;" :icon="['fas', 'ellipsis-h']"/>
@@ -29,13 +29,13 @@
                         <span><span>Another option</span></span>
                     </div>
                 </div>
-            </div>
+            </div> -->
       
         </div>
-    </template>
-    <template v-else>
+    </section>
+    <!-- <template v-else>
         <h2 class="page-title">iJams</h2>
-    </template>
+    </template> -->
     <router-view/>
   </div>
 </template>
@@ -197,10 +197,7 @@
 
 
 <script>
-
-    import App from '@/App'
     // import { getUser } from '@/shared/logic';
-    const axios = require('axios');
     import router from './router'
 
     export default {
@@ -219,9 +216,11 @@
     },
     async beforeMount() {
         try {
-            const user = await getUser();
-            this.user = user;
-            await this.$store.dispatch("setUser", user);
+            // this.user = this.$store.state.user; // might get rid of
+
+            // const user = await getUser();
+            // this.user = user;
+            // await this.$store.dispatch("setUser", user);
         } catch (error) {
             // let user know something
         }
@@ -282,11 +281,8 @@
     }, 
     computed: {
         computedUser() {
-              this.user = this.$store.state.user;
               return this.$store.state.user;
           }
-    },
-    asyncComputed: {
     }
     
 }

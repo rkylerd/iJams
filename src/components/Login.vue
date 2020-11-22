@@ -12,7 +12,7 @@
                 </span><br>
 
                 <div id="account-error-container">
-                    <span v-for="error in errors">{{error}}</span>
+                    <span v-for="(error,idx) in errors" :key="idx">{{error}}</span>
                 </div>
 
             </div>
@@ -25,8 +25,6 @@
 </template>
 
 <script>
-
-import App from '@/App'
 import router from '@/router'
 
 export default {
