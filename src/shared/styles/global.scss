@@ -118,6 +118,12 @@
 
 .name-artist {
     min-width: 122px;
+    a {
+        cursor: pointer;
+        &:hover {
+            color: white;
+        }
+    }
 }
 
 .price-explicitness {

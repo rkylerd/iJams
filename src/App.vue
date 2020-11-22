@@ -1,7 +1,7 @@
 /* eslint-disable */
 <template>
   <div id="app">
-    <template> <!--  v-if="computedUser" -->
+    <section> <!--  v-if="computedUser" -->
         <div id="nav" @mouseover="inputBoxGrow = true" @mouseleave="cutInputLength">
             
             <div id="form-data">
@@ -32,7 +32,7 @@
             </div> -->
       
         </div>
-    </template>
+    </section>
     <!-- <template v-else>
         <h2 class="page-title">iJams</h2>
     </template> -->

@@ -6,7 +6,7 @@
         </section> 
         <div class="container-normal">
             <div class="flex-col-wrap">
-                <SongTile @play="playSong" class="flex-row-wrap"  v-bind:song="song" v-for="(song, idx) in songResults" :ref="idx" v-bind:idx="idx" :key="idx"/>   
+                <SongTile class="flex-row-wrap" :song="song" v-for="(song, idx) in songResults" :idx="idx" :key="idx"/>   
             </div>
         </div>
 
@@ -63,22 +63,15 @@
         width: 200px;
     }
 
-    .mvideo-info {
-        text-align: left;
-    }
-
 </style>
-
 
 <script>
     import SongTile from '@/components/SongTile.vue'
     import MVideoTile from '@/components/MVideoTile.vue'
     import MediaSorter from '@/components/MediaSorter.vue'
 
-    import { addToPlaylist, playSound, cutLength, updateMusicIcon, search } from '@/shared/logic'
+    import { addToPlaylist, cutLength, updateMusicIcon, search } from '@/shared/logic'
     import { goToAlbum, filterArtist } from '@/shared/navigation'
-
-
 
     export default {
         name: 'Results',
@@ -126,10 +119,6 @@
                 return function (sortedMedia = []) {
                     this[mediaKey] = sortedMedia;
                 }
-            },
-            playSong({sound = {}, idx = 0}) {
-                // The fragile second paramter is to access the img tag within the SongTile component
-                playSound(sound, this.$refs[idx][0].$el.children.item("a").children.item("img"));
             },
             addToPlaylist: addToPlaylist,
             async logout() {

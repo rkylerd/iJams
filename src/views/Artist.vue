@@ -70,7 +70,7 @@ export default {
     AlbumCard
   },
   async created() {
-    this.getArtistAlbums();
+    await this.getArtistAlbums();
   },
   methods: {
     getArtistAlbums() {
@@ -87,11 +87,6 @@ export default {
       }
     },
     addToPlaylist: addToPlaylist
-  },
-  watch: {
-    '$route.query.artist': function () {
-      this.getArtistAlbums()
-    }
-  },
+  }
 }
 </script>

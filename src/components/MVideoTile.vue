@@ -1,6 +1,6 @@
 <template>
   <div>
-      <video width="200px" height="auto" controls>
+      <video width="200" height="150" controls>
           <source :src="mvid.previewUrl" type=""/>
       </video>
       <div class="mvideo-info">
@@ -30,5 +30,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .mvideo-info {
+      text-align: left;
+  }
 </style>

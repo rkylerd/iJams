@@ -3,8 +3,7 @@ import { goToAccount } from '@/shared/navigation';
 const axios = require('axios');
 
 const play = "play",
-    stop = "stop",
-    waitTime = 30000; // 30 seconds
+    stop = "stop";
 
 const search = async (term = "") => {
     if (!term) return {};
@@ -30,8 +29,8 @@ const updateMusicIcon = (el, isStart = true) => {
     el.classList.add(isStart ? stop : play);
 }
 
-const playSound = ({ trackId = "", previewUrl = ""} = {}, el) => {
-
+const playSound = ({trackId = "", previewUrl = ""} = {}, el) => {
+  
     if(trackId) {
         // Is the user trying to stop the currently playing song?
         if ($store.state.playing) {
@@ -46,23 +45,20 @@ const playSound = ({ trackId = "", previewUrl = ""} = {}, el) => {
         }
 
         let playing = new Audio(previewUrl);
+        
+        // When the song stops on its own, reset state 
+        playing.addEventListener('ended', () => {
+          $store.dispatch("setPlaying", null);
+          $store.dispatch("setIdOfPlaying", "");
+        });
+        // anytime song is paused, update it's play/stop icons
+        playing.addEventListener('pause', () => updateMusicIcon(el, false));
+        playing.play();
+        updateMusicIcon(el, true);
 
         $store.dispatch("setPlaying", playing);
         $store.dispatch("setIdOfPlaying", trackId);
         $store.dispatch("setReferenceToClassNameOfPlaying", el);
-        
-        updateMusicIcon(el, true);
-        playing.play();
-
-        setTimeout(() => {
-            if ($store.state.idOfPlaying === trackId) {
-                $store.dispatch("setPlaying", null);
-                $store.dispatch("setIdOfPlaying", "");
-                updateMusicIcon(el, false);
-                
-            }
-        }, waitTime);
-        
     }
 };
 
