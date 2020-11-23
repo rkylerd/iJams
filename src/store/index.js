@@ -10,7 +10,8 @@ export default createStore({
     referenceToClassName: {
       classList: []
     },
-    loginRedirect: null
+    loginRedirect: null,
+    cart: []
   },
   mutations: {
     setLoginRedirect(state, redirect) {
@@ -27,6 +28,9 @@ export default createStore({
     },
     setIdOfPlaying(state, id) {
       state.idOfPlaying = id;
+    },
+    addToCart(state, item) {
+      state.cart.push(item);
     }
   },
   actions: {
@@ -70,6 +74,9 @@ export default createStore({
     },
     setLoginRedirect(context, data) {
       context.commit("setLoginRedirect", data);
+    },
+    addToCart(context, item) {
+      context.commit("addToCart", item);
     }
   },
   modules: {}

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const auth = require("./auth.js");
 
+
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -23,6 +24,9 @@ const mongoose = require('mongoose');
 
 // const users = require("./users.js");
 // app.use("/api/users", users);
+
+const stripe = require("./stripe"); 
+app.use("/api/stripe", stripe);
 
 const iTunesAPI = require("./search.js");
 app.use("/api/search", iTunesAPI);

@@ -12,8 +12,13 @@ const goToAccount = () => {
     router.replace("Account");
 };
 
+const goToCheckout = ({trackId = ""}) => {
+    router.push({path:"checkout", query: {"item": trackId}});
+}
+
 export {
     filterArtist,
     goToAlbum,
-    goToAccount
+    goToAccount,
+    goToCheckout
 };

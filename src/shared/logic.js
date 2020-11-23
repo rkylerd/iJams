@@ -1,7 +1,7 @@
 import $store from '@/store';
 import { goToAccount } from '@/shared/navigation'; 
-const axios = require('axios');
 
+const axios = require('axios');
 const play = "play",
     stop = "stop";
 
@@ -136,15 +136,15 @@ const login = async (user = {}) => {
   }
 };
 
-  const register = async (user = {}) => {
-    try {
-      const { data = {}} = await axios.post('/api/users/register', {user});
-      $store.dispatch("setUser", data);
-      return data;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
+const register = async (user = {}) => {
+  try {
+    const { data = {}} = await axios.post('/api/users/register', {user});
+    $store.dispatch("setUser", data);
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 export {
     getAlbum,
@@ -160,3 +160,4 @@ export {
     login,
     register
 };
+export {createPaymentIntent} from './stripe';
