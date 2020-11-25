@@ -12,30 +12,49 @@
 <script>
 import { ref } from 'vue'
 import store from '@/store'
-import { addToPlaylist } from '@/shared/logic'
+import { addToPlaylist, deleteFromPlaylist } from '@/shared/logic'
 import { goToCheckout } from '@/shared/navigation'
 
 export default {
     name: 'ContentOptions',
     props: {
-        song: Object
+        media: Object,
+        type: String
     },
     setup(props) {
         const showing = ref(false);
-        const options = [
+        const cartOptions = [
             {
-                'displayText': 'Add to cart',
-                'action':  (item) => store.dispatch('addToCart', item)
+                'displayText': 'Delete',
+                'action':  async () => deleteFromPlaylist(props.media)
             },
             {
                 'displayText': 'Fast purchase',
-                'action':  (item) => goToCheckout(item)
+                'action':  async () => { await store.dispatch('setCheckoutItems', [props.media]); goToCheckout(props.media) }
+            }
+        ];
+        
+        const songOptions = [
+            {
+                'displayText': 'Add to cart',
+                'action':  async () => await store.dispatch('addToCart', props.media)
+            },
+            {
+                'displayText': 'Fast purchase',
+                'action':  async () => { await store.dispatch('setCheckoutItems', [props.media]); goToCheckout(props.media) }
             },
             {
                 'displayText': 'Add to playlist',
                 'action':  () => addToPlaylist(props.media)
             }
         ];
+
+        const optionsMap = {
+            'song-cart': cartOptions,
+            'song': songOptions
+        };
+
+        let options = optionsMap[props.type]
         return { options, showing }
     }
 }

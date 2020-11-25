@@ -1,33 +1,82 @@
 <template>
 <div id="outside-container">
-    <form id="payment-form">
-        <div id="card-element"><!--Stripe.js injects the Card Element--></div>
-        <button id="submit">
-            <div class="spinner hidden" id="spinner"></div>
-            <span id="button-text">Pay</span>
-        </button>
-        <p id="card-error" role="alert"></p>
-        <p class="result-message hidden">
-            Payment succeeded, see the result in your
-            <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-        </p>
-    </form>
+    <section>
+        <table class="album-songs">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Artist</th>
+                    <th>Explicitness</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, idx) in checkoutItems" :key="idx">
+                   <td>
+                            <img width="60" height="60" :style="{ 'background-image': 'url(' + item.artworkUrl60 + ')' }">
+                   </td>
+                   <td class="name-cell"><span class="song-name">{{item.trackName || item.trackName_short}}</span></td>
+                    <td class="name-cell"><span class="song-name">{{item.artistName || item.artistName_short}}</span></td>
+                    <td v-if="item.trackExplicitness.toLowerCase() === 'explicit' || item.trackExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
+                        :class="{'explicit': item.trackExplicitness.toLowerCase() === 'explicit', 
+                                'clean': item.trackExplicitness.toLowerCase() === 'cleaned' }">
+                                {{item.collectionExplicitness}}
+                    </td>
+                    <td>
+                        ${{item.trackPrice}}
+                    </td> 
+                </tr>
+                <tr>
+                   <td>Total:</td>
+                   <td></td>
+                   <td></td>
+                   <td>${{ orderTotal }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <section>
+        <form id="payment-form">
+            <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+            <button id="submit">
+                <div class="spinner hidden" id="spinner"></div>
+                <span id="button-text">Pay</span>
+            </button>
+            <p id="card-error" role="alert"></p>
+            <p class="result-message hidden">
+                Payment succeeded, see the result in your
+                <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
+            </p>
+        </form>
+    </section>
 </div>
 </template>
 
 <script>
-import { onMounted } from 'vue'
+import { computed, onMounted, reactive, toRefs } from 'vue'
+import store from '@/store'
 import { createPaymentIntent } from '@/shared/logic'
+import { redirectHome } from '@/shared/navigation'
+
 export default {
     name: 'Purchase',
     setup() {
+        const priceReducer = (acc, {trackPrice = '0'}={}) => acc + parseFloat(trackPrice);
+        const checkoutData = reactive({
+            checkoutItems: [],
+            orderTotal: computed(() => (checkoutData.checkoutItems).reduce(priceReducer, 0))
+        });
+
         onMounted(() => {
             document.querySelector("button").disabled = true;
-            var purchase = {
-                items: [{ id: "xl-tshirt" }]
-            };
-            createPaymentIntent(purchase);
-        })
+            if (store.state.checkoutItems.length === 0) {
+                redirectHome();
+                return;
+            }
+            checkoutData.checkoutItems.push(...store.state.checkoutItems);
+            createPaymentIntent(store.state.checkoutItems);
+        });
+        return { ...toRefs(checkoutData) };
     }
 }
 </script>

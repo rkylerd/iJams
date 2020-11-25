@@ -18,26 +18,30 @@ const style = {
     }
   };
 
-const createPaymentIntent = (purchase) => {
-    axios.post("api/stripe/", purchase)
-    .then(function({data = {}} = {}) {
-        const elements = stripe.elements();
-        const card = elements.create("card", { style });
-        
-        // Stripe injects an iframe into the DOM
-        card.mount("#card-element");
-        card.on("change", function (event) {
-            // Disable the Pay button if there are no card details in the Element
-            document.querySelector("button").disabled = event.empty;
-            document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
-        });
-        
-        let form = document.getElementById("payment-form");
-        form.addEventListener("submit", function(event) {
+const createPaymentIntent = (items) => {
+  axios.post("api/stripe/", { items })
+  .then(function({data = {}} = {}) {
+    const elements = stripe.elements();
+    const card = elements.create("card", { style });
+    
+    // Stripe injects an iframe into the DOM
+    card.mount("#card-element");
+    card.on("change", function (event) {
+        // Disable the Pay button if there are no card details in the Element
+        document.querySelector("button").disabled = event.empty;
+        document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
+    });
+    
+    let form = document.getElementById("payment-form");
+    form.addEventListener("submit", function(event) {
         event.preventDefault();
         // Complete payment when the submit button is clicked
         payWithCard(stripe, card, data.clientSecret);
     });
+  })
+  .catch(error => {
+    console.log(error.message);
+    showError(error.message);
   });
 };
 
@@ -54,6 +58,7 @@ var payWithCard = function(stripe, card, clientSecret) {
       }
     })
     .then(function(result) {
+      console.log(result);
       if (result.error) {
         // Show error to your customer
         showError(result.error.message);
@@ -63,6 +68,7 @@ var payWithCard = function(stripe, card, clientSecret) {
       }
     });
 };
+
 /* ------- UI helpers ------- */
 // Shows a success message when the payment is complete
 var orderComplete = function(paymentIntentId) {

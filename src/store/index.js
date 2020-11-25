@@ -11,7 +11,8 @@ export default createStore({
       classList: []
     },
     loginRedirect: null,
-    cart: []
+    cart: [],
+    checkoutItems: []
   },
   mutations: {
     setLoginRedirect(state, redirect) {
@@ -31,6 +32,9 @@ export default createStore({
     },
     addToCart(state, item) {
       state.cart.push(item);
+    },
+    setCheckoutItems(state, items) {
+      state.checkoutItems = items;
     }
   },
   actions: {
@@ -77,6 +81,9 @@ export default createStore({
     },
     addToCart(context, item) {
       context.commit("addToCart", item);
+    },
+    setCheckoutItems(context, items) {
+      context.commit("setCheckoutItems", items);
     }
   },
   modules: {}

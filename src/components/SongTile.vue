@@ -11,7 +11,7 @@
             </div>
             
             <div class="stick-right">
-                <Options :media="song"/> <!-- <button class="purchase-button btn-outline-success my-2 my-sm-0" type="button" @click.prevent="addToPlaylist(song)">Add</button> -->
+                <Options :media="song" type="song"/> <!-- <button class="purchase-button btn-outline-success my-2 my-sm-0" type="button" @click.prevent="addToPlaylist(song)">Add</button> -->
                 <span class="explicit" v-if="song.trackExplicitness === 'explicit'">{{song.trackExplicitness}}</span>
             </div>
             
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, toRefs } from 'vue'
 import store from '@/store'
 import { addToPlaylist, cutLength, playSound } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
@@ -45,7 +45,7 @@ export default {
       isPlaying: (id) => id === store.state.idOfPlaying
     });
 
-    return { ...data };
+    return { ...toRefs(data) };
   }
 };
 </script>

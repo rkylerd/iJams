@@ -36,3 +36,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.vert-middle {
+  vertical-align: text-top; 
+  vertical-align: -webkit-baseline-middle;
+}
+</style>

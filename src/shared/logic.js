@@ -30,7 +30,6 @@ const updateMusicIcon = (el, isStart = true) => {
 }
 
 const playSound = ({trackId = "", previewUrl = ""} = {}, el) => {
-  
     if(trackId) {
         // Is the user trying to stop the currently playing song?
         if ($store.state.playing) {
@@ -146,6 +145,16 @@ const register = async (user = {}) => {
   }
 };
 
+const deleteFromPlaylist = async () => {
+  try {
+      // await axios.delete("api/library/" + playlistData.user.username + "." + song.trackId);
+      // await this.getPlaylist();
+  }
+  catch (error) {
+      console.log(error);
+  }
+};
+
 export {
     getAlbum,
     getUser,
@@ -156,7 +165,8 @@ export {
     search,
     getArtist,
     getArtistAlbums,
-    addToPlaylist, 
+    addToPlaylist,
+    deleteFromPlaylist, 
     login,
     register
 };

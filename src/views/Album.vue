@@ -28,7 +28,7 @@
                     <td class="name-cell"><span class="song-name"><strong>{{song.trackName_short}}</strong></span></td>
                     <td class="artist-cell"><div @click.prevent="filterArtist(song.artistId)" class="x-small-font link">{{song.artistName_short}}</div></td>
                     <td class="time-cell"><div class="small-album-info">{{song.trackTimeMillis}}</div></td>
-                    <td><button class="purchase-button btn-outline-success my-2 my-sm-0" type="submit"  @click.prevent="addToPlaylist(song)">Add</button></td>
+                    <td><Options type="song" :media="song"/></td>
                     <td v-if="song.trackExplicitness.toLowerCase() === 'explicit' || song.trackExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
                         :class="{'explicit': song.trackExplicitness.toLowerCase() === 'explicit', 
                                 'clean': song.trackExplicitness.toLowerCase() === 'cleaned' }">
@@ -46,9 +46,13 @@
     import { onBeforeMount, reactive, ref } from 'vue'
     import store from '@/store'
     import router from '@/router'
+    import Options from '@/components/ContentOptions'
 
     export default {
         name: "Album",
+        components: {
+            Options
+        },
         setup() {
             const album = ref(undefined);
             const albumSongs = ref([]);
