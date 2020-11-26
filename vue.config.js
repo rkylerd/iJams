@@ -2,7 +2,7 @@
 // const config = require('config');
 
 module.exports = {
-    publicPath: '/',
+    publicPath: '/iJams/',
     chainWebpack: (config) => {
         config.resolve.symlinks(false)
     },
