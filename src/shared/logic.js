@@ -2,7 +2,7 @@ import $store from '@/store';
 import { goToAccount } from '@/shared/navigation'; 
 const api = process.env.NODE_ENV === 'local'
 ? 'api'
-: 'iJams';
+: 'https://ijams.herokuapp.com/';
 
 const axios = require('axios');
 const play = "play",
