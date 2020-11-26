@@ -15,6 +15,16 @@ const routes = [
     // }
   },
   {
+    path: '/iJams',
+    name: 'liveHome',
+    component: function () { 
+      return import('../views/Home.vue')
+    },
+    // meta: {
+    //     requiresAuth: true
+    // }
+  },
+  {
     path: '/playlist',
     name: 'playlist',
     // route level code-splitting

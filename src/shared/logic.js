@@ -80,7 +80,7 @@ const millisToMinutesAndSeconds = (millis) => {
 const addToPlaylist = async (song = {}) => {
     
     try {
-      await axios.post(`/${api}/library`, {       
+      await axios.post(`${api}/library`, {       
         song: {
             ...song, 
             username: $store.state.user.username, 
@@ -93,7 +93,7 @@ const addToPlaylist = async (song = {}) => {
 
 const getAlbum = async (term = "") => {
     try {
-      const { data: { results = [] } = {} } = await axios.get(`/${api}/search/album/${term}`);
+      const { data: { results = [] } = {} } = await axios.get(`${api}/search/album/${term}`);
       return results;
     } catch (error) {
       throw Error("error encountered while getting album");
@@ -102,7 +102,7 @@ const getAlbum = async (term = "") => {
 
 const getArtist = async (term = "") => {
     try {
-      const { data: { results = [] } = {} } = await axios.get(`/${api}/search/artist/${term}`);
+      const { data: { results = [] } = {} } = await axios.get(`${api}/search/artist/${term}`);
       return results;
     } catch (error) {
         throw Error("error encountered while getting artist");
@@ -111,7 +111,7 @@ const getArtist = async (term = "") => {
 
 const getArtistAlbums = async (term = "") => {
     try {
-        const { data: { results = [] } = {} } = await axios.get(`/${api}/search/artistalbums/${term}`);
+        const { data: { results = [] } = {} } = await axios.get(`${api}/search/artistalbums/${term}`);
         return results;
     } catch (error) {
           throw Error("error encountered while getting artist albums");
@@ -120,7 +120,7 @@ const getArtistAlbums = async (term = "") => {
 
 const getUser = async () => {
     try {
-        const { data = {} } = await axios.get(`/${api}/users/`);
+        const { data = {} } = await axios.get(`${api}/users/`);
         return data;
       } catch (error) {
         goToAccount();
@@ -140,7 +140,7 @@ const login = async (user = {}) => {
 
 const register = async (user = {}) => {
   try {
-    const { data = {}} = await axios.post(`/${api}/users/register`, {user});
+    const { data = {}} = await axios.post(`${api}/users/register`, {user});
     $store.dispatch("setUser", data);
     return data;
   } catch (error) {
