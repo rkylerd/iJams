@@ -3,7 +3,7 @@ import { goToAccount } from '@/shared/navigation';
 const api = process.env.NODE_ENV === 'local'
 ? 'api'
 : 'https://ijams.herokuapp.com/';
-
+console.log('api', api);
 const axios = require('axios');
 const play = "play",
     stop = "stop";
