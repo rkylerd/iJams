@@ -1,12 +1,16 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const auth = require("./auth.js");
-
+const cors = require('cors');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+const corsOptions = {
+  origin: 'https://rkylerd.github.io/' // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions))
 
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
