@@ -1,18 +1,25 @@
 <template>
   <div v-if="computedUser">
-      <h2 class="page-title">Playlist</h2>
+      <div class="page-title">Playlist</div>
       <section>
+          <div><button v-if="mediaForCheckout.length" @click="goToCheckout">Go to checkout with selected songs ({{mediaForCheckout.length}})</button></div>
         <div class="playlist-normal">
-            <SongCard draggable="true"  v-for="(song, i) in playlist" :key="i" v-on:dragstart="setDragItem(song)" v-on:dragover.prevent v-on:drop="dropItem(song)" :song="song" :displayNum="i+1"/>
+            <SongCard 
+                v-for="(song, idx) in playlist" 
+                @add-checkout="addCheckout(song)" 
+                @remove-checkout="removeCheckout(song)" 
+                draggable="true" 
+                :key="idx" 
+                v-on:dragstart="setDragItem(song)" 
+                v-on:dragover.prevent v-on:drop="dropItem(song)" 
+                :song="song" 
+                :displayNum="idx+1"/>
         </div>  
       </section>
-    <!-- <router-view/> -->
   </div>
 </template>
 
 <style scoped>
-
-    
 
     .playlist-normal {
         margin: 3rem;
@@ -31,7 +38,7 @@
     import store from '@/store'
     import { playSound } from '@/shared/logic'
     import SongCard from '@/components/SongCard.vue'
-    import { goToAlbum, filterArtist } from '@/shared/navigation'
+    import { goToAlbum, filterArtist, goToCheckout } from '@/shared/navigation'
 
     export default {
         name: "playlist",
@@ -50,9 +57,20 @@
                 user: {},
                 loading: true,
                 playlist: [],
+                mediaForCheckout: [],
                 playSound,
                 goToAlbum,
                 dragDropItem: {},
+                goToCheckout: async () => {
+                    await store.dispatch('setCheckoutItems', playlistData.mediaForCheckout);
+                    goToCheckout();
+                },
+                removeCheckout: (song) => {
+                    console.log('removing');
+                    let i = playlistData.mediaForCheckout.findIndex(({trackId}={}) => trackId === song.trackId); 
+                    playlistData.mediaForCheckout.splice(i,1);
+                },
+                addCheckout: (song) => {console.log('adding'); playlistData.mediaForCheckout.unshift(song)},
                 dropItem: (item) => {
                         const indexOfDragItem = playlistData.playlist.indexOf(playlistData.dragDropItem);
                         const indexOfDestination = playlistData.playlist.indexOf(item);

@@ -91,12 +91,13 @@
 <style scoped lang="scss">
 
     .play:hover {
-        background-size: 35px 35px;
+        background-size: 100% auto;
+        font-size: 0 !important;
         cursor: pointer;
     }
 
     .stop {
-        background-size: 25px 25px;
+        background-size: 100% auto;
         font-size: 0 !important;
         cursor: pointer;
     }
@@ -156,8 +157,8 @@
                 min-width: 20px;
                 font-size: small;
                 color: white;
-                width: 35px;
-                height: 35px;
+                max-width: 25px;
+                height: 25px;
                 text-align: center;
                 span {
                     width: 100%;

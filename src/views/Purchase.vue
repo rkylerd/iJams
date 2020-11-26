@@ -4,6 +4,7 @@
         <table class="album-songs">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Name</th>
                     <th>Artist</th>
                     <th>Explicitness</th>
@@ -17,11 +18,12 @@
                    </td>
                    <td class="name-cell"><span class="song-name">{{item.trackName || item.trackName_short}}</span></td>
                     <td class="name-cell"><span class="song-name">{{item.artistName || item.artistName_short}}</span></td>
-                    <td v-if="item.trackExplicitness.toLowerCase() === 'explicit' || item.trackExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
+                    <td v-if="item.trackExplicitness && (item.trackExplicitness.toLowerCase() === 'explicit' || /^clean/.test(item.trackExplicitness.toLowerCase()))" class="explicitness-container"
                         :class="{'explicit': item.trackExplicitness.toLowerCase() === 'explicit', 
-                                'clean': item.trackExplicitness.toLowerCase() === 'cleaned' }">
-                                {{item.collectionExplicitness}}
+                                'clean': /^clean/.test(item.trackExplicitness.toLowerCase()) }">
+                                {{item.trackExplicitness}}
                     </td>
+                    <td v-else></td>
                     <td>
                         ${{item.trackPrice}}
                     </td> 

@@ -1,7 +1,8 @@
 <template>
   <div class="playlist-single-track" style="border-right: 1px solid white;">
       <div class="fav-num-container">
-          <span class="fav-num white-text small-font">{{displayNum}}</span>
+          <span v-if="!selected" @click.prevent="(e)=>{setSelected(e); emitCheckout(selected);}" class="fav-num white-text small-font">{{displayNum}}</span>
+          <input v-else type="checkbox" :checked="selected" @click.prevent="(e)=>{setSelected(e); emitCheckout(selected);}" class="fav-num white-text small-font"/>
           <Options :media="song" type="song-cart"/>  
       </div>
 
@@ -24,7 +25,7 @@ import { goToAlbum, filterArtist } from '@/shared/navigation'
 import Options from '@/components/ContentOptions.vue'
 
 export default {
-  name: "SongTile",
+  name: "SongCard",
   props: {
     song: Object,
     displayNum: Number
@@ -32,8 +33,12 @@ export default {
   components: {
       Options
   },
+  methods: {
+    emitCheckout(selected) {this.$emit(selected ? 'add-checkout' : 'remove-checkout')}
+  },
   setup(props) {
     const data = reactive({
+      selected: false,
       song: props.song,
       displayNum: props.displayNum,
       playSound,
@@ -41,6 +46,10 @@ export default {
       goToAlbum,
       cutLength,
       filterArtist,
+      setSelected: (e) => {
+        let selected = (e.target.tagName.toLowerCase() !== "input"); 
+        data.selected = selected; 
+      },
       isPlaying: (id) => id === store.state.idOfPlaying
     });
 
