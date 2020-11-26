@@ -1,6 +1,6 @@
 
-const previewUrlPrefix = process.env.NODE_ENV === 'production'
-? process.env.CI_PROJECT_NAME
+const previewUrlPrefix = process.env.VUE_APP_NODE_ENV === 'production'
+? process.env.VUE_APP_CI_PROJECT_NAME
 : '.'
 
 export default [ 
