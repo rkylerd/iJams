@@ -1,15 +1,23 @@
 const express = require('express');
 const bodyParser = require("body-parser");
-const auth = require("./auth.js");
+// const auth = require("./auth.js");
 const cors = require('cors');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+
+const whitelist = ['https://rkylerd.github.io', 'http://localhost:8080'];
 const corsOptions = {
-  origin: 'https://rkylerd.github.io/' // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+};
 app.use(cors(corsOptions))
 
 const cookieParser = require("cookie-parser");
@@ -36,5 +44,5 @@ app.use("/api/search", iTunesAPI);
 
 // const historyAPI = require("./history.js");
 // app.use("/api/history", historyAPI);
-
-app.listen(3000, () => console.log('Server listening on port 3000!'));
+const port = process.env.PORT || (process.env.NODE_ENV === 'local' ? 3000 : 80);
+app.listen(port, () => console.log(`Server listening on port ${port}!`));

@@ -2,8 +2,8 @@ import $store from '@/store';
 import { goToAccount } from '@/shared/navigation'; 
 const api = process.env.NODE_ENV === 'local'
 ? 'api'
-: 'https://ijams.herokuapp.com/';
-console.log('api', api);
+: 'https://ijams.herokuapp.com';
+console.log(process.env.NODE_ENV, api);
 const axios = require('axios');
 const play = "play",
     stop = "stop";
