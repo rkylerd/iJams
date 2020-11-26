@@ -1,7 +1,7 @@
 
-const previewUrlPrefix = process.env.NODE_ENV === 'production'
-? 'iJams'
-: '.'
+const previewUrlPrefix = process.env.NODE_ENV === 'local'
+? '.'
+: 'iJams'
 console.log(previewUrlPrefix)
 export default [ 
     {trackName_short: "Suit & Tie", 
