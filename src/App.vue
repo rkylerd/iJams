@@ -19,6 +19,9 @@
                 <img class="menu-icons" src="https://cdn1.iconfinder.com/data/icons/assorted-gadgets-and-items-1/144/headphones-512.png">
                 <router-link to="/playlist" class="nav-link-text">Playlist</router-link>
             </div>
+            <div style="color: black !important; width: 20px;">
+                <MenuOption icon="shopping-cart" :qty="checkoutItems.length"/>
+            </div>
             <!-- <div id="empty-space" @mouseleave="()=>{isShown = false;}">
                 <div @click="()=>{if (computedUser) {isShown = !isShown;}}" class="dropdown">
                     <span class="menu-btn">
@@ -39,6 +42,105 @@
     <router-view/>
   </div>
 </template>
+
+<script>
+    // import { getUser } from '@/shared/logic';
+    import router from '@/router'
+    import store from '@/store'
+    import MenuOption from './components/MenuOption'
+
+    export default {
+    name: "playlist",
+    components: {
+        MenuOption
+    },
+    data() {
+        return {
+        user: {},
+        queryStr: '',
+        isShown: false,
+        playing: {
+        },
+        playingSong: '',
+        isPlaying: {isPlaying: false, index: ''},
+        inputBoxGrow: false,
+      }
+    },
+    async beforeMount() {
+        try {
+            // this.user = this.$store.state.user; // might get rid of
+            // const user = await getUser();
+            // this.user = user;
+            // await this.$store.dispatch("setUser", user);
+        } catch (error) {
+            // let user know something
+        }
+    },
+    methods: {
+        cutInputLength(){
+           setTimeout(()=>{this.inputBoxGrow = false},2000)   
+        },
+        setQueryTerm(term) {
+            this.queryStr = term;
+            
+            this.query();
+            this.getPlaylist();
+            
+        },
+        logout() {
+            this.isShown = false;
+            if (this.$store.state.playing !== null) {
+
+                this.$store.state.playing.pause();
+                this.$store.dispatch("setPlaying", null);
+            }
+            // this.user = null;
+            this.$store.dispatch("logout");  
+            this.$router.replace("Account");
+        },
+        query() {
+            let query = this.queryStr.toLowerCase();
+
+            let terms = query.split(" ");
+            query = terms.join('+');
+            
+            this.itunes(query);
+        },
+        async itunes(queryStr) {
+            try {
+            
+                this.songResults = [];
+                this.artistResults = [];
+                this.songNames = [];
+                this.filterSearch = true;
+                if (queryStr === '') return;
+                
+                /* axios.put("api/history/", {username: this.$store.user, term: queryStr})
+                .then(results => {
+                    // console.log("results of search history update: ", results);
+                })
+                .catch(error => {
+                    console.log(error);
+                }); */
+               
+                router.push({path:"results", query: {"search":queryStr}})
+                
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }, 
+    computed: {
+        computedUser() {
+              return store.state.user;
+          },
+          checkoutItems() {
+              return store.state.checkoutItems
+          }
+    }
+    
+}
+</script>
 
 <style lang='scss'>
 
@@ -119,12 +221,26 @@
     /*background-color: #2c3e50;*/
 }
 
+#nav-link {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+}
+
 .nav-link-text {
   font-family: 'Fredoka One', cursive;
   font-weight: bold;
   font-size: 3vh;
-  color: #2c3e50 !important;
+  color: #2c3e50;
   max-width: 100px;
+  padding: 4px;
+  transition-duration: 1s;
+  border: transparent 1px;
+  border-radius: 8px; 
+}
+
+.nav-link-text:hover {
+    box-shadow: 1px 1px #444;
 }
 
 .menu-icons {
@@ -194,97 +310,3 @@
 @import '~bootstrap/dist/css/bootstrap.css'
 
 </style>
-
-
-<script>
-    // import { getUser } from '@/shared/logic';
-    import router from './router'
-
-    export default {
-    name: "playlist",
-    data() {
-        return {
-        user: {},
-        queryStr: '',
-        isShown: false,
-        playing: {
-        },
-        playingSong: '',
-        isPlaying: {isPlaying: false, index: ''},
-        inputBoxGrow: false,
-      }
-    },
-    async beforeMount() {
-        try {
-            // this.user = this.$store.state.user; // might get rid of
-
-            // const user = await getUser();
-            // this.user = user;
-            // await this.$store.dispatch("setUser", user);
-        } catch (error) {
-            // let user know something
-        }
-    },
-    methods: {
-        cutInputLength(){
-           setTimeout(()=>{this.inputBoxGrow = false},2000)   
-        },
-        setQueryTerm(term) {
-            this.queryStr = term;
-            
-            this.query();
-            this.getPlaylist();
-            
-        },
-        logout() {
-            this.isShown = false;
-            if (this.$store.state.playing !== null) {
-
-                this.$store.state.playing.pause();
-                this.$store.dispatch("setPlaying", null);
-            }
-            // this.user = null;
-            this.$store.dispatch("logout");  
-            this.$router.replace("Account");
-        },
-        query() {
-            let query = this.queryStr.toLowerCase();
-
-            let terms = query.split(" ");
-            query = terms.join('+');
-            
-            this.itunes(query);
-        },
-        async itunes(queryStr) {
-            try {
-            
-                this.songResults = [];
-                this.artistResults = [];
-                this.songNames = [];
-                this.filterSearch = true;
-                if (queryStr === '') return;
-                
-                /* axios.put("api/history/", {username: this.$store.user, term: queryStr})
-                .then(results => {
-                    // console.log("results of search history update: ", results);
-                })
-                .catch(error => {
-                    console.log(error);
-                }); */
-               
-                router.push({path:"results", query: {"search":queryStr}})
-                
-            } catch (err) {
-                console.log(err);
-            }
-        }
-    }, 
-    computed: {
-        computedUser() {
-              return this.$store.state.user;
-          }
-    }
-    
-}
-
-</script>

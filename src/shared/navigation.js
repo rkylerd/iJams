@@ -12,8 +12,18 @@ const goToAccount = () => {
     router.replace("Account");
 };
 
+const goToCheckout = () => {
+    router.push({path:"checkout"});
+}
+
+const redirectHome = () => {
+    router.replace('/');
+}
+
 export {
+    redirectHome,
     filterArtist,
     goToAlbum,
-    goToAccount
+    goToAccount,
+    goToCheckout
 };

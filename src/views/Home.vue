@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <h2 class="page-title">Home</h2>
-   
     <div id="my-clean-songs">
       <SongTile class="flex-row-wrap"  v-bind:song="song" v-for="(song, idx) in myEdits" :key="idx"/>   
     </div>
@@ -50,10 +49,10 @@ import { goToAlbum, filterArtist } from '@/shared/navigation'
 import myEdits from '@/shared/my-edits'
 import SongTile from '@/components/SongTile.vue'
 
+
 export default {
   name: 'Home',
   setup() {
-    
     const homePage = reactive({
       user: {},
       myEdits,
@@ -64,7 +63,7 @@ export default {
       // computedUser : computed(() => this.$store.state.user)
     });
 
-    onBeforeMount(async () => {
+    onBeforeMount(() => {
       // this.user = this.$store.state.user;
     });
 

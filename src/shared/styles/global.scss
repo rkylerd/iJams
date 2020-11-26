@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Cabin|Fredoka+One|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap|Fruktur&display=swap');
 
 .page-title {
+    display: inline-block;
     text-align: center;
-    margin: 2vh auto 4vh auto;
+    margin: 2vh 0 4vh 0;
     font-family: 'Fredoka One', cursive;
     font-weight: bold;
     font-size: 40px;

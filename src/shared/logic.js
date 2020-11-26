@@ -1,7 +1,7 @@
 import $store from '@/store';
 import { goToAccount } from '@/shared/navigation'; 
-const axios = require('axios');
 
+const axios = require('axios');
 const play = "play",
     stop = "stop";
 
@@ -30,7 +30,6 @@ const updateMusicIcon = (el, isStart = true) => {
 }
 
 const playSound = ({trackId = "", previewUrl = ""} = {}, el) => {
-  
     if(trackId) {
         // Is the user trying to stop the currently playing song?
         if ($store.state.playing) {
@@ -136,15 +135,25 @@ const login = async (user = {}) => {
   }
 };
 
-  const register = async (user = {}) => {
-    try {
-      const { data = {}} = await axios.post('/api/users/register', {user});
-      $store.dispatch("setUser", data);
-      return data;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
+const register = async (user = {}) => {
+  try {
+    const { data = {}} = await axios.post('/api/users/register', {user});
+    $store.dispatch("setUser", data);
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const deleteFromPlaylist = async () => {
+  try {
+      // await axios.delete("api/library/" + playlistData.user.username + "." + song.trackId);
+      // await this.getPlaylist();
+  }
+  catch (error) {
+      console.log(error);
+  }
+};
 
 export {
     getAlbum,
@@ -156,7 +165,9 @@ export {
     search,
     getArtist,
     getArtistAlbums,
-    addToPlaylist, 
+    addToPlaylist,
+    deleteFromPlaylist, 
     login,
     register
 };
+export {createPaymentIntent} from './stripe';

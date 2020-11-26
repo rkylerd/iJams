@@ -28,6 +28,9 @@ const mongoose = require('mongoose');
 // const users = require("./users.js");
 // app.use("/api/users", users);
 
+const stripe = require("./stripe"); 
+app.use("/api/stripe", stripe);
+
 const iTunesAPI = require("./search.js");
 app.use("/api/search", iTunesAPI);
 
