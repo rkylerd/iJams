@@ -1,11 +1,11 @@
 import router from '@/router';
 
 const filterArtist = async (artistId) => {
-    router.push({path:"artist", query: {"artist":artistId}});
+    router.push({name:"artist", query: {"artist":artistId}});
 };
 
 const goToAlbum = async ({ collectionId = ""} = {}) => {
-    router.push({path:"album", query: {"album": collectionId}});
+    router.push({name:"album", query: {"album": collectionId}});
 };
 
 const goToAccount = () => {
@@ -13,7 +13,7 @@ const goToAccount = () => {
 };
 
 const goToCheckout = () => {
-    router.push({path:"checkout"});
+    router.push({name:"checkout"});
 }
 
 const redirectHome = () => {

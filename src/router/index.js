@@ -15,7 +15,7 @@ const routes = [
     // }
   },
   {
-    path: '/playlist',
+    path: '/iJams/playlist',
     name: 'playlist',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -28,7 +28,7 @@ const routes = [
     // }
   },
   {
-    path: '/artist',
+    path: '/iJams/artist',
     name: 'artist',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -41,7 +41,7 @@ const routes = [
     // }
   },
   {
-    path: '/album',
+    path: '/iJams/album',
     name: 'album',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -54,7 +54,7 @@ const routes = [
     // }
   },
   {
-    path: '/results',
+    path: '/iJams/results',
     name: 'results',
     component: Results,
     // meta: {
@@ -62,7 +62,7 @@ const routes = [
     // }
   },
   {
-    path: '/checkout',
+    path: '/iJams/checkout',
     name: 'checkout',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -72,7 +72,7 @@ const routes = [
     }
   },
   {
-    path: '/account',
+    path: '/iJams/account',
     name: 'account',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -90,7 +90,6 @@ const router = new createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    if(to.path === "/") next({path: 'iJams'})
     if(to.matched.some(record => record.meta.requiresAuth)) {
       
       if (JSON.parse(localStorage.getItem('user')) === null) {
