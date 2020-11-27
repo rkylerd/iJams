@@ -5,18 +5,8 @@ import Results from '../views/SearchResults.vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: function () { 
-      return import('../views/Home.vue')
-    },
-    // meta: {
-    //     requiresAuth: true
-    // }
-  },
-  {
     path: '/iJams',
-    name: 'liveHome',
+    name: 'home',
     component: function () { 
       return import('../views/Home.vue')
     },
@@ -100,7 +90,7 @@ const router = new createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    
+    if(to.path === "/") next({path: 'iJams'})
     if(to.matched.some(record => record.meta.requiresAuth)) {
       
       if (JSON.parse(localStorage.getItem('user')) === null) {

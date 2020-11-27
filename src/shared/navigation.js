@@ -17,7 +17,7 @@ const goToCheckout = () => {
 }
 
 const redirectHome = () => {
-    router.replace('/');
+    router.replace('/iJams');
 }
 
 export {

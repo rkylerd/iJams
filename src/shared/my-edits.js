@@ -1,8 +1,6 @@
 
-const previewUrlPrefix = process.env.NODE_ENV === 'local'
-? '.'
-: 'iJams';
-console.log('previewUrlPrefix', previewUrlPrefix);
+const previewUrlPrefix = '.';
+
 export default [ 
     {trackName_short: "Suit & Tie", 
           previewUrl: previewUrlPrefix + "/audio/suitandtie.mp3", 
