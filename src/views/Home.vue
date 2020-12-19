@@ -2,9 +2,8 @@
   <div class="home">
     <h2 class="page-title">Home</h2>
     <div id="my-clean-songs">
-      <SongTile class="flex-row-wrap"  v-bind:song="song" v-for="(song, idx) in myEdits" :key="idx"/>   
+      <SongTile class="flex-row flex-wrap song-tile" v-bind:song="song" v-for="(song, idx) in myEdits" :key="idx"/>   
     </div>
-  
   </div>
 </template>
 
@@ -33,6 +32,13 @@
 
 .name-artist { 
     min-width: 100px;  
+}
+
+@media (max-width: 400px) {
+  .song-tile {
+    background-color: pink;
+    min-width: 100%;
+  }
 }
 
 </style>

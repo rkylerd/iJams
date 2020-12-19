@@ -6,7 +6,7 @@
         </section> 
         <div class="container-normal">
             <div class="flex-col-wrap">
-                <SongTile class="flex-row-wrap" :song="song" v-for="(song, idx) in songResults" :idx="idx" :key="idx"/>   
+                <SongTile class="flex-row flex-wrap" :song="song" v-for="(song, idx) in songResults" :idx="idx" :key="idx"/>   
             </div>
         </div>
 
@@ -14,7 +14,7 @@
             <MediaSorter @sort-media="handleSort('mvideoResults')" v-bind:media="mvideoResults" type="mvideo"/>
         </section>
         <div class="container-normal">
-            <div class="flex-row-wrap flex-space-inbetween">
+            <div class="flex-row flex-wrap space-evenly">
                 <MVideoTile v-for="(mvid, idx) in mvideoResults" :mvid="mvid" class="mvideo-card" :key="idx"/>
             </div>
         </div>
@@ -38,10 +38,6 @@
             /* height: 400px; */
             flex-direction: row;
             overflow-x: auto;
-        }
-
-        .flex-space-inbetween {
-            justify-content: space-evenly;
         }
 
         & > * {

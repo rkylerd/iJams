@@ -1,102 +1,99 @@
 <template>
-<div id="outside-container">
-    <section>
-        <table class="album-songs">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Artist</th>
-                    <th>Explicitness</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item, idx) in checkoutItems" :key="idx">
-                   <td>
-                            <img width="60" height="60" :style="{ 'background-image': 'url(' + item.artworkUrl60 + ')' }">
-                   </td>
-                   <td class="name-cell"><span class="song-name">{{item.trackName || item.trackName_short}}</span></td>
-                    <td class="name-cell"><span class="song-name">{{item.artistName || item.artistName_short}}</span></td>
-                    <td v-if="item.trackExplicitness && (item.trackExplicitness.toLowerCase() === 'explicit' || /^clean/.test(item.trackExplicitness.toLowerCase()))" class="explicitness-container"
-                        :class="{'explicit': item.trackExplicitness.toLowerCase() === 'explicit', 
-                                'clean': /^clean/.test(item.trackExplicitness.toLowerCase()) }">
-                                {{item.trackExplicitness}}
-                    </td>
-                    <td v-else></td>
-                    <td>
-                        ${{item.trackPrice}}
-                    </td> 
-                </tr>
-                <tr>
-                   <td>Total:</td>
-                   <td></td>
-                   <td></td>
-                   <td>${{ orderTotal }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-    <section>
-        <form id="payment-form">
-            <div id="card-element"><!--Stripe.js injects the Card Element--></div>
-            <button id="submit">
-                <div class="spinner hidden" id="spinner"></div>
-                <span id="button-text">Pay</span>
-            </button>
-            <p id="card-error" role="alert"></p>
-            <p class="result-message hidden">
-                Payment succeeded, see the result in your
-                <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-            </p>
-        </form>
-    </section>
-</div>
+    <div id="outside-container">
+        <section id="checkout">
+            <div v-for="(item, idx) in checkoutItems" :key="idx">
+                    <span>
+                        <img width="60" height="60" :style="{ 'background-image': 'url(' + item.artworkUrl60 + ')' }">
+                        <span v-if="item.trackExplicitness && (item.trackExplicitness.toLowerCase() === 'explicit' || /^clean/.test(item.trackExplicitness.toLowerCase()))" 
+                            class="explicitness-container"
+                            :class="{'explicit': item.trackExplicitness.toLowerCase() === 'explicit', 
+                                    'clean': /^clean/.test(item.trackExplicitness.toLowerCase()) }">
+                                    {{item.trackExplicitness}}
+                        </span>
+                    </span>
+                    <span class="name-cell"><span class="song-name">{{item.trackName || item.trackName_short}}</span></span>
+                    <span class="name-cell"><span class="song-name">{{item.artistName || item.artistName_short}}</span></span>
+                    <span class="small-font">${{item.trackPrice}}</span> 
+            </div>
+            <div class="space-btwn">
+                <span>Total:</span>
+                <span style="padding-right: .5em;">${{ orderTotal }}</span>
+            </div>
+        </section>
+        <section>
+            <form id="payment-form">
+                <div id="card-element"></div>
+                <button id="submit">
+                    <div class="spinner hidden" id="spinner"></div>
+                    <span id="button-text">Pay</span>
+                </button>
+                <p id="card-error" role="alert"></p>
+                <p class="result-message hidden">
+                    Payment succeeded, see the result in your
+                    <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
+                </p>
+            </form>
+        </section>
+    </div>
 </template>
 
 <script>
-import { computed, onMounted, reactive, toRefs } from 'vue'
-import store from '@/store'
-import { createPaymentIntent } from '@/shared/logic'
-import { redirectHome } from '@/shared/navigation'
+    import { computed, onMounted, reactive, toRefs } from 'vue'
+    import store from '@/store'
+    import { createPaymentIntent } from '@/shared/logic'
+    import { redirectHome } from '@/shared/navigation'
 
-export default {
-    name: 'Purchase',
-    setup() {
-        const priceReducer = (acc, {trackPrice = '0'}={}) => acc + parseFloat(trackPrice);
-        const checkoutData = reactive({
-            checkoutItems: [],
-            orderTotal: computed(() => (checkoutData.checkoutItems).reduce(priceReducer, 0))
-        });
+    export default {
+        name: 'Purchase',
+        setup() {
+            const priceReducer = (acc, {trackPrice = '0'}={}) => acc + parseFloat(trackPrice);
+            const checkoutData = reactive({
+                checkoutItems: [],
+                orderTotal: computed(() => (checkoutData.checkoutItems).reduce(priceReducer, 0))
+            });
 
-        onMounted(() => {
-            document.querySelector("button").disabled = true;
-            if (store.state.checkoutItems.length === 0) {
-                redirectHome();
-                return;
-            }
-            checkoutData.checkoutItems.push(...store.state.checkoutItems);
-            createPaymentIntent(store.state.checkoutItems);
-        });
-        return { ...toRefs(checkoutData) };
+            onMounted(() => {
+                document.querySelector("button").disabled = true;
+                if (store.state.checkoutItems.length === 0) {
+                    redirectHome();
+                    return;
+                }
+                checkoutData.checkoutItems.push(...store.state.checkoutItems);
+                createPaymentIntent(store.state.checkoutItems);
+            });
+            return { ...toRefs(checkoutData) };
+        }
     }
-}
 </script>
 
-<style scoped>
-    * {
-    box-sizing: border-box;
-    }
-
+<style scoped lang="scss">
     div#outside-container {
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         font-size: 16px;
         -webkit-font-smoothing: antialiased;
         display: flex;
-        justify-content: center;
-        align-content: center;
-        height: 100vh;
+        flex-wrap: wrap;
         width: 100vw;
+        margin-top: 2em;
+
+        section {
+            margin: auto;
+            &#checkout {
+                div {
+                    display: flex;
+                    flex-wrap: wrap;
+                    margin-bottom: .5em;
+                    & * {
+                        display: block;
+                        margin: auto .5em auto 0; 
+                        .explicitness-container {
+                            width: 60px;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     form {

@@ -1,8 +1,8 @@
 <template>
-    <div v-if="album" class="flex-row-wrap container-album">
+    <div v-if="album" class="flex-row flex-wrap container-album">
         <div class="album-display">
             <img :src="album.artworkUrl100">
-            <div class="flex-row-wrap">
+            <div class="flex-row flex-wrap">
                 <h3>{{album.collectionName}}</h3>
                 <h5 class="link" @click.prevent="filterArtist(album.artistId)">{{album.artistName}}</h5>
                 <h6>{{album.releaseDate}}</h6>

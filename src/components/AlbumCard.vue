@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span class="flex-row-wrap">
+        <span class="flex-row flex-wrap">
             <span class="album-art link" :style="{ 'background-image': 'url(' + album.artworkUrl100 + ')' }" @click.prevent="goToAlbum(album)">
                 <img width="100" height="100">
             </span>
