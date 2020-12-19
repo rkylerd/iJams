@@ -5,7 +5,7 @@ import Results from '../views/SearchResults.vue'
 
 const routes = [
   {
-    path: '/iJams',
+    path: '/ijams',
     name: 'home',
     component: function () { 
       return import('../views/Home.vue')
@@ -15,7 +15,7 @@ const routes = [
     // }
   },
   {
-    path: '/iJams/playlist',
+    path: '/ijams/playlist',
     name: 'playlist',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -28,7 +28,7 @@ const routes = [
     // }
   },
   {
-    path: '/iJams/artist',
+    path: '/ijams/artist',
     name: 'artist',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -41,7 +41,7 @@ const routes = [
     // }
   },
   {
-    path: '/iJams/album',
+    path: '/ijams/album',
     name: 'album',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -54,7 +54,7 @@ const routes = [
     // }
   },
   {
-    path: '/iJams/results',
+    path: '/ijams/results',
     name: 'results',
     component: Results,
     // meta: {
@@ -62,7 +62,7 @@ const routes = [
     // }
   },
   {
-    path: '/iJams/checkout',
+    path: '/ijams/checkout',
     name: 'checkout',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -72,7 +72,7 @@ const routes = [
     }
   },
   {
-    path: '/iJams/account',
+    path: '/ijams/account',
     name: 'account',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

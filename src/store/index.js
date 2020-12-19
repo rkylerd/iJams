@@ -3,7 +3,9 @@ const axios = require('axios');
 
 export default createStore({
   state: {
-    user: {},
+    user: {
+      username:""
+    },
     playlist: [],
     playing: null, // The <audio> tag associated w/ the song playing
     idOfPlaying: '', // trackId of the current song
