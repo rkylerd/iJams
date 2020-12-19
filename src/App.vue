@@ -21,9 +21,9 @@
                 </form>
             </div>
             <div class="flex-row" id="nav-links">
-                <router-link to="/iJams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
-                <router-link to="/iJams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
-                <router-link to="/iJams/playlist" class="nav-link">
+                <router-link to="/ijams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
+                <router-link to="/ijams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
+                <router-link to="/ijams/playlist" class="nav-link">
                 <span class="flex-row">
                     <span>Cart</span>
                     <span class="small-font">
@@ -48,7 +48,7 @@
         </div>
     </section>
     <!-- <template v-else>
-        <h2 class="page-title">iJams</h2>
+        <h2 class="page-title">ijams</h2>
     </template> -->
     <router-view/>
   </div>

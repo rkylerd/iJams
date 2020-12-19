@@ -4,10 +4,11 @@
       <section>
           <div><button v-if="mediaForCheckout.length" @click="goToCheckout">Go to checkout with selected songs ({{mediaForCheckout.length}})</button></div>
         <div class="playlist-normal">
+            <!-- @remove-checkout="removeCheckout(song)"  -->
             <SongCard 
                 v-for="(song, idx) in playlist" 
                 @add-checkout="addCheckout(song)" 
-                @remove-checkout="removeCheckout(song)" 
+                @remove-checkout="deleteFromPlaylist(song)" 
                 draggable="true" 
                 :key="idx" 
                 v-on:dragstart="setDragItem(song)" 
@@ -36,7 +37,7 @@
     // const axios = require('axios');
     import { onBeforeMount, reactive, toRefs } from 'vue'
     import store from '@/store'
-    import { playSound } from '@/shared/logic'
+    import { playSound, getPlaylist, updatePlaylist, deleteFromPlaylist } from '@/shared/logic'
     import SongCard from '@/components/SongCard.vue'
     import { goToAlbum, filterArtist, goToCheckout } from '@/shared/navigation'
 
@@ -46,12 +47,6 @@
             SongCard
         },
         setup() {
-            
-            // const getPlaylist = () => {
-            //     this.playlist = (await axios.get("api/library/" + this.user.username)).data.sort((a, b) => {
-            //         return a.index - b.index;
-            //     });
-            // };
 
             let playlistData = reactive({
                 user: {},
@@ -65,11 +60,12 @@
                     await store.dispatch('setCheckoutItems', playlistData.mediaForCheckout);
                     goToCheckout();
                 },
-                removeCheckout: (song) => {
+                removeCheckout: ({ trackId: id = ""} = {}) => {
                     console.log('removing');
-                    let i = playlistData.mediaForCheckout.findIndex(({trackId}={}) => trackId === song.trackId); 
+                    let i = playlistData.mediaForCheckout.findIndex(({trackId}={}) => trackId === id); 
                     playlistData.mediaForCheckout.splice(i,1);
                 },
+                deleteFromPlaylist,
                 addCheckout: (song) => {console.log('adding'); playlistData.mediaForCheckout.unshift(song)},
                 dropItem: (item) => {
                         const indexOfDragItem = playlistData.playlist.indexOf(playlistData.dragDropItem);
@@ -82,13 +78,12 @@
 
                         for (let i = indexOfDestination < indexOfDragItem ? indexOfDestination : indexOfDragItem; i < playlistData.playlist.length; i++) {
                             playlistData.playlist[i].index = i; 
-                            // axios.put("api/library/" + this.user.username, { song: this.playlist[i] })
-                            //     .then(results => {
-                            //         console.log("successfully updated song with index: ", results);
-                            //     })
-                            //     .catch(error => {
-                            //         console.log("error while updating the order of your playlist.", error);
-                            //     });
+                            
+                            try {
+                                updatePlaylist(store.user.username, { song: playlistData.playlist[i] })
+                            } catch (err) {
+                                console.log("error while updating the order of your playlist.", err);
+                            }
                         }
                 },
                 setDragItem: (item) => { playlistData.dragDropItem = item },
@@ -97,9 +92,15 @@
             });
             
             onBeforeMount(async () => {
+                try {
+                    playlistData.playlist = await getPlaylist(store.state.user.username)
+                } catch (err) {
+                    console.log('Failed getting playlist', err);
+                }
+
                 playlistData.user = store.state.user;
-                // if (this.user) getPlaylist();
-                playlistData.playlist = store.state.cart;
+                // if (playlistData.user) getPlaylist();
+                // playlistData.playlist = store.state.cart;
             });
 
             return {

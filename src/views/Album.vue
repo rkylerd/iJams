@@ -65,7 +65,6 @@
                 albumSongs.value = results.slice(1).map(song => {
                     return {
                         ...song,
-                        className: "play",
                         trackName_short: cutLength(song.trackName, 75),
                         artistName_short: cutLength(song.artistName, 35),
                         trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis)

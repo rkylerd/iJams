@@ -1,7 +1,10 @@
 import $store from '@/store';
 import { goToAccount } from '@/shared/navigation'; 
-const api = `${process.env.NODE_ENV === 'local' ? '' : 'https://ijams.herokuapp.com/'}api`;
-
+const api = `${
+  process.env.VUE_APP_NODE_ENV === 'local' ? 
+  'http://localhost:3000/' : 
+  'https://ijams.herokuapp.com/'
+}api`;
 const axios = require('axios');
 const play = "play",
     stop = "stop";
@@ -12,7 +15,7 @@ const search = async (term = "") => {
     try {
       const {data: { results: mvideos = []} = {}} = await axios.get(`${api}/search/mvideo/${term}`);
       const {data: { results: songs = []} = {}} = await axios.get(`${api}/search/song/${term}`);
-      console.log(mvideos);
+
       return {
         mvideos,
         songs
@@ -75,14 +78,44 @@ const millisToMinutesAndSeconds = (millis) => {
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }
 
+const getPlaylist = async (username = "") => {
+  try {
+      const playlist = (await axios.get(`${api}/playlist/${username}`)).data
+      .sort((a, b) => {
+          return a.index - b.index;
+      });
+      return playlist;
+  } catch (err) {
+      console.log('Failed getting playlist', err);
+  }
+}
+
+const updatePlaylist = async (username = "", song) => {
+  try {
+      await axios.put(`${api}/playlist/${username}`, { song });
+  } catch (err) {
+      console.log('Failed updating your playlist', err);
+  }
+}
+
+const deleteFromPlaylist = async ({trackId = ""} = {}) => {
+  try {
+    if (trackId)
+      await axios.delete(`${api}/playlist/${$store.state.user.username}/${trackId}`);
+  }
+  catch (error) {
+      console.log(error);
+  }
+};
+
 const addToPlaylist = async (song = {}) => {
     
     try {
-      await axios.post(`${api}/library`, {       
+      await axios.post(`${api}/playlist`, {       
         song: {
             ...song, 
-            username: $store.state.user.username, 
-            className: play}, 
+            username: $store.state.user.username
+          }, 
         });
     } catch (error) {
         throw Error("error encountered while adding song to playlist");
@@ -103,11 +136,11 @@ const getArtist = async (term = "") => {
       const { data: { results = [] } = {} } = await axios.get(`${api}/search/artist/${term}`);
       return results;
     } catch (error) {
-        throw Error("error encountered while getting artist");
+      throw Error("error encountered while getting artist");
     }
-};
-
-const getArtistAlbums = async (term = "") => {
+  };
+  
+  const getArtistAlbums = async (term = "") => {
     try {
         const { data: { results = [] } = {} } = await axios.get(`${api}/search/artistalbums/${term}`);
         return results;
@@ -146,15 +179,6 @@ const register = async (user = {}) => {
   }
 };
 
-const deleteFromPlaylist = async () => {
-  try {
-      // await axios.delete("api/library/" + playlistData.user.username + "." + song.trackId);
-      // await this.getPlaylist();
-  }
-  catch (error) {
-      console.log(error);
-  }
-};
 
 export {
     getAlbum,
@@ -166,6 +190,8 @@ export {
     search,
     getArtist,
     getArtistAlbums,
+    getPlaylist,
+    updatePlaylist,
     addToPlaylist,
     deleteFromPlaylist, 
     login,
