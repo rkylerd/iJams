@@ -1,0 +1,1 @@
+export VUE_APP_NODE_ENV=local && npm run serve

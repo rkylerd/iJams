@@ -105,7 +105,6 @@
                         this.songResults = songs.map(song => {
                             return {
                                 ...song, 
-                                className: "play",
                                 trackName_short: cutLength(song.trackName, 12),
                                 artistName_short: cutLength(song.artistName, 20)
                             };

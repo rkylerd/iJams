@@ -7,7 +7,7 @@ const request = require("request");
 // Songs
 //
 
-const librarySchema = new mongoose.Schema({
+const playlistSchema = new mongoose.Schema({
   trackName: String,
   previewUrl: String,
   collectionName: String,
@@ -25,10 +25,9 @@ const librarySchema = new mongoose.Schema({
   username: String
 });
 
-const Song = mongoose.model('Song', librarySchema);
+const Song = mongoose.model('Song', playlistSchema);
 
 router.get('/:id', async (req, res) => {
-    console.log("router.get playlist for: ", req.params.id);
   try {
     let songs = await Song.find({username: req.params.id.toString()});
     return res.send(songs);
@@ -39,7 +38,6 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    console.log("router.post('/')", req.body.song);
     try {
         let playlistSong = await Song.findOne({
                 username: req.body.song.username,
@@ -75,13 +73,13 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
-    let params = req.params.id.split(".");
-    console.log("delete parameters: ", params);
+router.delete('/:username/:trackId', async (req, res) => {
   try {
+    const username = req.params.username;
+    const trackId = req.params.trackId;
     await Song.deleteOne({
-      username: params[0],
-      trackId: params[1]
+      username: username,
+      trackId: trackId
     });
     return res.sendStatus(200);
   } catch (error) {
@@ -90,20 +88,18 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-/* */
 router.put('/:id', async (req, res) => {
-    let data = req.body.song;
-    console.log("song", data);
-    try {
-          let song = await Song.findOne({
-            username: req.params.id,
-            trackId: req.body.song.trackId
-          });
+  try {
+      const data = req.body.song;
+      let song = await Song.findOne({
+        username: req.params.id,
+        trackId: req.body.song.trackId
+      });
 
-          song.index = data.index;
-          song.save();
-          
-          return res.sendStatus(200);
+      song.index = data.index;
+      song.save();
+      
+      return res.sendStatus(200);
     } catch (error) {
       console.log("error", error);
             return res.sendStatus(500); 

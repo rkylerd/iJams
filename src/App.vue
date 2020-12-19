@@ -15,9 +15,9 @@
                 </form>
             </div>
             <div id="nav-links">
-                <router-link to="/iJams" class="nav-link-text">iJams</router-link>
+                <router-link to="/ijams" class="nav-link-text">ijams</router-link>
                 <img class="menu-icons" src="https://cdn1.iconfinder.com/data/icons/assorted-gadgets-and-items-1/144/headphones-512.png">
-                <router-link to="/iJams/playlist" class="nav-link-text">Playlist</router-link>
+                <router-link to="/ijams/playlist" class="nav-link-text">Playlist</router-link>
             </div>
             <div style="color: black !important; width: 20px;">
                 <MenuOption icon="shopping-cart" :qty="checkoutItems.length"/>
@@ -37,7 +37,7 @@
         </div>
     </section>
     <!-- <template v-else>
-        <h2 class="page-title">iJams</h2>
+        <h2 class="page-title">ijams</h2>
     </template> -->
     <router-view/>
   </div>
