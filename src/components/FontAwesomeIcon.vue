@@ -42,4 +42,18 @@ export default defineComponent({
   vertical-align: text-top; 
   vertical-align: -webkit-baseline-middle;
 }
+
+.menu-icon {
+  max-height: 100%;
+  height: 20px;
+  margin: auto;
+}
+
+.block {
+  display: block;
+}
+
+.distance-left {
+  margin-left: .2em;
+}
 </style>

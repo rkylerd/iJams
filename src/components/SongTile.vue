@@ -10,7 +10,7 @@
                 <a class="artist-name white-text small-font" @click.prevent="filterArtist(song.artistId)">{{song.artistName_short}}</a><br>
             </div>
             
-            <div class="stick-right">
+            <div>
                 <Options :media="song" type="song"/> <!-- <button class="purchase-button btn-outline-success my-2 my-sm-0" type="button" @click.prevent="addToPlaylist(song)">Add</button> -->
                 <span class="explicit" v-if="song.trackExplicitness === 'explicit'">{{song.trackExplicitness}}</span>
             </div>
