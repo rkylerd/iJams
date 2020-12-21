@@ -7,12 +7,18 @@ const app = express();
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const { parsed: { MONGODB_PWD = 'wrongPassword', USERNAME = 'me', PORT = 80 } = {}} = require('dotenv').config();
+let { parsed: { MONGODB_PWD = '', USERNAME = '', PORT = 0 } = {}} = require('dotenv').config();
+
+if (!MONGODB_PWD) MONGODB_PWD = process.env.MONGODB_PWD;
+if (!USERNAME) USERNAME = process.env.USERNAME;
+if (!PORT) PORT = process.env.PORT;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+
+app.use(cookieParser());
 
 // Logs Apache style server requests
 app.use(morgan("common"));
@@ -36,7 +42,7 @@ app.use(cors(corsOptions))
 app.use(cookieParser());
 // connect to the database
 try {
-  mongoose.connect(`mongodb+srv://rkylerd06:${MONGODB_PWD}@ijams.8lbzh.mongodb.net/user?retryWrites=true&w=majority`, {
+  mongoose.connect(`mongodb+srv://${USERNAME}:${MONGODB_PWD}@ijams.8lbzh.mongodb.net/user?retryWrites=true&w=majority`, {
     useNewUrlParser: true, 
     useUnifiedTopology: true
   });

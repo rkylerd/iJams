@@ -23,14 +23,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  lastname: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
   tokens: [],
 });
 
@@ -104,19 +96,26 @@ const Users = mongoose.model('Users', userSchema);
 
 // Get current user if logged in.
 router.get('/', auth.verifyToken, async (req, res) => {
-  // look up user account
-  const user = await Users.findOne({
-    _id: req.user_id
-  });
-  
-  if (!user) {
-      console.log("No one is logged in yet");
-       return res.status(403).send({
-          error: "must login"
-        });   
+  try {
+    console.log('user_id', req.user_id)
+    // look up user account
+    const user = await Users.findOne({
+      _id: req.user_id
+    });
+    
+    if (!user) {
+        console.log("No one is logged in yet");
+         return res.status(403).send({
+            error: "must login"
+          });   
+    }
+    user.removeOldTokens();
+    await user.save();
+    console.log('logged in user', user);
+    return res.send(user);
+  } catch (err) {
+    return res.status(500);
   }
-  console.log('logged in user', user);
-  return res.send(user);
 });
 
 router.post('/register', async (req, res) => {
@@ -132,13 +131,11 @@ router.post('/register', async (req, res) => {
         const user = new Users({
               username: req.body.user.username,
               password: req.body.user.password,
-              firstname: req.body.user.firstname,
-              lastname: req.body.user.lastname,
-              email: req.body.user.email
+              firstname: req.body.user.firstname
         });
 
         await user.save();
-        return await login(user, res);
+        await login(user, res);
         // return res.status(200).send(user);
     } catch (error) {
         console.log(error);
@@ -167,12 +164,11 @@ router.post('/login', async (req, res) => {
     
     try {
         let existingUser = await Users.findOne({username: req.body.user.username});
-        if (existingUser == null || !await existingUser.comparePassword( req.body.user.password) ) {
-            console.log("From login", invalid);
+        if (!existingUser || !(await existingUser.comparePassword( req.body.user.password)) ) {
           return res.status(403).send(invalid);
         }
         
-        return await login(existingUser, res);
+        await login(existingUser, res);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -187,17 +183,18 @@ async function login(user, res) {
   user.removeOldTokens();
   user.addToken(token);
   await user.save();
-    
-  return res
-    .cookie("token", token, {
-      expires: new Date(Date.now() + 86400 * 1000)
+  
+  return res.cookie("token", token, {
+      httpOnly: true, 
+      secure: true, 
+      expires: new Date(Date.now() + 60 * 40 * 1000) // 1 second * 60 * 40 = 40 minutes 
     })
     .status(200).send(user);
 }
 
 router.delete('/', auth.verifyToken, async (req, res) => {
   // look up user account
-  console.log("logout");
+  console.log('inside DELETE-----------------');
   console.log("logout id: ", req.user_id);
   const user = await Users.findOne({
     _id: req.user_id

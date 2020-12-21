@@ -23,5 +23,8 @@
     "stripe": "^8.129.0"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
 }

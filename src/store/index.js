@@ -1,5 +1,4 @@
 import { createStore } from 'vuex'
-const axios = require('axios');
 
 export default createStore({
   state: {
@@ -12,7 +11,7 @@ export default createStore({
     referenceToClassName: {
       classList: []
     },
-    loginRedirect: null,
+    loginRedirect: "/ijams/",
     cart: [],
     checkoutItems: []
   },
@@ -65,15 +64,6 @@ export default createStore({
     async setUser(context, data) {
       try {
         context.commit("setUser", data);
-      } catch (error) {
-        return error.message;
-      }
-    },
-    async logout(context) {
-      try {
-        context.commit("setUser", null);
-        await axios.delete('/api/users');
-        window.localStorage.setItem('user', null);
       } catch (error) {
         return error.message;
       }

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const { parsed: { JWT_SECRET: secret = "" } = {}} = require('dotenv').config();
+const { parsed: { JWT_SECRET = "" } = {}} = require('dotenv').config();
+const secret = JWT_SECRET || process.env.JWT_SECRET;
 
 if (!secret) {
   console.log("You need to define a JWT_SECRET environment variable to continue.");
@@ -19,6 +20,9 @@ const generateToken = (data, expires) => {
 // This is setup as middleware, so it can be passed as an additional argument to Express after
 // the URL in any route. This will restrict access to only those clients who possess a valid token.
 const verifyToken = (req, res, next) => {
+  console.log('headers', console.log(req.headers))
+  console.log('cookies', console.log(req.cookies))
+  console.log('signedCookies', console.log(req.signedCookies))
   const token = req.cookies["token"];
   if (!token) return res.status(403).send({
     message: "No token provided."
@@ -50,7 +54,7 @@ const removeOldTokens = (tokens) => {
 }
 
 module.exports = {
-  generateToken: generateToken,
-  verifyToken: verifyToken,
-  removeOldTokens: removeOldTokens,
+  generateToken,
+  verifyToken,
+  removeOldTokens
 };
