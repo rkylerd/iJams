@@ -1,11 +1,15 @@
 import $store from '@/store';
-import { goToAccount } from '@/shared/navigation'; 
+import { goToLogin, goToRequestedPage } from '@/shared/navigation'; 
+// import Cookies from 'js-cookie'
 const api = `${
   process.env.VUE_APP_NODE_ENV === 'local' ? 
   'http://localhost:3000/' : 
-  'https://ijams.herokuapp.com/'
+  'https://ijams-server.herokuapp.com/'
 }api`;
 const axios = require('axios');
+// axios.defaults.withCredentials = true;
+// Access-Control-Allow-Credentials
+
 const play = "play",
     stop = "stop";
 
@@ -151,22 +155,39 @@ const getArtist = async (term = "") => {
 
 const getUser = async () => {
     try {
-        const { data = {} } = await axios.get(`${api}/users/`);
-        return data;
+      const user = await axios.get(`${api}/users/`);
+      console.log('getUser response', user);
+    }
+    catch (err) {
+      console.log('getUser error', err);
+    }
+    
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) throw new Error("No user logged in");
+        console.log(user, 'from getuser')
+        // await axios.get(`${api}/users/`);
+        await $store.dispatch("setUser", user);
+        return user;
       } catch (error) {
-        goToAccount();
-        throw Error(error.message);
+        console.log(error);
+        return undefined;
       }
 }
 
 const login = async (user = {}) => {
   try {
-    const { data = {} } = await axios.post("api/users/login", {user});
-    this.$store.dispatch("setUser", data);
-    return data;
+    const resp = await axios.post(`${api}/users/login`, { user });
+    console.log('login response', resp.data)
+    // Cookies.set('token', tokens[tokens.length-1]);
+
+    window.localStorage.setItem("user", JSON.stringify({tokens: resp.data.tokens, username: user.username}))
+    await $store.dispatch("setUser", user);    
+    goToRequestedPage();
   } catch (error) {
-    throw new Error(error.message);
+    console.log(error);
   }
+  return false;
 };
 
 const register = async (user = {}) => {
@@ -175,10 +196,26 @@ const register = async (user = {}) => {
     $store.dispatch("setUser", data);
     return data;
   } catch (error) {
-    throw new Error(error.message);
+    return error;
   }
 };
 
+const logout = async () => {
+  try {
+    if ($store.state.playing !== null) {
+      $store.dispatch("setPlaying", null);
+      $store.dispatch("setIdOfPlaying", "");
+    } 
+    
+    $store.dispatch("setUser", null);
+    await axios.delete('/api/users');
+    window.localStorage.setItem('user', null);
+    
+    goToLogin();
+  } catch (error) {
+    console.log('Error while logging out', error);
+  }
+};
 
 export {
     getAlbum,
@@ -195,6 +232,7 @@ export {
     addToPlaylist,
     deleteFromPlaylist, 
     login,
-    register
+    register,
+    logout
 };
 export {createPaymentIntent} from './stripe';

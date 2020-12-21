@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import router from '@/router'
+import { login } from '@/shared/logic';
 
 export default {
   name: "Login",
@@ -44,21 +44,14 @@ export default {
       },
       async go() {
         this.errors = [];
-        let user = {username: this.username, password: this.password}
-            
-        let loginResult = await this.$store.dispatch("login", user);
-        
-        if (loginResult.tokens) {
-                window.localStorage.setItem("user", JSON.stringify({...loginResult, "username": this.username}))
-                
-            if (this.$store.state.loginRedirect) {
-                router.replace(this.$store.state.loginRedirect);
-            } else {
-                router.replace("/");
+        const user = {username: this.username, password: this.password};
+        try {
+            const loginSuccess = await login(user);
+            if (!loginSuccess) {  
+                this.errors.push("Invalid username/password combination. Try again.");
             }
-            
-        } else {
-            this.errors.push("Invalid username/password combination. Try again.");
+        } catch (err) {
+            console.log('login error', err);
         }
       }
   }

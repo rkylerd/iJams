@@ -34,7 +34,6 @@
 </style>
 
 <script>
-    // const axios = require('axios');
     import { onBeforeMount, reactive, toRefs } from 'vue'
     import store from '@/store'
     import { playSound, getPlaylist, updatePlaylist, deleteFromPlaylist } from '@/shared/logic'
@@ -61,7 +60,6 @@
                     goToCheckout();
                 },
                 removeCheckout: ({ trackId: id = ""} = {}) => {
-                    console.log('removing');
                     let i = playlistData.mediaForCheckout.findIndex(({trackId}={}) => trackId === id); 
                     playlistData.mediaForCheckout.splice(i,1);
                 },

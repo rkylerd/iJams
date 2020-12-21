@@ -1,7 +1,7 @@
 /* eslint-disable */
 <template>
   <div id="app">
-    <section> <!--  v-if="computedUser" -->
+    <section v-if="user.username"> 
         <div id="nav">
             <div class="page-title">iJams</div>
             <div id="form-data">
@@ -30,49 +30,28 @@
                         <fa icon="shopping-cart" prefix="fas" class="menu-icon distance-left"></fa> <span v-if="!searchInputOpen">({{checkoutItems.length}})</span>
                     </span>
                 </span>
-                </router-link>            
+                </router-link>
+                <a class="nav-link" @click="logout"><span>Log out</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></a>            
             </div>
-
-            <!-- <div id="empty-space" @mouseleave="()=>{isShown = false;}">
-                <div @click="()=>{if (computedUser) {isShown = !isShown;}}" class="dropdown">
-                    <span class="menu-btn">
-                        <font-awesome-icon style="color: black; font-size: 2em; cursor: pointer;" :icon="['fas', 'ellipsis-h']"/>
-                    </span>
-                    <div class="dropdown-content" :class="{block: isShown && user != null}">
-                        <span @click="logout"><span>Log Out</span></span>
-                        <span><span>Another option</span></span>
-                    </div>
-                </div>
-            </div> -->
-      
         </div>
     </section>
-    <!-- <template v-else>
-        <h2 class="page-title">ijams</h2>
-    </template> -->
+    <section v-else>
+        <div class="page-title">iJams</div>
+    </section>
     <router-view/>
   </div>
 </template>
 
 <script>
     import { onBeforeMount, onBeforeUnmount, reactive, computed, toRefs, watch } from 'vue'
-    // import { getUser } from '@/shared/logic';
+    import { getUser, logout as globalLogout } from '@/shared/logic'
+    import { goToRequestedPage, goToLogin } from '@/shared/navigation'; 
     import router from '@/router'
     import store from '@/store'
 
     export default {
     name: "playlist",
     setup() {
-        const logout = () => {
-            appData.isShown = false;
-            if (store.state.playing !== null) {
-                store.state.playing.pause();
-                store.dispatch("setPlaying", null);
-            }
-            // appData.user = null;
-            store.dispatch("logout");  
-            router.replace("Account");
-        };
 
         const search = () => {
             const cleanedTerm = appData.searchTerm
@@ -84,16 +63,15 @@
                 router.push({name:"results", query: {"search":cleanedTerm}})
         };
         const appData = reactive({
-            user: {},
+            user: store.state.user,
             searchTerm: '',
             isShown: false,
             searchInputOpen: false,
             screenWidth: window.innerWidth,
-            computedUser: computed(()=> store.state.user ),
             checkoutItems: computed(()=>store.state.checkoutItems),
             onResize: () => appData.screenWidth = window.innerWidth,
             search,
-            logout
+            logout: () => { appData.user = {}; globalLogout(); }
         });
 
         onBeforeUnmount(() => {
@@ -102,19 +80,23 @@
         onBeforeMount(async () => {
             window.addEventListener('resize', appData.onResize);
             try {
-                // this.user = this.$store.state.user; // might get rid of
-                // const user = await getUser();
-                // this.user = user;
-                // await this.$store.dispatch("setUser", user);
+                const u = await getUser();
+                if (u) {
+                    appData.user = u;
+                    console.log(appData.user)
+                    goToRequestedPage();
+                }
+                else goToLogin();
             } catch (error) {
-                // let user know something
+                console.log('error while getting user', error)
             }
         });
         
         watch(
-            () => appData.checkoutItems,
-            (count, prevCount) => {
-                console.log(count, prevCount)
+            [appData.checkoutItems, appData.user],
+            
+            ([count, prevCount], [user, prevUser]) => {
+                console.log(count, prevCount, user, prevUser )
             }
         )
 

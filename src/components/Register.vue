@@ -31,20 +31,6 @@
                     <span id="account-error-container" v-for="(error, idx) in fnameerror" :key="idx">*{{error}}</span>
                 </span>
             </span><br><br>
-
-            <span class="input">
-                <label for="lastname">last name</label>
-                <input class="start-pages" @keyup="checkLName" name="lastname" v-model="lastname" type="text">
-                <span v-if="lnameerror.length > 0"> 
-                    <span id="account-error-container" v-for="(error, idx) in lnameerror" :key="idx">*{{error}}</span>
-                </span>
-            </span><br><br>
-            
-            <span class="input">
-                <label for="email">email</label>
-                <input name="email" class="start-pages" @keyup="checkEmail" v-model="email" type="email">
-                <span id="account-error-container" v-for="(error, idx) in emailerror" :key="idx">*{{error}}</span>
-            </span><br>
           
       </div>
   
@@ -57,7 +43,8 @@
 </template>
 
 <script>
-    import router from '@/router'
+    import { goToLogin, goToRequestedPage } from '@/shared/navigation'
+    import { register } from '@/shared/logic';
     
     export default {
         name: "Register",
@@ -65,7 +52,6 @@
             return {
                 username: '',
                 firstname: '',
-                lastname: '',
                 email: '',
                 password: '',
                 passwordconf: '',
@@ -73,8 +59,6 @@
                 passerror: [],
                 conferror: [],
                 fnameerror: [],
-                lnameerror: [],
-                emailerror: [],
                 registeranimation: false
             }
         },
@@ -109,13 +93,6 @@
                     return true;
                 }
             },
-            checkEmail() {
-                this.emailerror = [];
-                if (this.email == "") {
-                    this.emailerror.push("We need to know where to spam you at. Give us an email.");
-                    return true;
-                }
-            },
             checkFName() {
                 this.fnameerror = [];
                 if (this.firstname == "") {
@@ -123,20 +100,11 @@
                     return true;
                 }
             },
-            checkLName() {
-                this.lnameerror = [];
-                if (this.lastname == "") {
-                    this.lnameerror.push("I might reveal your last name though.");
-                    return true;
-                }
-            },
             toggle() {
                 this.$parent.toggle();
             },
             async go() {
-                this.checkEmail();
                 this.checkFName();
-                this.checkLName();
                 this.checkPassword();
                 this.checkPasswordConf();
                 this.checkUsername();
@@ -144,21 +112,19 @@
                 const user = {
                     username: this.username,
                     password: this.password,
-                    firstname: this.firstname,
-                    lastname: this.lastname,
-                    email: this.email
+                    firstname: this.firstname
                 }
                 
                 try {
-                    let registerResult = await this.$store.dispatch("register", user);
+                    let registerResult = await register(user);
                     
                     if (registerResult.tokens) {
                         window.localStorage.setItem("user", JSON.stringify({...registerResult, "username": this.username}))
                             
                         if (this.$store.state.loginRedirect) {
-                            router.replace(this.$store.state.loginRedirect);
+                            goToRequestedPage();
                         } else {
-                            router.replace("/");
+                            goToLogin();
                         }
                     } else {
                         this.unameerror.push(registerResult);

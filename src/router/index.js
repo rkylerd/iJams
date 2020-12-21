@@ -1,5 +1,4 @@
 import {createRouter, createWebHistory } from 'vue-router'
-// import Home from '../views/Home.vue'
 import store from '../store/index'
 import Results from '../views/SearchResults.vue'
 
@@ -10,9 +9,9 @@ const routes = [
     component: function () { 
       return import('../views/Home.vue')
     },
-    // meta: {
-    //     requiresAuth: true
-    // }
+    meta: {
+        requiresAuth: true
+    }
   },
   {
     path: '/ijams/playlist',
@@ -23,9 +22,9 @@ const routes = [
     component: function () { 
       return import(/* webpackChunkName: "playlist" */ '../views/Playlist.vue')
     },
-    // meta: {
-    //     requiresAuth: true
-    // }
+    meta: {
+        requiresAuth: true
+    }
   },
   {
     path: '/ijams/artist',
@@ -36,9 +35,9 @@ const routes = [
     component: function () { 
       return import(/* webpackChunkName: "artist" */ '../views/Artist.vue')
     },
-    // meta: {
-    //     requiresAuth: true
-    // }
+    meta: {
+        requiresAuth: true
+    }
   },
   {
     path: '/ijams/album',
@@ -49,17 +48,17 @@ const routes = [
     component: function () { 
       return import(/* webpackChunkName: "album" */ '../views/Album.vue')
     },
-    // meta: {
-    //     requiresAuth: true
-    // }
+    meta: {
+        requiresAuth: true
+    }
   },
   {
     path: '/ijams/results',
     name: 'results',
     component: Results,
-    // meta: {
-    //     requiresAuth: true
-    // }
+    meta: {
+        requiresAuth: true
+    }
   },
   {
     path: '/ijams/checkout',
@@ -86,23 +85,20 @@ const routes = [
 const router = new createRouter({
   history: createWebHistory(),
   routes
-  
 });
 
 router.beforeEach(async (to, from, next) => {
-    if(to.matched.some(record => record.meta.requiresAuth)) {
-      
-      if (JSON.parse(localStorage.getItem('user')) === null) {
-        
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    if (!localStorage.getItem('user')) {
         store.dispatch("setLoginRedirect", to.fullPath);
-          next({
-              path: '/account',
-          })
+        next({
+            name: 'account',
+        });
       } else {
-          next();
+        next();
       }
     } else {
-        next();
+      next();
     }
 })
 
