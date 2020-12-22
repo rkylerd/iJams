@@ -27,7 +27,7 @@
                 <span class="flex-row">
                     <span>Cart</span>
                     <span class="small-font">
-                        <fa icon="shopping-cart" prefix="fas" class="menu-icon distance-left"></fa> <span v-if="!searchInputOpen">({{checkoutItems.length}})</span>
+                        <fa icon="shopping-cart" prefix="fas" class="menu-icon distance-left"></fa> <span v-if="!searchInputOpen">({{cart}})</span>
                     </span>
                 </span>
                 </router-link>
@@ -43,16 +43,16 @@
 </template>
 
 <script>
-    import { onBeforeMount, onBeforeUnmount, reactive, computed, toRefs, watch } from 'vue'
+    import { onBeforeMount, onBeforeUnmount, reactive, computed, toRefs } from 'vue'
+    import { useStore } from 'vuex'
     import { getUser, logout as globalLogout } from '@/shared/logic'
-    import { goToRequestedPage, goToLogin } from '@/shared/navigation'; 
+    import { goToRequestedPage, goToLogin } from '@/shared/navigation'
     import router from '@/router'
-    import store from '@/store'
 
     export default {
     name: "playlist",
     setup() {
-
+        const store = useStore()
         const search = () => {
             const cleanedTerm = appData.searchTerm
                         .trim()
@@ -62,13 +62,14 @@
             if (cleanedTerm)
                 router.push({name:"results", query: {"search":cleanedTerm}})
         };
+
         const appData = reactive({
-            user: store.state.user,
+            user: computed(() => store.state.user),
             searchTerm: '',
             isShown: false,
             searchInputOpen: false,
             screenWidth: window.innerWidth,
-            checkoutItems: computed(()=>store.state.checkoutItems),
+            cart: computed(() => store.state.cart.length),
             onResize: () => appData.screenWidth = window.innerWidth,
             search,
             logout: () => { appData.user = {}; globalLogout(); }
@@ -77,28 +78,18 @@
         onBeforeUnmount(() => {
             window.removeEventListener('resize', appData.onResize);
         })
+
         onBeforeMount(async () => {
             window.addEventListener('resize', appData.onResize);
             try {
-                const u = await getUser();
-                if (u) {
-                    appData.user = u;
-                    console.log(appData.user)
+                const dbUser = await getUser();
+                if (dbUser) {
                     goToRequestedPage();
-                }
-                else goToLogin();
+                } else goToLogin();
             } catch (error) {
                 console.log('error while getting user', error)
             }
         });
-        
-        watch(
-            [appData.checkoutItems, appData.user],
-            
-            ([count, prevCount], [user, prevUser]) => {
-                console.log(count, prevCount, user, prevUser )
-            }
-        )
 
         return {
             ...toRefs(appData)

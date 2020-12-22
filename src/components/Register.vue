@@ -1,6 +1,5 @@
 <template>
   <div>
-  
       <div id="input-register-container">
           <span class="input">
                   <label for="username">username</label>
@@ -45,7 +44,7 @@
 <script>
     import { goToLogin, goToRequestedPage } from '@/shared/navigation'
     import { register } from '@/shared/logic';
-    
+
     export default {
         name: "Register",
         data: function() {

@@ -73,7 +73,6 @@
         name: 'Results',
         data() {
             return {
-                user: {},
                 playing: {},
                 playingSong: '',
                 isPlaying: { isPlaying: false, index: '' },
@@ -88,7 +87,6 @@
         },
         async created() {
             this.search();
-            this.user = this.$store.state.user || {};
         },
         methods: {
             search() {

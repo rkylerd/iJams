@@ -36,10 +36,16 @@ export default createStore({
     },
     setCheckoutItems(state, items) {
       state.checkoutItems = items;
-    }
+    },
+    setPlaylist(state, playlist) {
+      state.playlist = playlist;
+    },
   },
   actions: {
-    async setPlaying(context, data) {
+    setPlaylist(context, data) {
+      context.commit("setPlaylist", data)
+    },
+    setPlaying(context, data) {
       try {
         context.commit("setPlaying", data);
         return;
@@ -61,7 +67,7 @@ export default createStore({
         return error.message;
       }
     },
-    async setUser(context, data) {
+    setUser(context, data) {
       try {
         context.commit("setUser", data);
       } catch (error) {

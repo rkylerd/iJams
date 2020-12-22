@@ -44,7 +44,7 @@ export default {
       },
       async go() {
         this.errors = [];
-        const user = {username: this.username, password: this.password};
+        const user = { username: this.username, password: this.password };
         try {
             const loginSuccess = await login(user);
             if (!loginSuccess) {  

@@ -158,11 +158,6 @@ async function login(user, res) {
     expires: new Date(Date.now() + 60 * 40 * 1000) // 1 second * 60 * 40 = 40 minutes 
   }
   
-  if (process.env.NODE_ENV !== 'local') {
-    tokenRules.httpOnly = true;
-    tokenRules.secure = true;
-  }
-  console.log(tokenRules, 'tokenRules')
   return res
     .cookie("token", token, tokenRules)
     .status(200)

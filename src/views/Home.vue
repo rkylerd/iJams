@@ -44,33 +44,20 @@
 </style>
 
 <script>
-import {
-  onBeforeMount,
-  reactive
-  // ,
-  // computed
-} from 'vue';
+import { reactive } from 'vue';
 import { addToPlaylist } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
 import myEdits from '@/shared/my-edits'
 import SongTile from '@/components/SongTile.vue'
 
-
 export default {
   name: 'Home',
   setup() {
     const homePage = reactive({
-      user: {},
       myEdits,
       addToPlaylist,
       goToAlbum,  
       filterArtist
-      // ,
-      // computedUser : computed(() => this.$store.state.user)
-    });
-
-    onBeforeMount(() => {
-      // this.user = this.$store.state.user;
     });
 
     return {

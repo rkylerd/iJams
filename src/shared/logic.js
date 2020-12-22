@@ -7,8 +7,7 @@ const api = `${
   'https://ijams-server.herokuapp.com/'
 }api`;
 const axios = require('axios');
-// axios.defaults.withCredentials = true;
-// Access-Control-Allow-Credentials
+axios.defaults.withCredentials = true;
 
 const play = "play",
     stop = "stop";
@@ -82,13 +81,13 @@ const millisToMinutesAndSeconds = (millis) => {
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }
 
-const getPlaylist = async (username = "") => {
+const getPlaylist = async () => {
   try {
-      const playlist = (await axios.get(`${api}/playlist/${username}`)).data
+      const playlist = (await axios.get(`${api}/playlist/${$store.state.user.username}`)).data
       .sort((a, b) => {
           return a.index - b.index;
       });
-      return playlist;
+      await $store.dispatch('setPlaylist', playlist);
   } catch (err) {
       console.log('Failed getting playlist', err);
   }
@@ -104,8 +103,10 @@ const updatePlaylist = async (username = "", song) => {
 
 const deleteFromPlaylist = async ({trackId = ""} = {}) => {
   try {
-    if (trackId)
+    if (trackId) {
       await axios.delete(`${api}/playlist/${$store.state.user.username}/${trackId}`);
+      await getPlaylist();
+    }
   }
   catch (error) {
       console.log(error);
@@ -154,7 +155,6 @@ const getArtist = async (term = "") => {
 };
 
 const getUser = async () => {
-    
     try {
       const { data = {}} = await axios.get(`${api}/users/`, { withCredentials: true });
 
@@ -173,6 +173,7 @@ const login = async (user = {}) => {
 
     await $store.dispatch("setUser", data);    
     goToRequestedPage();
+    return true;
   } catch (error) {
     return false;
   }
@@ -193,9 +194,9 @@ const logout = async () => {
     if ($store.state.playing !== null) {
       $store.dispatch("setPlaying", null);
       $store.dispatch("setIdOfPlaying", "");
-    } 
+    }
     
-    $store.dispatch("setUser", null);
+    $store.dispatch("setUser", {});
     await axios.delete(`${api}/users`, { withCredentials: true});
     
     goToLogin();

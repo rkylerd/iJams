@@ -1,14 +1,13 @@
 <template>
-  <div v-if="computedUser">
+  <div>
       <div class="page-title">Playlist</div>
       <section>
           <div><button v-if="mediaForCheckout.length" @click="goToCheckout">Go to checkout with selected songs ({{mediaForCheckout.length}})</button></div>
         <div class="playlist-normal">
-            <!-- @remove-checkout="removeCheckout(song)"  -->
             <SongCard 
                 v-for="(song, idx) in playlist" 
                 @add-checkout="addCheckout(song)" 
-                @remove-checkout="deleteFromPlaylist(song)" 
+                @remove-checkout="removeCheckout(song)" 
                 draggable="true" 
                 :key="idx" 
                 v-on:dragstart="setDragItem(song)" 
@@ -34,11 +33,11 @@
 </style>
 
 <script>
-    import { onBeforeMount, reactive, toRefs } from 'vue'
-    import store from '@/store'
-    import { playSound, getPlaylist, updatePlaylist, deleteFromPlaylist } from '@/shared/logic'
+    import { onBeforeMount, reactive, toRefs, computed } from 'vue'
+    import { playSound, getPlaylist, updatePlaylist } from '@/shared/logic'
     import SongCard from '@/components/SongCard.vue'
     import { goToAlbum, filterArtist, goToCheckout } from '@/shared/navigation'
+    import { useStore } from 'vuex'
 
     export default {
         name: "playlist",
@@ -46,11 +45,10 @@
             SongCard
         },
         setup() {
-
+            const store = useStore();
             let playlistData = reactive({
-                user: {},
                 loading: true,
-                playlist: [],
+                playlist: computed(() => store.state.playlist),
                 mediaForCheckout: [],
                 playSound,
                 goToAlbum,
@@ -63,8 +61,7 @@
                     let i = playlistData.mediaForCheckout.findIndex(({trackId}={}) => trackId === id); 
                     playlistData.mediaForCheckout.splice(i,1);
                 },
-                deleteFromPlaylist,
-                addCheckout: (song) => {console.log('adding'); playlistData.mediaForCheckout.unshift(song)},
+                addCheckout: (song) => { playlistData.mediaForCheckout.unshift(song) },
                 dropItem: (item) => {
                         const indexOfDragItem = playlistData.playlist.indexOf(playlistData.dragDropItem);
                         const indexOfDestination = playlistData.playlist.indexOf(item);
@@ -78,7 +75,7 @@
                             playlistData.playlist[i].index = i; 
                             
                             try {
-                                updatePlaylist(store.user.username, { song: playlistData.playlist[i] })
+                                updatePlaylist(store.state.user.username, { song: playlistData.playlist[i] })
                             } catch (err) {
                                 console.log("error while updating the order of your playlist.", err);
                             }
@@ -91,24 +88,16 @@
             
             onBeforeMount(async () => {
                 try {
-                    playlistData.playlist = await getPlaylist(store.state.user.username)
+                    await getPlaylist()
                 } catch (err) {
                     console.log('Failed getting playlist', err);
                 }
 
-                playlistData.user = store.state.user;
-                // if (playlistData.user) getPlaylist();
-                // playlistData.playlist = store.state.cart;
             });
 
             return {
                 ...toRefs(playlistData)
             }
-        },
-        computed: {
-          computedUser() {
-              return store.state.user;
-          }  
         }
     }
 </script>
