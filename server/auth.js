@@ -20,14 +20,11 @@ const generateToken = (data, expires) => {
 // This is setup as middleware, so it can be passed as an additional argument to Express after
 // the URL in any route. This will restrict access to only those clients who possess a valid token.
 const verifyToken = (req, res, next) => {
-  console.log('headers', console.log(req.headers))
-  console.log('cookies', console.log(req.cookies))
-  console.log('signedCookies', console.log(req.signedCookies))
-  const token = req.cookies["token"];
-  if (!token) return res.status(403).send({
-    message: "No token provided."
-  });
   try {
+    const token = req.cookies["token"];
+    if (!token) return res.status(403).send({
+      message: "No token provided."
+    });
     const decoded = jwt.verify(token, secret);
     // save user id
     req.user_id = decoded.id;

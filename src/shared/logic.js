@@ -154,45 +154,33 @@ const getArtist = async (term = "") => {
 };
 
 const getUser = async () => {
-    try {
-      const user = await axios.get(`${api}/users/`, { withCredentials: true });
-      console.log('getUser response', user);
-    }
-    catch (err) {
-      console.log('getUser error', err);
-    }
     
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) throw new Error("No user logged in");
-        console.log(user, 'from getuser')
-        // await axios.get(`${api}/users/`);
-        await $store.dispatch("setUser", user);
-        return user;
-      } catch (error) {
-        console.log(error);
-        return undefined;
-      }
+      const { data = {}} = await axios.get(`${api}/users/`, { withCredentials: true });
+
+      if (!data) throw new Error("No user logged in");
+      await $store.dispatch("setUser", data);
+      
+      return data;
+    } catch (error) {
+      return undefined;
+    }
 }
 
 const login = async (user = {}) => {
   try {
-    const resp = await axios.post(`${api}/users/login`, { user }, { withCredentials: true});
-    console.log('login response', resp.data)
-    // Cookies.set('token', tokens[tokens.length-1]);
+    const { data = {} } = await axios.post(`${api}/users/login`, { user }, { withCredentials: true});
 
-    // window.localStorage.setItem("user", JSON.stringify({tokens: resp.data.tokens, username: user.username}))
-    await $store.dispatch("setUser", user);    
+    await $store.dispatch("setUser", data);    
     goToRequestedPage();
   } catch (error) {
-    console.log(error);
+    return false;
   }
-  return false;
 };
 
 const register = async (user = {}) => {
   try {
-    const { data = {}} = await axios.post(`${api}/users/register`, {user});
+    const { data = {}} = await axios.post(`${api}/users/register`, {user}, { withCredentials: true});
     $store.dispatch("setUser", data);
     return data;
   } catch (error) {
@@ -208,14 +196,12 @@ const logout = async () => {
     } 
     
     $store.dispatch("setUser", null);
-    await axios.delete('/api/users');
-    // window.localStorage.setItem('user', null);
+    await axios.delete(`${api}/users`, { withCredentials: true});
     
-    // goToLogin();
+    goToLogin();
   } catch (error) {
     console.log('Error while logging out', error);
   }
-  goToLogin();
 };
 
 export {

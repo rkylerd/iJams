@@ -86,7 +86,6 @@ const Users = mongoose.model('Users', userSchema);
 // Get current user if logged in.
 router.get('/', auth.verifyToken, async (req, res) => {
   try {
-    console.log('user_id', req.user_id)
     // look up user account
     const user = await Users.findOne({
       _id: req.user_id
@@ -100,7 +99,7 @@ router.get('/', auth.verifyToken, async (req, res) => {
     }
     user.removeOldTokens();
     await user.save();
-    console.log('logged in user', user);
+    
     return res.send(user);
   } catch (err) {
     return res.status(500);
@@ -123,7 +122,7 @@ router.post('/register', async (req, res) => {
         });
 
         await user.save();
-        await login(user, req.headers.origin, res);
+        await login(user, res);
     } catch (error) {
         console.log(error);
         return res.status(500).send({error: error});
@@ -134,19 +133,19 @@ router.post('/login', async (req, res) => {
     let invalid = {error: "Invalid username and password comination. Try again."};
     
     try {
-        let existingUser = await Users.findOne({username: req.body.user.username});
-        if (!existingUser || !(await existingUser.comparePassword( req.body.user.password)) ) {
-          return res.status(403).send(invalid);
-        }
+      let existingUser = await Users.findOne({username: req.body.user.username});
+      if (!existingUser || !(await existingUser.comparePassword( req.body.user.password)) ) {
+        return res.status(403).send(invalid);
+      }
         
-        await login(existingUser, req.headers.origin, res);
+      await login(existingUser, res);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
     }
 });
 
-async function login(user, hostname = "", res) {
+async function login(user, res) {
   let token = auth.generateToken({
     id: user._id
   }, "24h");
@@ -154,56 +153,48 @@ async function login(user, hostname = "", res) {
   user.removeOldTokens();
   user.addToken(token);
   await user.save();
+
+  let tokenRules = {
+    expires: new Date(Date.now() + 60 * 40 * 1000) // 1 second * 60 * 40 = 40 minutes 
+  }
   
+  if (process.env.NODE_ENV !== 'local') {
+    tokenRules.httpOnly = true;
+    tokenRules.secure = true;
+  }
+  console.log(tokenRules, 'tokenRules')
   return res
-    .header('Access-Control-Allow-Credentials', true)
-    .header('Access-Control-Allow-Origin', hostname)
-    .cookie("token", token, {
-      httpOnly: true, 
-      secure: true, 
-      expires: new Date(Date.now() + 60 * 40 * 1000) // 1 second * 60 * 40 = 40 minutes 
-    })
+    .cookie("token", token, tokenRules)
     .status(200)
     .send(user);
 }
 
 router.delete('/', auth.verifyToken, async (req, res) => {
-  // look up user account
-  console.log('inside DELETE-----------------');
-  console.log("logout id: ", req.user_id);
-  const user = await Users.findOne({
-    _id: req.user_id
-  });
-  
-  if (!user)
-    return res.clearCookie('token').status(403).send({
-      error: "You must be logged in to log out."
+  try {
+    // look up user account
+    const user = await Users.findOne({
+      _id: req.user_id
     });
-
-  user.removeToken(req.token);
-  await user.save();
-  res.clearCookie('token');
-  res.sendStatus(200);
+    
+    res.clearCookie('token');
+    
+    if (!user) {
+      return res.status(403).send({
+        error: "You must be logged in to log out."
+      });
+    }
+    
+    user.removeToken(req.token);
+    await user.save();
+    res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(500);
+  }
 });
 
-// router.delete('/:id/', async (req, res) => {
-//     console.log("delete id: ", req.params.id);
-    
-//   try {
-//     await Users.deleteOne({
-//       username: req.params.id.toString()
-//     });
-//     return res.sendStatus(200);
-//   } catch (error) {
-//     console.log(error);
-//     return res.sendStatus(500);
-//   }
-// });
-
-/* */
 router.put('/', async (req, res) => {
     let data = req.body.user;
-    console.log("user", data);
+    
     try {
           let user = await Users.findOne({username: data.username});
 
@@ -213,7 +204,7 @@ router.put('/', async (req, res) => {
           return res.sendStatus(200);
     } catch (error) {
       console.log("error", error);
-            return res.sendStatus(500); 
+      return res.sendStatus(500); 
     }
 });
     

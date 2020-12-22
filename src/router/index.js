@@ -88,7 +88,6 @@ const router = new createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log('beforeeach')
   if(to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.state.user.username) {
         store.dispatch("setLoginRedirect", to.fullPath);
