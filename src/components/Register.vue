@@ -119,7 +119,7 @@
                     let registerResult = await register(user);
                     
                     if (registerResult.tokens) {
-                        window.localStorage.setItem("user", JSON.stringify({...registerResult, "username": this.username}))
+                        // window.localStorage.setItem("user", JSON.stringify({...registerResult, "username": this.username}))
                             
                         if (this.$store.state.loginRedirect) {
                             goToRequestedPage();

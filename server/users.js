@@ -83,17 +83,6 @@ userSchema.methods.toJSON = function() {
 
 const Users = mongoose.model('Users', userSchema);
 
-//If we ever needed to get all users
-// router.get('/all', async (req, res) => {
-//   try {
-//     let users = await Users.find();
-//     return res.send(users);
-//   } catch (error) {
-//     console.log(error);
-//     return res.sendStatus(500);
-//   }
-// });
-
 // Get current user if logged in.
 router.get('/', auth.verifyToken, async (req, res) => {
   try {
@@ -119,12 +108,11 @@ router.get('/', auth.verifyToken, async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    console.log("router.post('/register')", req.body.user);
+    
     let invalid = {error: "That username has already been taken."};
     try {
         let existingUser = await Users.findOne({username: req.body.user.username});
         if (existingUser != null) {
-            console.log(invalid + " from register");
           return res.status(400).send(invalid);
         }
   
@@ -135,29 +123,12 @@ router.post('/register', async (req, res) => {
         });
 
         await user.save();
-        await login(user, res);
-        // return res.status(200).send(user);
+        await login(user, req.headers.origin, res);
     } catch (error) {
         console.log(error);
         return res.status(500).send({error: error});
     }
 });
-
-// router.post('/badlogin', async (req, res) => {
-//     let invalid = {error: "Invalid username and password comination. Try again."};
-    
-//     try {
-//         let existingUser = await Users.findOne({username: req.body.user.username, password: req.body.user.password});
-//         if (existingUser == null) {
-//           return res.status(403).send(invalid);
-//         }
-        
-//         return await login(existingUser, res);
-//     } catch (error) {
-//         console.log(error);
-//         return res.sendStatus(500);
-//     }
-// });
 
 router.post('/login', async (req, res) => {
     let invalid = {error: "Invalid username and password comination. Try again."};
@@ -168,14 +139,14 @@ router.post('/login', async (req, res) => {
           return res.status(403).send(invalid);
         }
         
-        await login(existingUser, res);
+        await login(existingUser, req.headers.origin, res);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
     }
 });
 
-async function login(user, res) {
+async function login(user, hostname = "", res) {
   let token = auth.generateToken({
     id: user._id
   }, "24h");
@@ -184,12 +155,16 @@ async function login(user, res) {
   user.addToken(token);
   await user.save();
   
-  return res.cookie("token", token, {
+  return res
+    .header('Access-Control-Allow-Credentials', true)
+    .header('Access-Control-Allow-Origin', hostname)
+    .cookie("token", token, {
       httpOnly: true, 
       secure: true, 
       expires: new Date(Date.now() + 60 * 40 * 1000) // 1 second * 60 * 40 = 40 minutes 
     })
-    .status(200).send(user);
+    .status(200)
+    .send(user);
 }
 
 router.delete('/', auth.verifyToken, async (req, res) => {

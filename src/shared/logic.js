@@ -155,7 +155,7 @@ const getArtist = async (term = "") => {
 
 const getUser = async () => {
     try {
-      const user = await axios.get(`${api}/users/`);
+      const user = await axios.get(`${api}/users/`, { withCredentials: true });
       console.log('getUser response', user);
     }
     catch (err) {
@@ -177,11 +177,11 @@ const getUser = async () => {
 
 const login = async (user = {}) => {
   try {
-    const resp = await axios.post(`${api}/users/login`, { user });
+    const resp = await axios.post(`${api}/users/login`, { user }, { withCredentials: true});
     console.log('login response', resp.data)
     // Cookies.set('token', tokens[tokens.length-1]);
 
-    window.localStorage.setItem("user", JSON.stringify({tokens: resp.data.tokens, username: user.username}))
+    // window.localStorage.setItem("user", JSON.stringify({tokens: resp.data.tokens, username: user.username}))
     await $store.dispatch("setUser", user);    
     goToRequestedPage();
   } catch (error) {
@@ -209,12 +209,13 @@ const logout = async () => {
     
     $store.dispatch("setUser", null);
     await axios.delete('/api/users');
-    window.localStorage.setItem('user', null);
+    // window.localStorage.setItem('user', null);
     
-    goToLogin();
+    // goToLogin();
   } catch (error) {
     console.log('Error while logging out', error);
   }
+  goToLogin();
 };
 
 export {
