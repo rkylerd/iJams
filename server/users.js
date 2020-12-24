@@ -155,7 +155,12 @@ async function login(user, res) {
   await user.save();
 
   let tokenRules = {
-    expires: new Date(Date.now() + 60 * 40 * 1000) // 1 second * 60 * 40 = 40 minutes 
+    expires: new Date(Date.now() + 60 * 40 * 1000), // 1 second * 60 * 40 = 40 minutes 
+  }
+  
+  if (process.env.VUE_APP_NODE_ENV !== 'local') {
+    tokenRules.secure = true; // serve secure cookies
+    tokenRules.sameSite = 'None';
   }
   
   return res
