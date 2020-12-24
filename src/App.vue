@@ -45,7 +45,7 @@
 <script>
     import { onBeforeMount, onBeforeUnmount, reactive, computed, toRefs } from 'vue'
     import { useStore } from 'vuex'
-    import { getUser, logout as globalLogout } from '@/shared/logic'
+    import { getUser, logout } from '@/shared/logic'
     import { goToRequestedPage, goToLogin } from '@/shared/navigation'
     import router from '@/router'
 
@@ -60,19 +60,18 @@
                         .replace(/[\s]+/g, '+');
             
             if (cleanedTerm)
-                router.push({name:"results", query: {"search":cleanedTerm}})
+                router.push({name:"results", query: {"search": cleanedTerm } })
         };
 
         const appData = reactive({
             user: computed(() => store.state.user),
             searchTerm: '',
-            isShown: false,
             searchInputOpen: false,
             screenWidth: window.innerWidth,
             cart: computed(() => store.state.cart.length),
             onResize: () => appData.screenWidth = window.innerWidth,
             search,
-            logout: () => { appData.user = {}; globalLogout(); }
+            logout
         });
 
         onBeforeUnmount(() => {

@@ -1,6 +1,6 @@
 import $store from '@/store';
 import { goToLogin, goToRequestedPage } from '@/shared/navigation'; 
-// import Cookies from 'js-cookie'
+
 const api = `${
   process.env.VUE_APP_NODE_ENV === 'local' ? 
   'http://localhost:3000/' : 
@@ -195,7 +195,7 @@ const register = async (user = {}) => {
 
 const logout = async () => {
   try {
-    if ($store.state.playing !== null) {
+    if ($store.state.playing) {
       $store.dispatch("setPlaying", null);
       $store.dispatch("setIdOfPlaying", "");
     }
