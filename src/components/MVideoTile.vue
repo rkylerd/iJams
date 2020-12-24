@@ -12,19 +12,10 @@
 
 <script>
 
-import { addToPlaylist, cutLength } from '@/shared/logic'
-import { goToAlbum, filterArtist } from '@/shared/navigation'
-
 export default {
   name: "MVideoTile",
   props: {
     mvid: Object
-  }, 
-  methods: {
-      addToPlaylist: addToPlaylist,
-      goToAlbum: goToAlbum,
-      cutLength: cutLength,
-      filterArtist: filterArtist
   }
 };
 </script>

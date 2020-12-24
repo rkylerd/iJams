@@ -90,7 +90,8 @@ const router = new createRouter({
 router.beforeEach(async (to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.state.user.username) {
-        store.dispatch("setLoginRedirect", to.fullPath);
+      const { path = "", query = {} } = to;
+        store.dispatch("setLoginRedirect", { path, query } );
         next({
             name: 'account',
         });

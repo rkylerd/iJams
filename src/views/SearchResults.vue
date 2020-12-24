@@ -65,9 +65,7 @@
     import SongTile from '@/components/SongTile.vue'
     import MVideoTile from '@/components/MVideoTile.vue'
     import MediaSorter from '@/components/MediaSorter.vue'
-
-    import { addToPlaylist, cutLength, updateMusicIcon, search } from '@/shared/logic'
-    import { goToAlbum, filterArtist } from '@/shared/navigation'
+    import { cutLength, updateMusicIcon, search } from '@/shared/logic'
 
     export default {
         name: 'Results',
@@ -113,7 +111,6 @@
                     this[mediaKey] = sortedMedia;
                 }
             },
-            addToPlaylist: addToPlaylist,
             async logout() {
                 try {
                     this.error = await this.$store.dispatch("logout");
@@ -121,14 +118,11 @@
                 catch (error) {
                     console.log(error);
                 }
-            },
-            goToAlbum: goToAlbum,
-            cutLength: cutLength,
-            filterArtist: filterArtist
+            }
         },
         computed: {
             searchTerm: function() {
-                return (this.$route.query.search).replace(/\b\+\b/g, ' '); 
+                return (this.$route.query.search || "").replace(/\b\+\b/g, ' '); 
             }
         },
         watch: {

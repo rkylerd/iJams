@@ -147,11 +147,15 @@ const getArtist = async (term = "") => {
   
   const getArtistAlbums = async (term = "") => {
     try {
+      if (term) {
         const { data: { results = [] } = {} } = await axios.get(`${api}/search/artistalbums/${term}`);
         return results;
+      }
     } catch (error) {
-          throw Error("error encountered while getting artist albums");
+      console.log(error);
+      // throw Error("error encountered while getting artist albums");
     }
+    return [];
 };
 
 const getUser = async () => {

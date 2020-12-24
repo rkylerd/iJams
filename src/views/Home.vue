@@ -21,8 +21,7 @@
 
 #my-clean-songs {
     width: 90%;
-    /* flex: 1; */
-    justify-content: flex-start;
+    justify-content: center;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
