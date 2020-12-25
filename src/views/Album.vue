@@ -4,7 +4,9 @@
             <img :src="album.artworkUrl100">
             <div class="flex-row flex-wrap">
                 <h3>{{album.collectionName}}</h3>
-                <h5 class="link" @click.prevent="filterArtist(album.artistId)">{{album.artistName}}</h5>
+                <span>
+                    <h5 class="link" @click.prevent="filterArtist(album.artistId)">{{album.artistName}}</h5>
+                </span>
                 <h6>{{album.releaseDate}}</h6>
                 <h6>{{album.genre}}</h6>
                 <span v-if="album.collectionExplicitness.toLowerCase() === 'explicit' || album.collectionExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
@@ -25,8 +27,8 @@
             <tbody>
                 <tr v-for="(song, idx) in albumSongs" :key="idx">
                     <td class="trackNumber-cell small-album-info" :class="{ 'play' : !isPlaying(song.trackId), 'stop' : isPlaying(song.trackId) }" @click.prevent="({ target } = {}) => playSound(song, target)">{{song.trackNumber}}</td>
-                    <td class="name-cell"><span class="song-name"><strong>{{song.trackName_short}}</strong></span></td>
-                    <td class="artist-cell"><div @click.prevent="filterArtist(song.artistId)" class="x-small-font link">{{song.artistName_short}}</div></td>
+                    <td class="name-cell"><span class="song-name"><strong>{{song.trackName}}</strong></span></td>
+                    <td class="artist-cell"><div @click.prevent="filterArtist(song.artistId)" class="x-small-font link">{{song.artistName}}</div></td>
                     <td class="time-cell"><div class="small-album-info">{{song.trackTimeMillis}}</div></td>
                     <td><Options type="song" :media="song"/></td>
                     <td v-if="song.trackExplicitness.toLowerCase() === 'explicit' || song.trackExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
@@ -65,8 +67,8 @@
                 albumSongs.value = results.slice(1).map(song => {
                     return {
                         ...song,
-                        trackName_short: cutLength(song.trackName, 75),
-                        artistName_short: cutLength(song.artistName, 35),
+                        trackName: cutLength(song.trackName, 75),
+                        artistName: cutLength(song.artistName, 35),
                         trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis)
                     }
                 })

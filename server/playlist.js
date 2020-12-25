@@ -6,7 +6,6 @@ const request = require("request");
 //
 // Songs
 //
-
 const playlistSchema = new mongoose.Schema({
   trackName: String,
   previewUrl: String,
@@ -48,21 +47,7 @@ router.post('/', async (req, res) => {
         }
   
         const song = new Song({
-              username: req.body.song.username,
-              trackName: req.body.song.trackName,
-              previewUrl: req.body.song.previewUrl,
-              collectionName: req.body.song.collectionName,
-              collectionId: req.body.song.collectionId,
-              artistId: req.body.song.artistId,
-              trackPrice: req.body.song.trackPrice, 
-              artistName: req.body.song.artistName,
-              trackExplicitness: req.body.song.trackExplicitness,
-              collectionExplicitness: req.body.song.collectionExplicitness,
-              artworkUrl60: req.body.song.artworkUrl60,
-              artworkUrl100: req.body.song.artworkUrl100,
-              className: req.body.song.className,
-              trackId: req.body.song.trackId,
-              trackTimeMillis: req.body.song.trackTimeMillis
+              ...req.body.song
         });
 
         await song.save();
@@ -90,20 +75,20 @@ router.delete('/:username/:trackId', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-      const data = req.body.song;
-      let song = await Song.findOne({
-        username: req.params.id,
-        trackId: req.body.song.trackId
-      });
+    const data = req.body.song;
+    let song = await Song.findOne({
+      username: req.params.id,
+      trackId: req.body.song.trackId
+    });
 
-      song.index = data.index;
-      song.save();
-      
-      return res.sendStatus(200);
-    } catch (error) {
-      console.log("error", error);
-            return res.sendStatus(500); 
-    }
+    song.index = data.index;
+    song.save();
+    
+    res.sendStatus(200);
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(500); 
+  }
 });
     
     

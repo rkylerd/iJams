@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 
     .playlist-normal {
         margin: 3rem;
@@ -27,8 +27,10 @@
         flex-wrap: wrap;
         justify-content: flex-start;
         overflow-x: auto;
+        @media (max-width: 652px) {
+            justify-content: center;
+        }
     }
-
 
 </style>
 
@@ -63,23 +65,31 @@
                 },
                 addCheckout: (song) => { playlistData.mediaForCheckout.unshift(song) },
                 dropItem: (item) => {
-                        const indexOfDragItem = playlistData.playlist.indexOf(playlistData.dragDropItem);
-                        const indexOfDestination = playlistData.playlist.indexOf(item);
-                        
-                        playlistData.playlist.splice(indexOfDragItem, 1);
-                        playlistData.playlist.splice(indexOfDestination, 0, playlistData.dragDropItem);
+                    
+                    // Remove the moved song from its original index
+                    const indexOfDragItem = playlistData.playlist.indexOf(playlistData.dragDropItem);
+                    playlistData.playlist.splice(indexOfDragItem, 1);
 
-                        playlistData.playlist[indexOfDestination].index = indexOfDestination;
+                    // Add the moved song to the desired location and update its index to update the db
+                    const indexOfDestination = playlistData.playlist.indexOf(item);
+                    playlistData.playlist.splice(indexOfDestination, 0, playlistData.dragDropItem);
+                    playlistData.playlist[indexOfDestination].index = indexOfDestination;
 
-                        for (let i = indexOfDestination < indexOfDragItem ? indexOfDestination : indexOfDragItem; i < playlistData.playlist.length; i++) {
-                            playlistData.playlist[i].index = i; 
-                            
-                            try {
-                                updatePlaylist(store.state.user.username, { song: playlistData.playlist[i] })
-                            } catch (err) {
-                                console.log("error while updating the order of your playlist.", err);
-                            }
-                        }
+                    const indexUpdatePromises = [];
+                    // Only update the song indeces that were effected
+                    let i = indexOfDestination < indexOfDragItem ? indexOfDestination : indexOfDragItem;
+                    let end = indexOfDestination < indexOfDragItem ? indexOfDragItem : indexOfDestination;
+                    for (i; i <= end; i++) {
+                        // re-sync the indeces of each song for db update
+                        playlistData.playlist[i].index = i; 
+                        indexUpdatePromises.push(
+                            updatePlaylist(store.state.user.username, { song: playlistData.playlist[i] })
+                        );
+                    }
+                    Promise.all(indexUpdatePromises)
+                        .catch(err => {
+                            console.log('error', err);
+                        })
                 },
                 setDragItem: (item) => { playlistData.dragDropItem = item },
                 filterArtist,

@@ -93,12 +93,8 @@ const getPlaylist = async () => {
   }
 }
 
-const updatePlaylist = async (username = "", song) => {
-  try {
-      await axios.put(`${api}/playlist/${username}`, { song });
-  } catch (err) {
-      console.log('Failed updating your playlist', err);
-  }
+const updatePlaylist = (username = "", song) => {
+  return axios.put(`${api}/playlist/${username}`, song);
 }
 
 const deleteFromPlaylist = async ({trackId = ""} = {}) => {
@@ -119,6 +115,7 @@ const addToPlaylist = async (song = {}) => {
       await axios.post(`${api}/playlist`, {       
         song: {
             ...song, 
+            index: $store.state.playlist.length-1,
             username: $store.state.user.username
           }, 
         });

@@ -5,12 +5,19 @@
         <div id="nav">
             <div class="page-title">iJams</div>
             <div id="form-data">
-                <form v-on:submit.prevent="search" v-on:keyup.enter="search" id="search-bar" class="form-inline my-2 my-lg-0">
+                <form v-on:submit.prevent="search" v-on:keyup.enter="search" id="search-bar" class="form-inline">
                     <div class="search-container">
                         <button v-if="searchInputOpen" @click="searchInputOpen = false" id="close-btn" class="btn btn-outline-success">
                             <fa icon="times" prefix="fas" class="menu-icon block"></fa>
                         </button>
-                        <input :class="{'closed': !searchInputOpen}" v-model="searchTerm" id="search-input"  class="narrow form-control" type="search" placeholder="Song, artist or album name" aria-label="Search">
+                        <input v-model="searchTerm" 
+                            :class="{'closed': !searchInputOpen}" 
+                            id="search-input" 
+                            class="narrow form-control" 
+                            type="search" 
+                            placeholder="Song, artist or album name" 
+                            aria-label="Search"
+                            v-on:keyup.enter="$event.target.blur()">
                         <button v-if="searchInputOpen" class="btn btn-outline-success closed" id="search-button" type="submit">
                             <fa icon="search" prefix="fas" class="menu-icon block"></fa>
                         </button>
@@ -20,18 +27,18 @@
                     </div>
                 </form>
             </div>
-            <div class="flex-row" id="nav-links">
+            <div class="flex-row" id="nav-links" v-if="!searchInputOpen || screenWidth > 400">
                 <router-link to="/ijams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
                 <router-link to="/ijams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
-                <router-link to="/ijams/playlist" class="nav-link">
+                <!-- <router-link to="/ijams/playlist" class="nav-link">
                 <span class="flex-row">
                     <span>Cart</span>
-                    <span class="small-font">
-                        <fa icon="shopping-cart" prefix="fas" class="menu-icon distance-left"></fa> <span v-if="!searchInputOpen">({{cart}})</span>
+                    <span class="x-small-font">
+                        <fa icon="shopping-cart" prefix="fas" class="menu-icon distance-left"></fa> <span v-if="cartSize">({{cartSize}})</span>
                     </span>
                 </span>
-                </router-link>
-                <a class="nav-link" @click="logout"><span>Log out</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></a>            
+                </router-link> -->
+                <a class="nav-link" @click="logout"><span>Log out</span><fa icon="sign-out-alt" prefix="fas" class="menu-icon distance-left"></fa></a>            
             </div>
         </div>
     </section>
@@ -66,9 +73,9 @@
         const appData = reactive({
             user: computed(() => store.state.user),
             searchTerm: '',
-            searchInputOpen: false,
+            searchInputOpen: true,
             screenWidth: window.innerWidth,
-            cart: computed(() => store.state.cart.length),
+            cartSize: computed(() => store.state.cart.length),
             onResize: () => appData.screenWidth = window.innerWidth,
             search,
             logout
@@ -183,7 +190,9 @@
 
 #nav-links {
     align-items: center;
+    
     .nav-link {
+        cursor: pointer;
         margin-right: .2em;
         display: flex;
         font-family: 'Fredoka One', cursive;
@@ -260,8 +269,8 @@
 #nav {
     display: flex;
     flex-wrap: nowrap;
-    padding: 5px;
     background-color: whitesmoke;
+    min-height: 45px;
 }
 
 #form-data {
@@ -278,5 +287,6 @@
 @import '~bootstrap/dist/css/bootstrap.css';
 .form-control {
     border-radius: 0;
+    padding: 0 .25em;
 }
 </style>

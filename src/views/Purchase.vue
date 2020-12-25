@@ -11,8 +11,8 @@
                                     {{item.trackExplicitness}}
                         </span>
                     </span>
-                    <span class="name-cell"><span class="song-name">{{item.trackName || item.trackName_short}}</span></span>
-                    <span class="name-cell"><span class="song-name">{{item.artistName || item.artistName_short}}</span></span>
+                    <span class="name-cell"><span class="song-name">{{item.trackName}}</span></span>
+                    <span class="name-cell"><span class="song-name">{{item.artistName}}</span></span>
                     <span class="small-font">${{item.trackPrice}}</span> 
             </div>
             <div class="space-btwn">
@@ -75,7 +75,7 @@
         flex-wrap: wrap;
         width: 100vw;
         margin-top: 2em;
-
+        
         section {
             margin: auto;
             &#checkout {
