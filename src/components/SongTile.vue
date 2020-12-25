@@ -6,8 +6,8 @@
         
         <div class="song-info">
             <div class="name-artist">
-                <a class="song-name small-font" @click.prevent="goToAlbum(song)"><strong>{{song.trackName_short}}</strong></a><br>
-                <a class="artist-name white-text small-font" @click.prevent="filterArtist(song.artistId)">{{song.artistName_short}}</a><br>
+                <a class="song-name small-font" @click.prevent="goToAlbum(song)"><strong>{{song.trackName}}</strong></a><br>
+                <a class="artist-name white-text small-font" @click.prevent="filterArtist(song.artistId)">{{song.artistName}}</a><br>
             </div>
             
             <div>

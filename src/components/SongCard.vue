@@ -11,8 +11,8 @@
       </div>
 
       <div class="name-artist">
-          <a class="white-text song-name" @click.prevent="goToAlbum(song)" href=""><strong>{{song.trackName || song.trackName_short}}</strong></a><br>
-          <a class=" white-text artist-name link" @click.prevent="filterArtist(song.artistId)">{{song.artistName || song.artistName_short}}</a><br>
+          <a class="white-text song-name" @click.prevent="goToAlbum(song)" href=""><strong>{{song.trackName}}</strong></a><br>
+          <a class=" white-text artist-name link" @click.prevent="filterArtist(song.artistId)">{{song.artistName}}</a><br>
       </div>
   </div> 
 </template>

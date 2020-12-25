@@ -97,8 +97,8 @@
                         this.songResults = songs.map(song => {
                             return {
                                 ...song, 
-                                trackName_short: cutLength(song.trackName, 12),
-                                artistName_short: cutLength(song.artistName, 20)
+                                trackName: cutLength(song.trackName, 12),
+                                artistName: cutLength(song.artistName, 20)
                             };
                         });
                         this.mvideoResults =  mvideos;
