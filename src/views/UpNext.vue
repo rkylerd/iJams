@@ -13,10 +13,7 @@
         name: "upnext",
         data() {
             return {
-                upnext: [],
-                playing: {},
-                playingSong: '',
-                isPlaying: { isPlaying: false, index: '' }
+                upnext: []
             }
         },
         created() {

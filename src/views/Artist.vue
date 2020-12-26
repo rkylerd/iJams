@@ -53,18 +53,16 @@
 
 
 <script>
-import { addToPlaylist, getArtistAlbums } from '@/shared/logic'
+import { getArtistAlbums } from '@/shared/logic'
 import AlbumCard from '@/components/AlbumCard'
 
 export default {
   name: 'Artist',
   data(){
     return {
-   playing: {      
-        },
-          artistAlbums: [],
-          loading: true,
-        }
+      artistAlbums: [],
+      loading: true,
+    }
   },
   components: {
     AlbumCard
@@ -78,15 +76,7 @@ export default {
         this.artistAlbums = albums;
         this.loading = false;
       });
-    },
-    async logout() {
-      try {
-        this.error = await this.$store.dispatch("logout");
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    addToPlaylist: addToPlaylist
+    }
   }
 }
 </script>

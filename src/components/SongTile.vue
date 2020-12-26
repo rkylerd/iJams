@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import { reactive, toRefs } from 'vue'
-import store from '@/store'
+import { reactive, toRefs, computed } from 'vue'
+import { useStore } from 'vuex'
 import { addToPlaylist, cutLength, playSound } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
 import Options from '@/components/ContentOptions.vue'
@@ -35,6 +35,7 @@ export default {
       Options
   },
   setup(props) {
+    const store = useStore();
     const data = reactive({
       song: props.song,
       playSound,
@@ -42,7 +43,8 @@ export default {
       goToAlbum,
       cutLength,
       filterArtist,
-      isPlaying: (id) => id === store.state.idOfPlaying
+      trackIsPlaying: computed(() => store.state.isPlaying),
+      isPlaying: id => data.trackIsPlaying && id === store.state.dataOfPlaying.trackId
     });
 
     return { ...toRefs(data) };

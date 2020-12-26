@@ -92,8 +92,7 @@
                         })
                 },
                 setDragItem: (item) => { playlistData.dragDropItem = item },
-                filterArtist,
-                isPlaying: (id) => id === store.state.idOfPlaying
+                filterArtist
             });
             
             onBeforeMount(async () => {

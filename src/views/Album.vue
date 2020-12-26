@@ -45,8 +45,8 @@
 <script>
     import { addToPlaylist, playSound, cutLength, millisToMinutesAndSeconds, getAlbum } from '@/shared/logic'
     import { filterArtist } from '@/shared/navigation'
-    import { onBeforeMount, reactive, ref } from 'vue'
-    import store from '@/store'
+    import { onBeforeMount, reactive, ref, computed } from 'vue'
+    import { useStore } from 'vuex'
     import router from '@/router'
     import Options from '@/components/ContentOptions'
 
@@ -56,6 +56,7 @@
             Options
         },
         setup() {
+            const store = useStore();
             const album = ref(undefined);
             const albumSongs = ref([]);
 
@@ -69,7 +70,7 @@
                         ...song,
                         trackName: cutLength(song.trackName, 75),
                         artistName: cutLength(song.artistName, 35),
-                        trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis)
+                        trackTimeMillis: millisToMinutesAndSeconds(song.trackTimeMillis).timeStr
                     }
                 })
             });
@@ -78,10 +79,10 @@
                 user: {},
                 playSound,
                 cutLength,
-                millisToMinutesAndSeconds,
                 addToPlaylist,
                 filterArtist,
-                isPlaying: (id) => id === store.state.idOfPlaying
+                trackIsPlaying: computed(() => store.state.isPlaying),
+                isPlaying: id => data.trackIsPlaying && id === store.state.dataOfPlaying.trackId
             });
 
             return { ...data, album, albumSongs };

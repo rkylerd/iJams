@@ -6,11 +6,11 @@ import '@/shared/styles/global.scss';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faEllipsisH, faShoppingCart } from '@fortawesome/free-solid-svg-icons'
-import { fas, faTimes, faSearch, faHome, faMusic, faCompactDisc, faSignOutAlt, faBars } from "@fortawesome/free-solid-svg-icons";
+import { fas, faTimes, faSearch, faHome, faMusic, faCompactDisc, faSignOutAlt, faBars, faPlay, faPause, faForward, faBackward } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import FontAwesomeIcon from "@/components/FontAwesomeIcon.vue";
 
-library.add(faEllipsisH, faShoppingCart, fas, faTwitter, faInstagram, 
+library.add(faEllipsisH, faShoppingCart, fas, faTwitter, faInstagram, faPlay, faPause, faForward, faBackward,
   faTimes, faSearch, faHome, faMusic, faCompactDisc, faBars, faSignOutAlt);
 
 // Vue.config.productionTip = false;

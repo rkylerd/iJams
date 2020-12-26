@@ -71,9 +71,6 @@
         name: 'Results',
         data() {
             return {
-                playing: {},
-                playingSong: '',
-                isPlaying: { isPlaying: false, index: '' },
                 songResults: [],
                 mvideoResults: []
             }

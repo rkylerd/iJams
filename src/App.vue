@@ -27,6 +27,7 @@
                     </div>
                 </form>
             </div>
+        
             <div class="flex-row" id="nav-links" v-if="!searchInputOpen || screenWidth > 400">
                 <router-link to="/ijams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
                 <router-link to="/ijams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
@@ -40,11 +41,32 @@
                 </router-link> -->
                 <a class="nav-link" @click="logout"><span>Log out</span><fa icon="sign-out-alt" prefix="fas" class="menu-icon distance-left"></fa></a>            
             </div>
+        
         </div>
     </section>
     <section v-else>
         <div class="page-title">iJams</div>
     </section>
+  <div id="music-player-container" v-if="playing">
+    <div class="flex-row" id="music-player">
+        <div class="flex-row" id="buttons">
+            <fa v-if="playing && isPlaying" @click="()=>globalPausePlay()" icon="pause" prefix="fas" class="menu-icon block"></fa>
+            <fa v-else @click="()=>globalPausePlay(false)" icon="play" prefix="fas" class="menu-icon block"></fa>
+            <fa icon="backward" prefix="fas" class="menu-icon block"></fa>
+            <fa icon="forward" prefix="fas" class="menu-icon block"></fa>
+        </div>
+        <div id="slider">
+            <span>
+                {{ millisToMinutesAndSeconds( currentTime * 1000 ).timeStr }} / {{ millisToMinutesAndSeconds( (dataOfPlaying.trackLengthSeconds || 30) * 1000 ).timeStr }}
+            </span>
+            <input type="range" 
+                min="0" 
+                @change="updateCurrentTime"
+                :value="currentTime" 
+                :max="dataOfPlaying.trackLengthSeconds || 30"/>
+        </div>
+    </div>
+  </div>
     <router-view/>
   </div>
 </template>
@@ -52,7 +74,7 @@
 <script>
     import { onBeforeMount, onBeforeUnmount, reactive, computed, toRefs } from 'vue'
     import { useStore } from 'vuex'
-    import { getUser, logout } from '@/shared/logic'
+    import { getUser, logout, playSound, globalPausePlay, millisToMinutesAndSeconds } from '@/shared/logic'
     import { goToRequestedPage, goToLogin } from '@/shared/navigation'
     import router from '@/router'
 
@@ -75,10 +97,20 @@
             searchTerm: '',
             searchInputOpen: true,
             screenWidth: window.innerWidth,
-            cartSize: computed(() => store.state.cart.length),
             onResize: () => appData.screenWidth = window.innerWidth,
+            cartSize: computed(() => store.state.cart.length),
+            playing: computed(() => store.state.playing),
+            isPlaying: computed(() => store.state.isPlaying),
+            currentTime: computed(() => parseInt(store.state.playingTime) ),
+            dataOfPlaying: computed(() => store.state.dataOfPlaying),
             search,
-            logout
+            logout,
+            playSound,
+            globalPausePlay,
+            millisToMinutesAndSeconds,
+            updateCurrentTime: 
+                ({ currentTarget: { value = 0 } = {} } = {}) =>
+                    { if (appData.playing) store.dispatch('setCurrentTimeOfPlaying', value)} 
         });
 
         onBeforeUnmount(() => {
@@ -105,6 +137,55 @@
 </script>
 
 <style lang='scss' scoped>
+$width-desktop: 1600px;
+$width-tablet: 1024px;
+$width-phone: 400px;
+
+#music-player-container {
+    position: absolute;
+    right: 0;
+    z-index: 10;
+    transition: height .3s;
+    #music-player {
+        @media (max-width: $width-desktop) {
+            background-color: #00c5ff;
+            border-bottom-left-radius: 8px;
+            min-height: 3em;
+            width: 50vw;
+            #slider {
+                display: flex;
+                width: 100%;
+                input {
+                    flex-grow: 1;
+                }
+            }
+        }
+        @media (max-width: $width-tablet) {
+            border-bottom-right-radius: 2px;
+            width: 90vw;
+        }
+        
+        > div {
+            padding: 0 .5em;
+            margin: auto 0;
+            &#buttons {
+                > svg {
+                    margin: 0 .3em;
+                }
+            }
+            &#slider {
+                > span {
+                    font-size: small;
+                    margin-right: .3em;
+                    @media (max-width: $width-tablet) {
+                        font-size: x-small;     
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 .page-title {
     margin: auto .4em;
@@ -128,9 +209,7 @@
 
 .menu-btn {
     display: inline-block;
-    
     vertical-align: sub;
-
     height: 100%;
     width: 40px;
 }

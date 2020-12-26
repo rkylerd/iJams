@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import { reactive, toRefs } from 'vue'
-import store from '@/store'
+import { reactive, toRefs, computed } from 'vue'
+import { useStore } from 'vuex'
 import { addToPlaylist, cutLength, playSound } from '@/shared/logic'
 import { goToAlbum, filterArtist } from '@/shared/navigation'
 import Options from '@/components/ContentOptions.vue'
@@ -37,6 +37,7 @@ export default {
     emitCheckout(selected) {this.$emit(selected ? 'add-checkout' : 'remove-checkout')}
   },
   setup(props) {
+    const store = useStore();
     const data = reactive({
       selected: false,
       song: props.song,
@@ -50,7 +51,8 @@ export default {
         let selected = (e.target.tagName.toLowerCase() !== "input"); 
         data.selected = selected; 
       },
-      isPlaying: (id) => id === store.state.idOfPlaying
+      trackIsPlaying: computed(() => store.state.isPlaying),
+      isPlaying: id => data.trackIsPlaying && id === store.state.dataOfPlaying.trackId
     });
 
     return { ...toRefs(data) };

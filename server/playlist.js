@@ -20,6 +20,7 @@ const playlistSchema = new mongoose.Schema({
   className: String,
   trackId: String,
   trackTimeMillis: String,
+  trackLengthSeconds: Number,
   index: Number,
   username: String
 });

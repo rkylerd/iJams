@@ -6,8 +6,10 @@ export default createStore({
       username:""
     },
     playlist: [],
+    isPlaying: false,
     playing: null, // The <audio> tag associated w/ the song playing
-    idOfPlaying: '', // trackId of the current song
+    dataOfPlaying: {},
+    playingTime: 0,
     referenceToClassName: {
       classList: []
     },
@@ -25,11 +27,16 @@ export default createStore({
     setPlaying(state, playing) {
       state.playing = playing;
     },
+    setIsPlaying(state, isPlaying) {
+      if (state.isPlaying !== isPlaying) {
+        state.isPlaying = isPlaying;
+      }
+    },
     setReferenceToClassNameOfPlaying(state, el) {
       state.referenceToClassName = el;
     },
-    setIdOfPlaying(state, id) {
-      state.idOfPlaying = id;
+    setDataOfPlaying(state, playing) {
+      state.dataOfPlaying = playing;
     },
     addToCart(state, item) {
       state.cart.push(item);
@@ -40,18 +47,29 @@ export default createStore({
     setPlaylist(state, playlist) {
       state.playlist = playlist;
     },
+    setPlayingTime(state, time) {
+      state.playingTime = time;
+    },
+    setCurrentTimeOfPlaying(state, time) {
+      state.playing.currentTime = time;
+    }
   },
   actions: {
+    updatePlayingTime(context, data) {
+      context.commit("setPlayingTime", data);
+    },
     setPlaylist(context, data) {
-      context.commit("setPlaylist", data)
+      context.commit("setPlaylist", data);
     },
     setPlaying(context, data) {
       try {
         context.commit("setPlaying", data);
-        return;
       } catch (error) {
         return error.message;
       }
+    },
+    setIsPlaying(context, isPlaying) {
+      context.commit("setIsPlaying", isPlaying)
     },
     setReferenceToClassNameOfPlaying(context, data) {
       try {
@@ -60,9 +78,12 @@ export default createStore({
         return error.message;
       }
     },
-    setIdOfPlaying(context, data) {
+    setCurrentTimeOfPlaying(context, time) {
+      context.commit("setCurrentTimeOfPlaying", time);
+    },
+    setDataOfPlaying(context, data) {
       try {
-        context.commit("setIdOfPlaying", data);
+        context.commit("setDataOfPlaying", data);
       } catch (error) {
         return error.message;
       }
