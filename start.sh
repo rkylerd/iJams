@@ -1,3 +1,4 @@
 export VUE_APP_NODE_ENV=local
 export VUE_APP_BASE_URL=http://localhost:8080/ijams
+export VUE_APP_STRIPE_KEY=pk_test_qHfSpXtwezM69fZSAFm2UXUC005az94RrK
 npm run serve

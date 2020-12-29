@@ -1,3 +1,4 @@
 export VUE_APP_NODE_ENV=production
 export VUE_APP_BASE_URL=https://rkylerd.github.io/ijams
+export VUE_APP_STRIPE_KEY=pk_test_qHfSpXtwezM69fZSAFm2UXUC005az94RrK
 npm run deploy
