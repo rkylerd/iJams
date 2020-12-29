@@ -8,18 +8,40 @@ $width-phone: 400px;
     width: 25px;
 }
 
-.page-title {
-    display: inline-block;
+.btn {
+        display: inline-block;
+    font-weight: 400;
     text-align: center;
-    margin: 2vh 0 4vh 0;
-    font-family: 'Fredoka One', cursive;
-    font-weight: bold;
-    font-size: 40px;
-    -ms-transform: skewY(-5deg); /* IE 9 */
-    -webkit-transform: skewY(-5deg); /* Safari 3-8 */
-    transform: skewY(-5deg);
-    text-shadow: 3px 3px white;
-    color: #42b983 !important;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.page-title-container {
+    margin: 1em;
+    background-color: #42b983;
+    border-radius: 2px;
+    .page-title {
+        display: inline-block;
+        text-align: center;
+        margin: 2vh 0 4vh 0;
+        font-family: 'Fredoka One', cursive;
+        font-weight: bold;
+        font-size: 40px;
+        -ms-transform: skewY(-5deg); /* IE 9 */
+        -webkit-transform: skewY(-5deg); /* Safari 3-8 */
+        transform: skewY(-5deg);
+        text-shadow: 3px 3px #2c3e50;
+        color: white;
+        
+    }
 }
 
 .purchase-button {

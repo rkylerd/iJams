@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    <h2 class="page-title">Home</h2>
+    <div class="page-title-container">
+      <div class="page-title">Home</div>
+    </div>
     <div id="my-clean-songs">
       <SongTile class="flex-row flex-wrap song-tile" v-bind:song="song" v-for="(song, idx) in myEdits" :key="idx"/>   
     </div>
@@ -31,13 +33,6 @@
 
 .name-artist { 
     min-width: 100px;  
-}
-
-@media (max-width: 400px) {
-  .song-tile {
-    background-color: pink;
-    min-width: 100%;
-  }
 }
 
 </style>

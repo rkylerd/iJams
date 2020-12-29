@@ -47,18 +47,21 @@
             /* Highest, active tab is on top */
             z-index: 3;
             &:after, &:before {
-              background: #42b983; 
+              background: whitesmoke; 
               
               /* Squares below circles */
               z-index: 1;
             }
             a { 
               /* Colors when tab is active */
-              background: #42b983; 
+              background: whitesmoke; 
               color: #192734;
               &:before, &:after {
                 background: #192734;
               }  
+              &:hover {
+                color: #192734;
+              }
             }
           }
 
@@ -77,7 +80,6 @@
             text-decoration: none;
             
             /* Default colors */ 
-            color: white;
             font-family: 'Josefin Sans', sans-serif;    
             font-weight: bold;
             background: #192734; 

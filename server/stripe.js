@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")("sk_test_4eC39HqLyjWDarjtT1zdp7dc");
+let { parsed: { STRIPE_API_KEY = '' } = {}} = require('dotenv').config();
+if (!STRIPE_API_KEY) STRIPE_API_KEY = process.env.STRIPE_API_KEY;
+const stripe = require("stripe")(STRIPE_API_KEY);
 
 // Stripe accepts amount in the form of cents, not dollars
 const calculateOrderAmount = items => 

@@ -36,6 +36,16 @@ const updateMusicIcon = (el, isStart = true) => {
     el.classList.add(isStart ? stop : play);
 }
 
+const playNextSound = () => {
+  if ($store.state.upNext.length) {
+    const nextSong = [...$store.state.upNext][0]; 
+    playSound(nextSong);
+    $store.dispatch("removeFromUpNext", nextSong);
+    return true;
+  }
+  return false;
+}
+
 const playSound = (song = {}, el) => {
     const { trackId = "", previewUrl = "" } = song;
     if(trackId) {
@@ -60,6 +70,7 @@ const playSound = (song = {}, el) => {
           $store.dispatch("setPlaying", null);
           $store.dispatch("setDataOfPlaying", {});
           $store.dispatch("setIsPlaying", false);
+          playNextSound();
         });
 
         // anytime song is paused, update it's play/stop icons
@@ -242,6 +253,7 @@ export {
     getUser,
     globalPausePlay,
     playSound,
+    playNextSound,
     cutLength,
     millisToMinutesAndSeconds,
     updateMusicIcon, 

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const express = require("express");
 const router = express.Router();
-const request = require("request");
 const bcrypt = require("bcrypt");
 const auth = require("./auth.js");
 const SALT_WORK_FACTOR = 10;

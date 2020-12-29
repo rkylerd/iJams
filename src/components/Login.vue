@@ -1,27 +1,27 @@
 <template>
-        <div >
-            <div id="input-login-container">
-                <span class="input">
-                    <label for="username">username</label>
-                    <input name="username" class="start-pages" v-model="username" type="text"><br>
-                </span><br>
+    <div >
+        <div id="input-login-container">
+            <span class="input">
+                <label for="username">username</label>
+                <input name="username" class="start-pages" v-model="username" type="text"><br>
+            </span><br>
 
-                <span class="input">
-                    <label for="password">password</label>
-                    <input class="start-pages" name="password" v-model="password" type="password"><br>
-                </span><br>
+            <span class="input">
+                <label for="password">password</label>
+                <input class="start-pages" name="password" v-model="password" type="password"><br>
+            </span><br>
 
-                <div id="account-error-container">
-                    <span v-for="(error,idx) in errors" :key="idx">{{error}}</span>
-                </div>
-
+            <div id="account-error-container">
+                <span v-for="(error,idx) in errors" :key="idx">{{error}}</span>
             </div>
 
-            <div style="margin: auto; width: 240px; height: 40px; padding-top: 20px;">
-                <!--<input @click="toggle" style="width: 125px;" class="confirmation-buttons" value="Register" type="button"/>-->
-                <input @click="go" class="confirmation-buttons" v-bind:class="{colorAnimation : loginanimation}" value="Submit" type="button"/>
-            </div>
         </div>
+
+        <div style="margin: auto; width: 240px; height: 40px; padding-top: 20px;">
+            <!--<input @click="toggle" style="width: 125px;" class="confirmation-buttons" value="Register" type="button"/>-->
+            <input @click="go" class="confirmation-buttons" v-bind:class="{colorAnimation : loginanimation}" value="Submit" type="button"/>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -73,11 +73,9 @@ export default {
         display: block; 
         float: right; 
         font-size: small;
-        background-color: #42b983; 
-        color: white; 
         width: 80px; 
         height: 25px;
-        border-radius: 15px;
+        border-radius: 4px;
         margin: 0 auto 5px auto;
         text-align: center;
     }
@@ -131,9 +129,7 @@ export default {
         
         font-family: 'Manjari', sans-serif;
         border-radius: 4px;
-        background-color: #192734;
         
-        color: #42b983;
         font-size: 15px;
         padding-left: 3px;
     }
@@ -143,5 +139,13 @@ export default {
         grid-template-columns: 60% 40%;
         align-items: center;
         justify-content: center;
+    }
+
+    input {
+        border: transparent;
+        background-color: whitesmoke;
+        color: #192734;
+        font-size: 15px;
+        font-weight: 550;
     }
 </style>

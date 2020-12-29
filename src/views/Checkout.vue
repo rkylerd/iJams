@@ -1,4 +1,7 @@
 <template>
+    <div class="page-title-container">
+        <div class="page-title">Checkout</div>
+    </div>
     <div id="outside-container">
         <section id="checkout">
             <div v-for="(item, idx) in checkoutItems" :key="idx">
@@ -13,8 +16,9 @@
                     </span>
                     <span class="name-cell"><span class="song-name">{{item.trackName}}</span></span>
                     <span class="name-cell"><span class="song-name">{{item.artistName}}</span></span>
-                    <span class="small-font">${{item.trackPrice}}</span> 
+                    <span class="small-font" style="margin-left: auto;">${{item.trackPrice}}</span> 
             </div>
+            <hr style="color: white;">
             <div class="space-btwn">
                 <span>Total:</span>
                 <span style="padding-right: .5em;">${{ orderTotal }}</span>
@@ -23,7 +27,7 @@
         <section>
             <form id="payment-form">
                 <div id="card-element"></div>
-                <button id="submit">
+                <button id="stripe-button">
                     <div class="spinner hidden" id="spinner"></div>
                     <span id="button-text">Pay</span>
                 </button>
@@ -44,7 +48,7 @@
     import { redirectHome } from '@/shared/navigation'
 
     export default {
-        name: 'Purchase',
+        name: 'Checkout',
         setup() {
             const priceReducer = (acc, {trackPrice = '0'}={}) => acc + parseFloat(trackPrice);
             const checkoutData = reactive({
@@ -53,7 +57,7 @@
             });
 
             onMounted(() => {
-                document.querySelector("button").disabled = true;
+                document.querySelector("#stripe-button").disabled = true;
                 if (store.state.checkoutItems.length === 0) {
                     redirectHome();
                     return;
@@ -98,7 +102,7 @@
 
     form {
         width: 30vw;
-        min-width: 500px;
+        min-width: 350px;
         align-self: center;
         box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
             0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
@@ -123,7 +127,7 @@
     }
 
     .result-message a {
-        color: rgb(89, 111, 214);
+        color: #42B9FF;
         font-weight: 600;
         text-decoration: none;
     }
@@ -155,7 +159,7 @@
 
     /* Buttons and links */
     button {
-        background: #5469d4;
+        background: #42B9FF;
         color: #ffffff;
         font-family: Arial, sans-serif;
         border-radius: 0 0 4px 4px;
@@ -208,7 +212,7 @@
     .spinner:before {
         width: 10.4px;
         height: 20.4px;
-        background: #5469d4;
+        background: #42B9FF;
         border-radius: 20.4px 0 0 20.4px;
         top: -0.2px;
         left: -0.2px;
@@ -221,7 +225,7 @@
     .spinner:after {
         width: 10.4px;
         height: 10.2px;
-        background: #5469d4;
+        background: #42B9FF;
         border-radius: 0 10.2px 10.2px 0;
         top: -0.1px;
         left: 10.2px;

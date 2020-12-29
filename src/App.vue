@@ -3,7 +3,7 @@
   <div id="app">
     <section v-if="user.username"> 
         <div id="nav">
-            <div class="page-title">iJams</div>
+            <div class="app-logo">iJams</div>
             <div id="form-data">
                 <form v-on:submit.prevent="search" v-on:keyup.enter="search" id="search-bar" class="form-inline">
                     <div class="search-container">
@@ -31,42 +31,45 @@
             <div class="flex-row" id="nav-links" v-if="!searchInputOpen || screenWidth > 400">
                 <router-link to="/ijams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
                 <router-link to="/ijams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
-                <!-- <router-link to="/ijams/playlist" class="nav-link">
-                <span class="flex-row">
-                    <span>Cart</span>
-                    <span class="x-small-font">
-                        <fa icon="shopping-cart" prefix="fas" class="menu-icon distance-left"></fa> <span v-if="cartSize">({{cartSize}})</span>
-                    </span>
-                </span>
-                </router-link> -->
                 <a class="nav-link" @click="logout"><span>Log out</span><fa icon="sign-out-alt" prefix="fas" class="menu-icon distance-left"></fa></a>            
+            </div>
+            <div v-else>
+                <a class="nav-link" @click="mobileOptionsShown = !mobileOptionsShown"><fa icon="bars" prefix="fas" class="menu-icon distance-left"></fa></a>
+                <div id="mobile-nav" v-if="mobileOptionsShown" @click="mobileOptionsShown = false">
+                    <router-link to="/ijams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
+                    <router-link to="/ijams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
+                    <a class="nav-link" @click="logout"><span>Log out</span><fa icon="sign-out-alt" prefix="fas" class="menu-icon distance-left"></fa></a>            
+                </div>
             </div>
         
         </div>
     </section>
     <section v-else>
-        <div class="page-title">iJams</div>
+        <div class="app-logo">iJams</div>
     </section>
-  <div id="music-player-container" v-if="playing">
-    <div class="flex-row" id="music-player">
-        <div class="flex-row" id="buttons">
-            <fa v-if="playing && isPlaying" @click="()=>globalPausePlay()" icon="pause" prefix="fas" class="menu-icon block"></fa>
-            <fa v-else @click="()=>globalPausePlay(false)" icon="play" prefix="fas" class="menu-icon block"></fa>
-            <fa icon="backward" prefix="fas" class="menu-icon block"></fa>
-            <fa icon="forward" prefix="fas" class="menu-icon block"></fa>
-        </div>
-        <div id="slider">
-            <span>
-                {{ millisToMinutesAndSeconds( currentTime * 1000 ).timeStr }} / {{ millisToMinutesAndSeconds( (dataOfPlaying.trackLengthSeconds || 30) * 1000 ).timeStr }}
-            </span>
-            <input type="range" 
-                min="0" 
-                @change="updateCurrentTime"
-                :value="currentTime" 
-                :max="dataOfPlaying.trackLengthSeconds || 30"/>
+    <div id="toasts" v-for="(toast, idx) in toasts" v-bind:key="idx">
+        <Toast :msg="toast.msg" :timeoutSeconds="4" :idx="idx"/>
+    </div>
+    <div id="music-player-container" v-if="playing">
+        <div class="flex-row" id="music-player">
+            <div class="flex-row" id="buttons">
+                <fa v-if="playing && isPlaying" @click="()=>globalPausePlay()" icon="pause" prefix="fas" class="menu-icon block"></fa>
+                <fa v-else @click="()=>globalPausePlay(false)" icon="play" prefix="fas" class="menu-icon block"></fa>
+                <fa icon="backward" @click="updateCurrentTime" prefix="fas" class="menu-icon block"></fa>
+                <fa icon="forward" @click="playNextSound" prefix="fas" class="menu-icon block"></fa>
+            </div>
+            <div id="slider">
+                <span>
+                    {{ millisToMinutesAndSeconds( currentTime * 1000 ).timeStr }} / {{ millisToMinutesAndSeconds( (dataOfPlaying.trackLengthSeconds || 30) * 1000 ).timeStr }}
+                </span>
+                <input type="range" 
+                    min="0" 
+                    @change="updateCurrentTime"
+                    :value="currentTime" 
+                    :max="dataOfPlaying.trackLengthSeconds || 30"/>
+            </div>
         </div>
     </div>
-  </div>
     <router-view/>
   </div>
 </template>
@@ -74,12 +77,16 @@
 <script>
     import { onBeforeMount, onBeforeUnmount, reactive, computed, toRefs } from 'vue'
     import { useStore } from 'vuex'
-    import { getUser, logout, playSound, globalPausePlay, millisToMinutesAndSeconds } from '@/shared/logic'
+    import { getUser, logout, playSound, globalPausePlay, millisToMinutesAndSeconds, playNextSound } from '@/shared/logic'
     import { goToRequestedPage, goToLogin } from '@/shared/navigation'
     import router from '@/router'
+    import Toast from '@/components/Toast.vue'
 
     export default {
     name: "playlist",
+    components: {
+        Toast
+    },
     setup() {
         const store = useStore()
         const search = () => {
@@ -103,11 +110,17 @@
             isPlaying: computed(() => store.state.isPlaying),
             currentTime: computed(() => parseInt(store.state.playingTime) ),
             dataOfPlaying: computed(() => store.state.dataOfPlaying),
+            toasts: computed(() => store.state.toasts),
             search,
             logout,
             playSound,
             globalPausePlay,
             millisToMinutesAndSeconds,
+            mobileOptionsShown: false,
+            playNextSound: () => { 
+                if (!playNextSound())
+                    store.dispatch("addToast", {msg: "Add a song to the 'up next' list first."});
+            },
             updateCurrentTime: 
                 ({ currentTarget: { value = 0 } = {} } = {}) =>
                     { if (appData.playing) store.dispatch('setCurrentTimeOfPlaying', value)} 
@@ -141,6 +154,27 @@ $width-desktop: 1600px;
 $width-tablet: 1024px;
 $width-phone: 400px;
 
+#mobile-nav {
+    position: absolute;
+    top: 45px;
+    width: 90vw;
+    height: 90vh;
+    right: 0;
+    background-color: whitesmoke;
+    z-index: 30;
+    text-align: right;
+    .nav-link {
+        background-color: #2c3e50;
+        color: whitesmoke;
+        &:hover {
+            background-color: #42b983;
+        }
+    }
+}
+
+.nav-link {
+    cursor: pointer;
+}
 #music-player-container {
     position: absolute;
     right: 0;
@@ -169,6 +203,9 @@ $width-phone: 400px;
             padding: 0 .5em;
             margin: auto 0;
             &#buttons {
+                > * {
+                    cursor: pointer;
+                }
                 > svg {
                     margin: 0 .3em;
                 }
@@ -186,8 +223,16 @@ $width-phone: 400px;
     }
 }
 
-
-.page-title {
+.app-logo {
+    display: inline-block;
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-weight: bold;
+    -ms-transform: skewY(-5deg); /* IE 9 */
+    -webkit-transform: skewY(-5deg); /* Safari 3-8 */
+    transform: skewY(-5deg);
+    text-shadow: 3px 3px white;
+    color: #42b983;
     margin: auto .4em;
     font-size: 20px;
 }
@@ -218,60 +263,15 @@ $width-phone: 400px;
     vertical-align: middle;
 }
 
-.dropdown {
-    cursor: default;
-    position: relative;
-    display: inline-block;
-}
-
 .block {
     display: block !important;
     z-index: 5;
-}
-
-.dropdown-content {
-  cursor: pointer;
-  display: none;
-  position: absolute;
-  /*left: -10px;*/
-  font-size: smaller;
-  background-color: #2c3e50;
-  color: whitesmoke;
-  margin-top: 1px;
-  min-width: 150px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  padding: 6px 0 6px 0;
-  min-height: 35px;
-  border-radius: 5px;
-  z-index: 5;
-}
-
-.dropdown-content > span {
-    text-align: left;
-    width: 100%; 
-    line-height: 2;
-    min-height: 30px;
-    font-size: 14px;
-    display: block;
-    
-}
-
-.dropdown-content > span > span {
-    padding : 3px 0 3px 4px;
-}
-
-.dropdown-content > span:hover {
-    width: 100%;
-    color: whitesmoke;
-    background-color: #42b983 !important;
-    /*background-color: #2c3e50;*/
 }
 
 #nav-links {
     align-items: center;
     
     .nav-link {
-        cursor: pointer;
         margin-right: .2em;
         display: flex;
         font-family: 'Fredoka One', cursive;
@@ -283,9 +283,6 @@ $width-phone: 400px;
         transition-duration: 1s;
         border: transparent 1px;
         border-radius: 8px; 
-        &:hover {
-            box-shadow: 1px 1px #444;
-        }
         > span:not(.flex-row), span.flex-row > span:first-of-type {
             @media (max-width: 700px) {
                 display: none;
@@ -339,9 +336,7 @@ $width-phone: 400px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  /* color: #2c3e50;
-   */
-   color: whitesmoke;
+  color: whitesmoke;
   background-color: black;
 }
 
@@ -367,5 +362,72 @@ $width-phone: 400px;
 .form-control {
     border-radius: 0;
     padding: 0 .25em;
+}
+
+// *********Global Time Slider********
+input[type=range] {
+  width: 100%;
+  margin: 6.6px 0;
+  background-color: transparent;
+  -webkit-appearance: none;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  background: white;
+  border-radius: 1.3px;
+  width: 100%;
+  height: 3.8px;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  margin-top: -6.8px;
+  width: 6px;
+  height: 17px;
+  background: #2c3e50;
+  border-radius: 2px;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+// input[type=range]:focus::-webkit-slider-runnable-track {
+//   background: white;
+// }
+input[type=range]::-moz-range-track {
+  background: #2c3e50;
+  border-radius: 1.3px;
+  width: 100%;
+  height: 3.8px;
+  cursor: pointer;
+}
+input[type=range]::-moz-range-thumb {
+  width: 6px;
+  height: 17px;
+  background: #2c3e50;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  border-width: 18.4px 0;
+  color: transparent;
+  width: 100%;
+  height: 3.8px;
+  cursor: pointer;
+}
+
+// input[type=range]::-ms-fill-upper {
+//   background: rgba(0, 0, 94, 0.1);
+//   border: 0.2px solid #010101;
+//   border-radius: 2.6px;
+// }
+input[type=range]::-ms-thumb {
+  width: 6px;
+  height: 17px;
+  background: #2c3e50;
+  border-radius: 22px;
+  cursor: pointer;
+  margin-top: 0px;
+  /*Needed to keep the Edge thumb centred*/
 }
 </style>

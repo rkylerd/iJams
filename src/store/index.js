@@ -15,7 +15,9 @@ export default createStore({
     },
     loginRedirect: "/ijams/",
     cart: [],
-    checkoutItems: []
+    checkoutItems: [],
+    upNext: [],
+    toasts: []
   },
   mutations: {
     setLoginRedirect(state, redirect) {
@@ -52,6 +54,19 @@ export default createStore({
     },
     setCurrentTimeOfPlaying(state, time) {
       state.playing.currentTime = time;
+    },
+    addToUpNext(state, song) {
+      state.upNext.push(song);
+    },
+    removeFromUpNext(state, song) {
+      const index = state.upNext.indexOf(song);
+      state.upNext.splice(index, 1);
+    },
+    addToast(state, toast) {
+      state.toasts.push(toast);
+    },
+    removeToast(state, index) {
+      state.toasts.splice(index, 1);
     }
   },
   actions: {
@@ -103,6 +118,18 @@ export default createStore({
     },
     setCheckoutItems(context, items) {
       context.commit("setCheckoutItems", items);
+    },
+    addToUpNext(context, song) {
+      context.commit("addToUpNext", song);
+    },
+    removeFromUpNext(context, song) {
+      context.commit("removeFromUpNext", song);
+    },
+    addToast(context, toast) {
+      context.commit("addToast", toast);
+    },
+    removeToast(context, indexOfToast) {
+      context.commit("removeToast", indexOfToast);
     }
   },
   modules: {}

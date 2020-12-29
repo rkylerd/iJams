@@ -1,8 +1,18 @@
 <template>
   <div>
-      <div class="page-title">Playlist</div>
+      <div class="page-title-container">
+        <div class="page-title">Playlist</div>
+      </div>
       <section>
-          <div><button v-if="mediaForCheckout.length" @click="goToCheckout">Go to checkout with selected songs ({{mediaForCheckout.length}})</button></div>
+        <div style="text-align: left;">
+            Number of selected songs: ({{mediaForCheckout.length}})
+            <button 
+                class="btn btn-success" 
+                :disabled="!mediaForCheckout.length" 
+                @click="goToCheckout">
+                    Go to checkout
+            </button>
+        </div>
         <div class="playlist-normal">
             <SongCard 
                 v-for="(song, idx) in playlist" 
@@ -21,14 +31,19 @@
 
 <style scoped lang="scss">
 
-    .playlist-normal {
+    section {
         margin: 3rem;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        overflow-x: auto;
-        @media (max-width: 652px) {
-            justify-content: center;
+        > * {
+            margin-bottom: .5em;
+        }
+        .playlist-normal {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            overflow-x: auto;
+            @media (max-width: 652px) {
+                justify-content: center;
+            }
         }
     }
 
