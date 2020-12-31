@@ -1,13 +1,13 @@
 <template>
   <div class="single-track">
-        <a class="album-art" :style="{ 'background-image': 'url(' + song.artworkUrl60 + ')' }" @click.prevent="({ srcElement } = {}) => playSound(song, srcElement)">
+        <div class="album-art" :style="{ 'background-image': 'url(' + song.artworkUrl60 + ')' }" @click.prevent="({ srcElement } = {}) => playSound(song, srcElement)">
             <img width="60" height="60" :class="{ 'play' : !isPlaying(song.trackId), 'stop' : isPlaying(song.trackId) }">
-        </a>
+        </div>
         
         <div class="song-info">
             <div class="name-artist">
-                <a class="song-name small-font" @click.prevent="goToAlbum(song)"><strong>{{song.trackName}}</strong></a><br>
-                <a class="artist-name white-text small-font" @click.prevent="filterArtist(song.artistId)">{{song.artistName}}</a><br>
+                <span class="song-name small-font" @click.prevent="goToAlbum(song)"><strong>{{song.trackName}}</strong></span><br>
+                <span class="artist-name small-font" @click.prevent="filterArtist(song.artistId)">{{song.artistName}}</span><br>
             </div>
             
             <div>

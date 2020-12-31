@@ -50,23 +50,39 @@
     <div id="toasts" v-for="(toast, idx) in toasts" v-bind:key="idx">
         <Toast :msg="toast.msg" :timeoutSeconds="4" :idx="idx"/>
     </div>
-    <div id="music-player-container" v-if="playing">
+    <div id="music-player-container" v-if="playing" :class="{'hidden': !musicPlayerShowing}">
         <div class="flex-row" id="music-player">
+            <div id="caret">
+                <fa v-if="musicPlayerShowing" icon="caret-right" @click="musicPlayerShowing = false" prefix="fas" class="block"></fa>
+                <fa v-else icon="caret-left" @click="musicPlayerShowing = true" prefix="fas" class="block"></fa>
+            </div>
             <div class="flex-row" id="buttons">
-                <fa v-if="playing && isPlaying" @click="()=>globalPausePlay()" icon="pause" prefix="fas" class="menu-icon block"></fa>
-                <fa v-else @click="()=>globalPausePlay(false)" icon="play" prefix="fas" class="menu-icon block"></fa>
-                <fa icon="backward" @click="updateCurrentTime" prefix="fas" class="menu-icon block"></fa>
-                <fa icon="forward" @click="playNextSound" prefix="fas" class="menu-icon block"></fa>
+                <div>
+                    <fa icon="backward" @click="updateCurrentTime" prefix="fas" class="block"></fa>
+                </div>
+                <div v-if="playing && isPlaying">
+                    <fa @click="()=>globalPausePlay()" icon="pause" prefix="fas" class="menu-icon block"></fa>
+                </div>
+                <div v-else id="play">
+                    <fa @click="()=>globalPausePlay(false)" icon="play" prefix="fas" class="menu-icon block"></fa>
+                </div>
+                <div>
+                    <fa icon="forward" @click="playNextSound" prefix="fas" class="menu-icon block"></fa>
+                </div>
             </div>
             <div id="slider">
                 <span>
-                    {{ millisToMinutesAndSeconds( currentTime * 1000 ).timeStr }} / {{ millisToMinutesAndSeconds( (dataOfPlaying.trackLengthSeconds || 30) * 1000 ).timeStr }}
+                    {{ millisToMinutesAndSeconds( currentTime * 1000 ).timeStr }}
                 </span>
-                <input type="range" 
+                <input 
+                    type="range" 
                     min="0" 
                     @change="updateCurrentTime"
                     :value="currentTime" 
                     :max="dataOfPlaying.trackLengthSeconds || 30"/>
+                <span>
+                    {{ millisToMinutesAndSeconds( (dataOfPlaying.trackLengthSeconds || 30) * 1000 ).timeStr }}
+                </span>
             </div>
         </div>
     </div>
@@ -103,6 +119,7 @@
             user: computed(() => store.state.user),
             searchTerm: '',
             searchInputOpen: true,
+            musicPlayerShowing: true,
             screenWidth: window.innerWidth,
             onResize: () => appData.screenWidth = window.innerWidth,
             cartSize: computed(() => store.state.cart.length),
@@ -160,12 +177,12 @@ $width-phone: 400px;
     width: 90vw;
     height: 90vh;
     right: 0;
-    background-color: whitesmoke;
+    background-color: #f7f7f7;
     z-index: 30;
     text-align: right;
     .nav-link {
-        background-color: #2c3e50;
-        color: whitesmoke;
+        background-color: #292b2c;
+        color: #f7f7f7;
         &:hover {
             background-color: #42b983;
         }
@@ -178,11 +195,21 @@ $width-phone: 400px;
 #music-player-container {
     position: absolute;
     right: 0;
+    overflow-x: hidden;
     z-index: 10;
-    transition: height .3s;
+    transition: width .3s;
+    @media (max-width: $width-desktop) {
+        width: 50vw;
+    }
+    @media (max-width: $width-tablet) {
+        width: 90vw;
+    }
     #music-player {
+        transition: width .3s;
+        border-left: solid .25em #292b2c;
+        border-bottom: solid .25em #292b2c;
+        background-color: rgb(247, 247, 247);
         @media (max-width: $width-desktop) {
-            background-color: #00c5ff;
             border-bottom-left-radius: 8px;
             min-height: 3em;
             width: 50vw;
@@ -191,6 +218,7 @@ $width-phone: 400px;
                 width: 100%;
                 input {
                     flex-grow: 1;
+                    margin: auto .5em;
                 }
             }
         }
@@ -200,14 +228,54 @@ $width-phone: 400px;
         }
         
         > div {
-            padding: 0 .5em;
             margin: auto 0;
-            &#buttons {
-                > * {
-                    cursor: pointer;
-                }
+            &#caret {
+                background-color: #292b2c;
+                color: rgb(247, 247, 247);
+                margin: auto .1em auto 0;
+                width: 2em;
+                height: 2em;
+                min-width: 20px;
+                border-bottom-right-radius: 4px;
+                border-top-right-radius: 4px;
+                cursor: pointer;
+                transition: box-shadow .3s;
                 > svg {
-                    margin: 0 .3em;
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            &#buttons {
+                > div {
+                    &#play {
+                        padding-left: 2px;
+                    }
+                    margin: auto .1em;
+                    width: 2em;
+                    height: 2em;
+                    &:nth-child(1) {
+                        padding-right: 2px;
+                    }
+                    &:nth-child(3) {
+                        padding-left: 2px;
+                    }
+                    &:nth-child(2) {
+                        width: 2.5em;
+                        height: 2.5em;    
+                    }
+                    border-radius: 50%;
+                    background-color: rgb(247, 247, 247);
+                    cursor: pointer;
+                    transition: box-shadow .3s;
+                    > svg {
+                        width: 50%;
+                        height: 100%;
+                        margin: auto;
+                    }
+                    &:hover {
+                        -webkit-box-shadow: 0 0 10px #1f2b38;
+                        box-shadow: 0 0 10px #1f2b38;
+                    }
                 }
             }
             &#slider {
@@ -221,6 +289,9 @@ $width-phone: 400px;
             }
         }
     }
+    &.hidden {
+       width: 40px;
+    }
 }
 
 .app-logo {
@@ -231,7 +302,7 @@ $width-phone: 400px;
     -ms-transform: skewY(-5deg); /* IE 9 */
     -webkit-transform: skewY(-5deg); /* Safari 3-8 */
     transform: skewY(-5deg);
-    text-shadow: 3px 3px white;
+    text-shadow: 3px 3px #f7f7f7;
     color: #42b983;
     margin: auto .4em;
     font-size: 20px;
@@ -277,7 +348,6 @@ $width-phone: 400px;
         font-family: 'Fredoka One', cursive;
         font-weight: bold;
         font-size: 3vh;
-        color: #2c3e50;
         max-width: 100px;
         padding: 4px;
         transition-duration: 1s;
@@ -303,6 +373,7 @@ $width-phone: 400px;
     padding: 0px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+
 }
 
 #search-button {
@@ -329,39 +400,49 @@ $width-phone: 400px;
 .search-container {
     display: flex;
     height: 25px;
+    > button {
+        background-color: rgb(247, 247, 247);
+        &:hover {
+            background-color: #28a745;
+        }
+    }
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: whitesmoke;
-  background-color: black;
+  color: #292b2c;
+  background-color: rgb(247, 247, 247, .9);
 }
 
 #nav {
     display: flex;
     flex-wrap: nowrap;
-    background-color: whitesmoke;
-    min-height: 45px;
+    background-color: #292b2c;
+    color: #f7f7f7;
+    min-height: 12vh;
 }
 
 #form-data {
-    margin-right: auto; 
+    flex-grow: 1; 
     display: flex; 
     flex-wrap: nowrap;
 }
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: rgb(247, 247, 247);
 }
 
 @import '~bootstrap/dist/css/bootstrap.css';
 .form-control {
     border-radius: 0;
+    border-left: none;
+    border-right: none;
     padding: 0 .25em;
+    border-color: #28a745;
+    background-color: rgb(247, 247, 247);
 }
 
 // *********Global Time Slider********
@@ -375,7 +456,7 @@ input[type=range]:focus {
   outline: none;
 }
 input[type=range]::-webkit-slider-runnable-track {
-  background: white;
+  background: #292b2c;
   border-radius: 1.3px;
   width: 100%;
   height: 3.8px;
@@ -385,7 +466,7 @@ input[type=range]::-webkit-slider-thumb {
   margin-top: -6.8px;
   width: 6px;
   height: 17px;
-  background: #2c3e50;
+  background: #292b2c;
   border-radius: 2px;
   cursor: pointer;
   -webkit-appearance: none;
@@ -394,7 +475,7 @@ input[type=range]::-webkit-slider-thumb {
 //   background: white;
 // }
 input[type=range]::-moz-range-track {
-  background: #2c3e50;
+  background: #292b2c;
   border-radius: 1.3px;
   width: 100%;
   height: 3.8px;
@@ -403,7 +484,7 @@ input[type=range]::-moz-range-track {
 input[type=range]::-moz-range-thumb {
   width: 6px;
   height: 17px;
-  background: #2c3e50;
+  background: #292b2c;
   cursor: pointer;
 }
 input[type=range]::-ms-track {
@@ -424,7 +505,7 @@ input[type=range]::-ms-track {
 input[type=range]::-ms-thumb {
   width: 6px;
   height: 17px;
-  background: #2c3e50;
+  background: #292b2c;
   border-radius: 22px;
   cursor: pointer;
   margin-top: 0px;

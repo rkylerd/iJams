@@ -101,24 +101,30 @@ export default {
 
 <style lang="scss" scoped>
     div {
+        transition: background-color .3s;
         div.svg-container {
             margin: 4px 4px 0 0;
             padding: 4px;
-            width: 22px;
-            height: 22px;
+            width: 1.5em;
+            height: 1.5em;
             border-radius: 50%;
+            &:hover {
+                cursor: pointer;
+                background-color: #292b2c;
+                color: #f7f7f7;
+            }
         }
         div.options-container {
             position: absolute;
             font-size: small;
-            background-color: white;
-            color: black;
+            color: #f7f7f7;
+            background-color: #292b2c;
             min-width: 100px;
             max-width: 100px;
             border-radius: 3px;
             :hover {
-                background-color: #42B9FF;
-                color: white;
+                background-color: #42b983;
+                color: #f7f7f7;
             }
             
             div {
@@ -130,14 +136,11 @@ export default {
                     padding: 10px 0 7px 5px;
                     height: 40px;
                 }
-                border-bottom: 1px solid black;
+                border-bottom: 1px solid #292b2c;
             }
         }
     }
-    .svg-container:hover {
-        cursor: pointer;
-        background-color: #00a2ff;
-    }
+    
     .block-icon {
         display: block;
     }

@@ -1,8 +1,12 @@
 <template>
-  <div class="playlist-single-track" style="border-right: 1px solid white;">
+  <div class="playlist-single-track">
       <div class="fav-num-container">
-          <span v-if="!selected" @click.prevent="(e)=>{setSelected(e); emitCheckout(selected);}" class="fav-num white-text small-font">{{displayNum}}</span>
-          <input v-else type="checkbox" :checked="selected" @click.prevent="(e)=>{setSelected(e); emitCheckout(selected);}" class="fav-num white-text small-font"/>
+        <div v-if="!selected" @click.prevent="(e)=>{setSelected(e); emitCheckout(selected);}" class="fav-num small-font" style="cursor: pointer;">
+          <span>{{displayNum}}</span>
+        </div>
+        <div v-else>
+          <input type="checkbox" :checked="selected" @click.prevent="(e)=>{setSelected(e); emitCheckout(selected);}" class="fav-num small-font"/>
+        </div>
           <Options :media="song" type="song-cart"/>  
       </div>
 
@@ -11,8 +15,8 @@
       </div>
 
       <div class="name-artist">
-          <a class="white-text song-name" @click.prevent="goToAlbum(song)" href=""><strong>{{song.trackName}}</strong></a><br>
-          <a class=" white-text artist-name link" @click.prevent="filterArtist(song.artistId)">{{song.artistName}}</a><br>
+          <span class="song-name" @click.prevent="goToAlbum(song)"><strong>{{song.trackName}}</strong></span><br>
+          <span class="artist-name link" @click.prevent="filterArtist(song.artistId)">{{song.artistName}}</span><br>
       </div>
   </div> 
 </template>
@@ -72,8 +76,8 @@ export default {
     .fav-num {
         /* padding: .25rem .5rem 0 .5rem; */
         width: 20px;
-        border: solid 1px white;
-
+        background-color: #292b2c;
+        color: #f7f7f7;
         border-radius: .3rem;
     }
     .name-artist {
@@ -82,7 +86,8 @@ export default {
     }
 
     .playlist-single-track {
-        border-top: white 1px solid;
+        border-top: 1px solid #292b2c;
+        border-right: 1px solid #292b2c;
         width: 180px;
     }
     .album-art {

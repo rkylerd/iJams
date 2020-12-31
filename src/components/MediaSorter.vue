@@ -3,17 +3,15 @@
         <select 
             @change="({ target : { value = '' } = {} } = {}) => 
                 {sort.by = value; sortMedia()}"
-            :value="sort.by">Sort
+                :value="sort.by">Sort
             <!-- <option value="trackTimeMillis">Track Length</option> -->
             <option value="trackName">Name</option>
             <option value="releaseDate">Release Date</option>
         </select>
-        <input 
-            type="button" 
+        <button 
             @click="()=>{
                 sortMedia(true)
-            }" 
-            :value="toggleBtnText.get(sort.by + (sort.inAsc ? 'true' : 'false'))">
+            }">{{toggleBtnText.get(sort.by + (sort.inAsc ? 'true' : 'false'))}}</button>
     </div>
 </template>
 
@@ -29,8 +27,8 @@ export default {
             toggleBtnText: new Map([
                 ['releaseDatetrue', 'Newest first'], 
                 ['releaseDatefalse', 'Oldest first'], 
-                ['trackNamefalse', '#\'s & A\'s first'], 
-                ['trackNametrue', 'Z\'s first']])
+                ['trackNamefalse', '#s & As first'], 
+                ['trackNametrue', 'Zs first']])
         }
   },
   props: {
@@ -61,11 +59,21 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     div {
-        select, input[type="button"] {
+        select, button {
             font-size: small;
-            padding: 0;
+            padding: .4em;
+            min-height: 2em;
+            display: inline-block;
+        }
+        button {
+            background-color: #292b2c;
+            border-color: transparent;
+            &:hover {
+                background-color: #42b983;
+            }
+            border-radius: 3px;
         }
     }
 </style>

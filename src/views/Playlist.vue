@@ -4,8 +4,8 @@
         <div class="page-title">Playlist</div>
       </div>
       <section>
-        <div style="text-align: left;">
-            Number of selected songs: ({{mediaForCheckout.length}})
+        <div style="text-align: right;">
+            Selected songs: ({{mediaForCheckout.length}})
             <button 
                 class="btn btn-success" 
                 :disabled="!mediaForCheckout.length" 
@@ -32,9 +32,24 @@
 <style scoped lang="scss">
 
     section {
-        margin: 3rem;
+        margin: 0 3rem;
         > * {
             margin-bottom: .5em;
+            .btn-success {
+                background-color: #292b2c;
+                border-color: transparent;
+                &:hover {
+                    background-color: #42b983;
+                }
+            }
+            .btn {
+                opacity: 1;
+            }
+        }
+        > div {
+            > button {
+                font-size: small;
+            }
         }
         .playlist-normal {
             display: flex;

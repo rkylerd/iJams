@@ -31,7 +31,7 @@
                     <td class="artist-cell"><div @click.prevent="filterArtist(song.artistId)" class="x-small-font link">{{song.artistName}}</div></td>
                     <td class="time-cell"><div class="small-album-info">{{song.trackTimeMillis}}</div></td>
                     <td><Options type="song" :media="song"/></td>
-                    <td v-if="song.trackExplicitness.toLowerCase() === 'explicit' || song.trackExplicitness.toLowerCase() === 'cleaned'" class="explicitness-container"
+                    <td v-if="song.trackExplicitness.toLowerCase() === 'explicit' || song.trackExplicitness.toLowerCase() === 'cleaned'" style="vertical-align: top;" class="explicitness-container"
                         :class="{'explicit': song.trackExplicitness.toLowerCase() === 'explicit', 
                                 'clean': song.trackExplicitness.toLowerCase() === 'cleaned' }">
                                 {{song.collectionExplicitness}}
@@ -143,14 +143,12 @@
 
             th {
                 font-size: small;
-                color: white;
                 text-align: left;
             }
 
             td {
-                border-top: white 1px solid;
+                border-top: #292b2c 1px solid;
                 .small-album-info {
-                    color: white;
                     font-size: x-small;
                 }
             }
@@ -158,7 +156,7 @@
             td.trackNumber-cell {
                 min-width: 20px;
                 font-size: small;
-                color: white;
+                color: #292b2c;
                 max-width: 25px;
                 height: 25px;
                 text-align: center;

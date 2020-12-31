@@ -1,10 +1,12 @@
 <template>
     <div>
+        <div class="page-title-container" style="align-self: center;">
+            <div class="page-title">Search: {{searchTerm}}</div>
+        </div>
         <section class="sectionInfo">
-            <h3>Search Results: {{searchTerm}}</h3>
             <MediaSorter @sort-media="handleSort('songResults')" v-bind:media="songResults" type="song"/>     
-        </section> 
-        <div class="container-normal">
+        </section>
+        <div class="container-normal flex-row">
             <div class="flex-col-wrap">
                 <SongTile class="flex-row flex-wrap" :song="song" v-for="(song, idx) in songResults" :idx="idx" :key="idx"/>   
             </div>
@@ -35,7 +37,6 @@
         
         .container-normal {
             margin: unset auto;
-            /* height: 400px; */
             flex-direction: row;
             overflow-x: auto;
         }

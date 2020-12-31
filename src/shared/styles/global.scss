@@ -3,6 +3,14 @@ $width-tablet: 1024px;
 $width-desktop: 1600px;
 $width-phone: 400px;
 
+body {
+ background-color: rgb(247, 247, 247, .9);
+ color: #292b2c;
+ background-image: none;
+ transition: background-image .3s;
+ font-family: "Josefin Sans", sans-serif;
+}
+
 .search-btn {
     height: 25px;
     width: 25px;
@@ -35,10 +43,7 @@ $width-phone: 400px;
         font-family: 'Fredoka One', cursive;
         font-weight: bold;
         font-size: 40px;
-        -ms-transform: skewY(-5deg); /* IE 9 */
-        -webkit-transform: skewY(-5deg); /* Safari 3-8 */
-        transform: skewY(-5deg);
-        text-shadow: 3px 3px #2c3e50;
+        text-shadow: 3px 3px #292b2c;
         color: white;
         
     }
@@ -59,10 +64,6 @@ $width-phone: 400px;
 
 .x-small-font {
     font-size: x-small;
-}
-
-.white-text {
-    color: white;
 }
 
 .explicit {    
@@ -110,7 +111,6 @@ $width-phone: 400px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    background: black;
 }
 
 .album-art {
@@ -119,10 +119,7 @@ $width-phone: 400px;
 }
 
 .play:hover {       
-
-    /* background: url(https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Ei-play.svg/120px-Ei-play.svg.png) center no-repeat; */
-    background: url(https://www.wisc-online.com/asset-repository/getfile?id=414&getType=view
-) center no-repeat;
+    background: url(https://www.wisc-online.com/asset-repository/getfile?id=414&getType=view) center no-repeat;
     background-size: 40px 40px;
 }
 
@@ -132,27 +129,22 @@ $width-phone: 400px;
 }
 
 .single-track {
-    border-top: white 1px solid; 
+    border-top: #292b2c 1px solid; 
     max-width: 220px;
 }
 
 .song-name {
-    color: white;
     font-size: small;
 }
 
 .artist-name {
-    color: white;
     font-size: x-small;
 }
 
 .name-artist {
     min-width: 122px;
-    a {
+    span {
         cursor: pointer;
-        &:hover {
-            color: white;
-        }
     }
 }
 

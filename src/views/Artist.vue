@@ -2,7 +2,7 @@
   <div>
     <section class="flex-row flex-wrap">
       <template v-if="!loading">
-        <h3 v-if="artistAlbums.length" style="margin-top: 2%; margin-left: 5%; color: whitesmoke;">{{artistAlbums[0].artistName}}</h3>
+        <h3 v-if="artistAlbums.length" style="margin-top: 2%; margin-left: 5%;">{{artistAlbums[0].artistName}}</h3>
         <br>
         <div class="container-normal">
           <div class="flex-col-wrap">            
@@ -35,7 +35,7 @@
 }
 
 .albums-container {
-    border-top: white 1px solid; 
+    border-top: #292b2c 1px solid; 
     max-width: 175px;
 }
 

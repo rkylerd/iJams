@@ -152,7 +152,7 @@
         display: block; 
         float: right; 
         font-size: small;
-        background-color: whitesmoke; 
+        background-color: #f7f7f7; 
         color: ; 
         width: 80px; 
         height: 25px;
@@ -243,7 +243,7 @@
 
     input {
         border: transparent;
-        background-color: whitesmoke;
+        background-color: #f7f7f7;
         color: #192734;
         font-size: 15px;
         font-weight: 550;

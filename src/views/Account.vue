@@ -17,6 +17,9 @@
 
 <style type="text/css" lang="scss">
     @import url('https://fonts.googleapis.com/css?family=Cabin|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap');
+    #app {
+      background-color: rgb(247, 247, 247, .7);
+    }
     .tabs-container {
         display: flex;
         width: 30vw;
@@ -38,29 +41,28 @@
               abs. positioned and on bottom */
             position: absolute;
             bottom: 0;
-            background: #192734;
+            background: white;
             width: 10px;
             height: 10px;
           }
-
           &.active {
             /* Highest, active tab is on top */
             z-index: 3;
             &:after, &:before {
-              background: whitesmoke; 
+              background-color: #292b2c; 
               
               /* Squares below circles */
               z-index: 1;
             }
             a { 
               /* Colors when tab is active */
-              background: whitesmoke; 
-              color: #192734;
+              background-color: #292b2c; 
+              color: white;
               &:before, &:after {
-                background: #192734;
+                background: #f7f7f7;
               }  
               &:hover {
-                color: #192734;
+                color: #f7f7f7;
               }
             }
           }
@@ -78,12 +80,11 @@
             float: left; 
             padding: 5px 20px; 
             text-decoration: none;
-            
             /* Default colors */ 
             font-family: 'Josefin Sans', sans-serif;    
             font-weight: bold;
-            background: #192734; 
-            
+            background-color: #42b983; 
+            color: #f7f7f7;
             /* Only round the top corners */
             -webkit-border-top-left-radius: 15px;
             -webkit-border-top-right-radius: 15px;
@@ -102,14 +103,13 @@
                 abs. positioned and on bottom */
               position: absolute;
               bottom: 0;
-
+              background-color: #f7f7f7;
               width: 20px; 
               height: 20px;
               /* Circles are circular */
               -webkit-border-radius: 10px;
               -moz-border-radius:    10px;
               border-radius:         10px;
-              background: black;
               
               /* Circles over squares */
               z-index: 2;
@@ -131,15 +131,22 @@
        outside color needs */
     .tabs li:first-child.active a:before,
     .tabs li:last-child.active a:after {
-      background: black;
+      background-color:#f7f7f7;
+    }
+
+    .tabs li:first-child.active a:after,
+    .tabs li:last-child.active a:before {
+      background-color: #42b983;
     }
     
    #account-container {
-      background: #192734;
-      color: whitesmoke;
-      border: #0b0129 solid 1px;
+      background-color: #292b2c;
+      color: #f7f7f7;
+      border:#292b2c solid 1px;
       border-radius: 10px;
-      box-shadow: #ccc 0px 4px 0px 0px;
+      // -webkit-box-shadow: 0 0 10px #1f2b38;
+      // box-shadow: 0 0 10px #1f2b38;
+      
       width: 30vw;
       min-width: 310px;
       min-height: 310px;
