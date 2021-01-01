@@ -1,25 +1,22 @@
 <template>
-    <div >
-        <div id="input-login-container">
-            <span class="input">
-                <label for="username">username</label>
-                <input name="username" class="start-pages" v-model="username" type="text"><br>
-            </span><br>
-
-            <span class="input">
-                <label for="password">password</label>
-                <input class="start-pages" name="password" v-model="password" type="password"><br>
-            </span><br>
-
-            <div id="account-error-container">
-                <span v-for="(error,idx) in errors" :key="idx">{{error}}</span>
+    <div class="login-container">
+        <div>
+            <label for="username">Username</label>
+            <input name="username" v-model="username" type="text">
+            <div class="error-container">
             </div>
-
         </div>
 
-        <div style="margin: auto; width: 240px; height: 40px; padding-top: 20px;">
-            <!--<input @click="toggle" style="width: 125px;" class="confirmation-buttons" value="Register" type="button"/>-->
-            <input @click="go" class="confirmation-buttons" v-bind:class="{colorAnimation : loginanimation}" value="Submit" type="button"/>
+        <div>
+            <label for="password">Password</label>
+            <input name="password" v-model="password" type="password">
+            <div class="error-container" style="min-height: 3em;">
+                <span v-for="(error,idx) in errors" :key="idx">*{{error}}</span>
+            </div>
+        </div>
+        
+        <div class="submit">
+            <button @click="go" v-bind:class="{colorAnimation : loginanimation}">Login</button>
         </div>
     </div>
 </template>
@@ -57,95 +54,3 @@ export default {
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-    @import url('https://fonts.googleapis.com/css?family=Cabin|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap');
-
-    #account-error-container {
-        min-height: 15px;
-        color: red;
-        text-align: left;
-        
-    }
-    
-    .confirmation-buttons {
-        display: block; 
-        float: right; 
-        font-size: small;
-        width: 80px; 
-        height: 25px;
-        border-radius: 4px;
-        margin: 0 auto 5px auto;
-        text-align: center;
-    }
-    
-    .confirmation-buttons:hover {
-        cursor: pointer;
-    }
-    
-    .colorAnimation {
-        animation: colorchange 10s infinite; /* animation-name followed by duration in seconds*/
-             /* you could also use milliseconds (ms) or something like 2.5s */
-          -webkit-animation: colorchange 10s infinite; /* Chrome and Safari */
-    }
-    
-    @keyframes colorchange
-    {
-      0%   {background: #1c89cc;}
-      25%  {background: green;}
-      50%  {background: #1c89cc;}
-      75%  {background: green;}
-      100% {background: #1c89cc;}
-    }
-    
-    @-webkit-keyframes colorchange /* Safari and Chrome - necessary duplicate */
-    {
-        0%   {background: #1c89cc;}
-        25%  {background: green;}
-        50%  {background: #1c89cc;}
-        75%  {background: green;}
-        100% {background: #1c89cc;}
-    }
-    
-    #input-login-container {
-        width: 200px;
-        font-size: small;
-        text-align: center;
-        margin: 20px auto 0 auto;
-    }
-    
-    
-    label {
-        display: block;
-        text-align: left;
-        font-size: larger;
-    }
-    
-    input.start-pages {
-        /* margin: 10px; */
-        width: 220px;
-        height: 30px;
-        
-        font-family: 'Manjari', sans-serif;
-        border-radius: 4px;
-        
-        font-size: 15px;
-        padding-left: 3px;
-    }
-    
-    .two-col-container {
-        display: grid;
-        grid-template-columns: 60% 40%;
-        align-items: center;
-        justify-content: center;
-    }
-
-    input {
-        border: transparent;
-        background-color: #f7f7f7;
-        color: #192734;
-        font-size: 15px;
-        font-weight: 550;
-    }
-</style>

@@ -1,47 +1,45 @@
 <template>
-  <div>
-      <div id="input-register-container">
-          <span class="input">
-                  <label for="username">username</label>
-                  <input name="username" class="start-pages" @keyup="checkUsername" v-model="username" type="text" autofocus>
-                  <span v-if="unameerror.length > 0">
-                    <span id="account-error-container" v-for="(error, idx) in unameerror" :key="idx">{{error}}</span>
-                  </span>
-              </span><br><br>
-  
-          <span class="input">
-                  <label for="password">password</label>
-                  <input class="start-pages" @keyup="checkPassword" name="password" v-model="password" type="password">
-                  <span v-if="passerror.length > 0">
-                      <span id="account-error-container" v-for="(error, idx) in passerror" :key="idx">{{error}}</span>
-                  </span>
-              </span><br><br>
-          
-          <span class="input">
-                <label for="psswdConf">password confirmation</label>
-                <input class="start-pages" @keyup="checkPasswordConf" name="psswd" v-model="passwordconf" type="password">
-                <span v-if="passwordconf != ''" id="account-error-container">{{conferror}}</span>
-            </span><br><br>
-                
-            <span class="input">
-                <label for="firstname">first name</label>
-                <input name="firstname" @keyup="checkFName" class="start-pages" placeholder="" v-model="firstname" type="text">
-                <span v-if="fnameerror.length > 0">
-                    <span id="account-error-container" v-for="(error, idx) in fnameerror" :key="idx">*{{error}}</span>
-                </span>
-            </span><br><br>
-          
-      </div>
-  
-      <div style="margin: 0 auto 30px auto; width: 240px; height: 40px; padding-top: 20px;">
-          <input @click="go" class="confirmation-buttons" v-bind:class="{colorAnimation : registeranimation}" value="Submit" type="button" />
-      </div>
-  </div>
-  
+    <div class="login-container">
+        <div>
+            <label for="username">Username</label>
+            <input name="username" @keyup="checkUsername" v-model="username" type="text" autofocus>
+            <div class="error-container">
+                <span v-if="unameerror.length">*{{unameerror[0]}}</span>
+            </div>
+        </div>
+
+        <div>
+            <label for="password">Password</label>
+            <input @keyup="checkPassword" name="password" v-model="password" type="password">
+            <div class="error-container">
+                <span v-if="passerror.length">*{{passerror[0]}}</span>
+            </div>
+        </div>
+        
+        <div>
+            <label for="psswdConf">Password Confirmation</label>
+            <input @keyup="checkPasswordConf" name="psswd" v-model="passwordconf" type="password">
+            <div class="error-container">
+                <span v-if="conferror">*{{conferror}}</span>
+            </div>
+        </div>
+            
+        <div>
+            <label for="firstname">First Name</label>
+            <input name="firstname" @keyup="checkFName" placeholder="" v-model="firstname" type="text">
+            <div class="error-container">
+                <span v-if="fnameerror.length">*{{fnameerror[0]}}</span>
+            </div>
+        </div>
+
+        <div class="submit">
+            <button @click="go" v-bind:class="{colorAnimation : registeranimation}">Register</button>
+        </div>
+    </div>
 </template>
 
 <script>
-    import { goToLogin, goToRequestedPage } from '@/shared/navigation'
+    import { goToRequestedPage } from '@/shared/navigation'
     import { register } from '@/shared/logic';
 
     export default {
@@ -55,7 +53,7 @@
                 passwordconf: '',
                 unameerror: [],
                 passerror: [],
-                conferror: [],
+                conferror: '',
                 fnameerror: [],
                 registeranimation: false
             }
@@ -66,7 +64,7 @@
                 this.unameerror = [];
                 
                 if (this.username == "") {
-                    this.unameerror.push("Enter a username.");
+                    this.unameerror.push("Username required.");
                     return true;
                 }
                 
@@ -75,7 +73,7 @@
                 this.passerror = [];
                 let flag = false;
                 if (this.password.length < 6) {
-                    this.passerror.push("Six character minimum on the password.");
+                    this.passerror.push("Six characters required on passwords.");
                     flag = true;
                 }
                 if (this.password != this.passwordconf && this.passwordconf.length == 0) {
@@ -117,15 +115,9 @@
                     let registerResult = await register(user);
                     
                     if (registerResult.tokens) {
-                        // window.localStorage.setItem("user", JSON.stringify({...registerResult, "username": this.username}))
-                            
-                        if (this.$store.state.loginRedirect) {
-                            goToRequestedPage();
-                        } else {
-                            goToLogin();
-                        }
+                        goToRequestedPage();
                     } else {
-                        this.unameerror.push(registerResult);
+                        this.unameerror.push("Username already taken");
                     }
                     
                 } catch (error) {
@@ -139,31 +131,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-    #account-error-container {
-        min-height: 15px;
-        color: red;
-        text-align: left;
-
-    }
-
-    .confirmation-buttons {
-        display: block; 
-        float: right; 
-        font-size: small;
-        background-color: #f7f7f7; 
-        color: ; 
-        width: 80px; 
-        height: 25px;
-        border-radius: 3px;
-        margin: 0 auto 15px auto;
-        text-align: center;
-    }
-    
-    .confirmation-buttons:hover {
-        cursor: pointer;
-    }
+<style scoped lang="scss">
 
     .colorAnimation {
         animation: colorchange 10s infinite;
@@ -212,40 +180,4 @@
         }
     }
 
-    #input-register-container {
-        width: 200px;
-        font-size: small;
-        text-align: center;
-        margin: 20px auto 0 auto;
-    }
-
-    label {
-        display: block;
-        text-align: left;
-        font-size: larger;
-    }
-
-    input.start-pages {
-        width: 220px;
-        height: 30px;
-        font-family: 'Manjari', sans-serif;
-        border-radius: 4px;
-        font-size: 15px;
-        padding-left: 3px;
-    }
-
-    .two-col-container {
-        display: grid;
-        grid-template-columns: 60% 40%;
-        align-items: center;
-        justify-content: center;
-    }
-
-    input {
-        border: transparent;
-        background-color: #f7f7f7;
-        color: #192734;
-        font-size: 15px;
-        font-weight: 550;
-    }
 </style>

@@ -70,6 +70,7 @@ export default {
         button {
             background-color: #292b2c;
             border-color: transparent;
+            color: #f7f7f7;
             &:hover {
                 background-color: #42b983;
             }

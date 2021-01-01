@@ -1,6 +1,6 @@
 /* eslint-disable */
 <template>
-  <div id="app">
+  <div id="app-container">
     <section v-if="user.username"> 
         <div id="nav">
             <div class="app-logo">iJams</div>
@@ -45,7 +45,9 @@
         </div>
     </section>
     <section v-else>
-        <div class="app-logo">iJams</div>
+        <div id="nav">
+            <div class="app-logo">iJams</div>
+        </div>
     </section>
     <div id="toasts" v-for="(toast, idx) in toasts" v-bind:key="idx">
         <Toast :msg="toast.msg" :timeoutSeconds="4" :idx="idx"/>
@@ -408,7 +410,7 @@ $width-phone: 400px;
     }
 }
 
-#app {
+#app-container {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

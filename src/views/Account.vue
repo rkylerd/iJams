@@ -17,14 +17,12 @@
 
 <style type="text/css" lang="scss">
     @import url('https://fonts.googleapis.com/css?family=Cabin|Fjalla+One|Fredoka+One|Inconsolata|Josefin+Sans|Luckiest+Guy|Manjari|Modak&display=swap');
-    #app {
-      background-color: rgb(247, 247, 247, .7);
-    }
+    
     .tabs-container {
         display: flex;
         width: 30vw;
         min-width: 310px;
-        margin: 2% auto 0 auto;
+        margin: 1em auto 0 auto;
         list-style-type: none;
 
         > li {
@@ -54,10 +52,10 @@
               /* Squares below circles */
               z-index: 1;
             }
-            a { 
+            > a {
               /* Colors when tab is active */
               background-color: #292b2c; 
-              color: white;
+              color: #f7f7f7;
               &:before, &:after {
                 background: #f7f7f7;
               }  
@@ -75,6 +73,9 @@
           }
 
           > a { 
+            &:not([href]):not([class]) {
+                  color: #f7f7f7;
+              } 
             /* Make them block level
               and only as wide as they need */
             float: left; 
@@ -137,6 +138,7 @@
     .tabs li:first-child.active a:after,
     .tabs li:last-child.active a:before {
       background-color: #42b983;
+      color: #f7f7f7;
     }
     
    #account-container {
@@ -148,6 +150,7 @@
       // box-shadow: 0 0 10px #1f2b38;
       
       width: 30vw;
+      max-width: 98%;
       min-width: 310px;
       min-height: 310px;
       margin: 0 auto;
