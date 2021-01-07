@@ -25,11 +25,11 @@ export default {
     props: {
         msg: String,
         timeoutSeconds: Number,
-        idx: Number
+        idx: String
     },
     setup(props) {
         const removeToast = () => store.dispatch("removeToast", props.idx); 
-        setTimeout(removeToast, props.timeoutSeconds*1000)
+        if (props.timeoutSeconds) setTimeout(removeToast, props.timeoutSeconds*1000)
         return { ...props, removeToast }
     }
 }

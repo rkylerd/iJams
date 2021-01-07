@@ -56,4 +56,15 @@ export default defineComponent({
 .distance-left {
   margin-left: .2em;
 }
+
+.spin {
+  @keyframes spinner {
+    to { transform: rotate(360deg); }
+  }
+  /* This is the class name given by the Font Awesome component when icon contains 'spinner' */
+  
+  /* Apply 'spinner' keyframes looping once every second (1s)  */
+  animation: spinner 2s linear infinite;
+  
+}
 </style>

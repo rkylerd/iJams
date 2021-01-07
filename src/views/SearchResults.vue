@@ -1,5 +1,6 @@
 <template>
     <div>
+        <Loading v-if="loading" msg="Working on it..." />
         <div class="page-title-container" style="align-self: center;">
             <div class="page-title">Search: {{searchTerm}}</div>
         </div>
@@ -41,7 +42,7 @@
             overflow-x: auto;
         }
 
-        & > * {
+        & > *:not(.loading-box) {
             margin-top: 1rem;
         }
     }
@@ -67,19 +68,22 @@
     import MVideoTile from '@/components/MVideoTile.vue'
     import MediaSorter from '@/components/MediaSorter.vue'
     import { cutLength, updateMusicIcon, search } from '@/shared/logic'
+    import Loading from '@/components/Loading.vue'
 
     export default {
         name: 'Results',
         data() {
             return {
                 songResults: [],
-                mvideoResults: []
+                mvideoResults: [],
+                loading: true
             }
         },
         components: {
             SongTile,
             MediaSorter,
-            MVideoTile
+            MVideoTile,
+            Loading
         },
         async created() {
             this.search();
@@ -89,7 +93,7 @@
                 if (this.$store.state.referenceToClassName && this.$store.state.referenceToClassName.classList.length) {
                     updateMusicIcon(this.$store.state.referenceToClassName, false);
                 }
-                
+                this.loading = true;
                 search(this.$route.query.search)
                     .then(({songs = [], mvideos=[]}={}) => {
                         this.songResults = songs.map(song => {
@@ -100,6 +104,7 @@
                             };
                         });
                         this.mvideoResults =  mvideos;
+                        this.loading = false;
                     }).catch(error => {
                         console.log("error from results.vue", error);
                     })

@@ -1,5 +1,6 @@
 <template>
   <div>
+      <Loading v-if="loading" :msg="`Retrieving your playlist`" />
       <div class="page-title-container">
         <div class="page-title">Playlist</div>
       </div>
@@ -68,13 +69,15 @@
     import { onBeforeMount, reactive, toRefs, computed } from 'vue'
     import { playSound, getPlaylist, updatePlaylist } from '@/shared/logic'
     import SongCard from '@/components/SongCard.vue'
+    import Loading from '@/components/Loading.vue'
     import { goToAlbum, filterArtist, goToCheckout } from '@/shared/navigation'
     import { useStore } from 'vuex'
 
     export default {
         name: "playlist",
         components: {
-            SongCard
+            SongCard,
+            Loading
         },
         setup() {
             const store = useStore();
@@ -127,7 +130,12 @@
             
             onBeforeMount(async () => {
                 try {
-                    await getPlaylist()
+                    await getPlaylist();
+                    playlistData.loading = false;
+                    if (!playlistData.playlist.length) {
+                        store.dispatch("addToast", { key: "playlist-alert", msg: "This page will be empty until you add songs to your playlist"});
+                    }
+                    
                 } catch (err) {
                     console.log('Failed getting playlist', err);
                 }

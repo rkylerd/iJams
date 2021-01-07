@@ -65,8 +65,9 @@ export default createStore({
     addToast(state, toast) {
       state.toasts.push(toast);
     },
-    removeToast(state, index) {
-      state.toasts.splice(index, 1);
+    removeToast(state, toastKey) {
+      const indexOf = state.toasts.findIndex(({key = ""}) => key === toastKey)
+      state.toasts.splice(indexOf, 1);
     }
   },
   actions: {
@@ -128,8 +129,8 @@ export default createStore({
     addToast(context, toast) {
       context.commit("addToast", toast);
     },
-    removeToast(context, indexOfToast) {
-      context.commit("removeToast", indexOfToast);
+    removeToast(context, keyOfToast) {
+      context.commit("removeToast", keyOfToast);
     }
   },
   modules: {}

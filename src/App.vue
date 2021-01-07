@@ -33,7 +33,7 @@
                 <router-link to="/ijams/playlist" class="nav-link"><span>Playlist</span><fa icon="compact-disc" prefix="fas" class="menu-icon distance-left"></fa></router-link>
                 <a class="nav-link" @click="logout"><span>Log out</span><fa icon="sign-out-alt" prefix="fas" class="menu-icon distance-left"></fa></a>            
             </div>
-            <div v-else>
+            <div v-else id="mobile-nav-links">
                 <a class="nav-link" @click="mobileOptionsShown = !mobileOptionsShown"><fa icon="bars" prefix="fas" class="menu-icon distance-left"></fa></a>
                 <div id="mobile-nav" v-if="mobileOptionsShown" @click="mobileOptionsShown = false">
                     <router-link to="/ijams" class="nav-link"><span>iJams</span><fa icon="home" prefix="fas" class="menu-icon distance-left"></fa></router-link>
@@ -41,7 +41,6 @@
                     <a class="nav-link" @click="logout"><span>Log out</span><fa icon="sign-out-alt" prefix="fas" class="menu-icon distance-left"></fa></a>            
                 </div>
             </div>
-        
         </div>
     </section>
     <section v-else>
@@ -49,8 +48,8 @@
             <div class="app-logo">iJams</div>
         </div>
     </section>
-    <div id="toasts" v-for="(toast, idx) in toasts" v-bind:key="idx">
-        <Toast :msg="toast.msg" :timeoutSeconds="4" :idx="idx"/>
+    <div id="toasts">
+        <Toast v-for="(toast, idx) in toasts" :timeoutSeconds="4" :msg="toast.msg" :idx="toast.key" :key="idx"/>
     </div>
     <div id="music-player-container" v-if="playing" :class="{'hidden': !musicPlayerShowing}">
         <div class="flex-row" id="music-player">
@@ -138,7 +137,7 @@
             mobileOptionsShown: false,
             playNextSound: () => { 
                 if (!playNextSound())
-                    store.dispatch("addToast", {msg: "Add a song to the 'up next' list first."});
+                    store.dispatch("addToast", { key: "ps-alert", msg: "Add a song to the 'up next' list first."});
             },
             updateCurrentTime: 
                 ({ currentTarget: { value = 0 } = {} } = {}) =>
@@ -175,9 +174,8 @@ $width-phone: 400px;
 
 #mobile-nav {
     position: absolute;
-    top: 45px;
+    top: 12vh;
     width: 90vw;
-    height: 90vh;
     right: 0;
     background-color: #f7f7f7;
     z-index: 30;
@@ -185,15 +183,34 @@ $width-phone: 400px;
     .nav-link {
         background-color: #292b2c;
         color: #f7f7f7;
+        height: 3em;
+        border-top: solid 2px #f7f7f7;
         &:hover {
             background-color: #42b983;
         }
     }
 }
 
+#mobile-nav-links {
+    margin: auto;
+}
+
 .nav-link {
     cursor: pointer;
 }
+
+#toasts {
+    $n: 10;
+
+    @for $i from 1 through $n {
+        :nth-child(#{$i}) {
+            // position: absolute;
+            // left: 10px * $i;
+            top: 5em*$i + .5em*($i - 1);
+        }
+    }
+}
+
 #music-player-container {
     position: absolute;
     right: 0;
